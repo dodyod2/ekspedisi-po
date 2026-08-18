@@ -157,26 +157,27 @@
   }
 
   .checklist-box {
-    max-height: 180px;
+    max-height: 220px;
     overflow-y: auto;
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 10px;
     background: #fff;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 8px;
   }
 
+  /* Penyesuaian Tampilan Item Checklist */
   .checkbox-item {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    align-items: flex-start;
+    gap: 10px;
     font-weight: 500;
     cursor: pointer;
     font-size: 13px;
     background: #f8fafc;
-    padding: 8px 12px;
+    padding: 10px 12px;
     border-radius: 8px;
     border: 1px solid #e2e8f0;
     transition: background 0.15s ease;
@@ -189,8 +190,30 @@
   .checkbox-item input[type="checkbox"] {
     width: 16px;
     height: 16px;
+    margin-top: 2px;
     cursor: pointer;
     accent-color: var(--primary);
+    flex-shrink: 0;
+  }
+
+  .po-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+  }
+
+  .po-info strong {
+    color: var(--text-main);
+    font-size: 13px;
+  }
+
+  .po-detail {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .button-group {
@@ -423,7 +446,7 @@
 
         <!-- Kolom Pencarian / Filter PO -->
         <div class="search-po-box">
-          <input type="text" id="searchPOInput" placeholder="🔍 Cari / ketik nomor PO..." oninput="filterPOList()">
+          <input type="text" id="searchPOInput" placeholder="🔍 Cari nomor PO, penerima, atau nama barang..." oninput="filterPOList()">
         </div>
 
         <div id="checklistContainer" class="checklist-box">
@@ -560,6 +583,7 @@ function updateUnassignedCounters() {
   document.getElementById('unassignedKM9').textContent = km9Unassigned;
 }
 
+/* Fungsi Render Checklist PO Terpercaya */
 function renderChecklistPO(poList) {
   const container = document.getElementById('checklistContainer');
   container.innerHTML = '';
@@ -588,8 +612,29 @@ function renderChecklistPO(poList) {
       handleCheckboxChange(this);
     };
 
+    // Kontainer Teks Informasi Lengkap
+    const infoContainer = document.createElement('div');
+    infoContainer.className = 'po-info';
+
+    const title = document.createElement('strong');
+    title.textContent = `${poStr} (${item.feedmill})`;
+
+    const details = document.createElement('div');
+    details.className = 'po-detail';
+    
+    // Menggabungkan atribut informasi PO
+    const parts = [];
+    if (item.penerimaPO) parts.push(`Penerima: ${item.penerimaPO}`);
+    if (item.namaBarang) parts.push(`Barang: ${item.namaBarang}`);
+    if (item.row) parts.push(`Baris: ${item.row}`);
+
+    details.textContent = parts.length > 0 ? parts.join(' • ') : `Baris: ${item.row}`;
+
+    infoContainer.appendChild(title);
+    infoContainer.appendChild(details);
+
     label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(`${poStr} (${item.feedmill})`));
+    label.appendChild(infoContainer);
     container.appendChild(label);
   });
 }
@@ -606,7 +651,12 @@ function handleCheckboxChange(cb) {
 
 function filterPOList() {
   const query = document.getElementById('searchPOInput').value.trim().toLowerCase();
-  const filtered = rawPOList.filter(item => String(item.po).toLowerCase().includes(query));
+  const filtered = rawPOList.filter(item => {
+    const po = String(item.po || '').toLowerCase();
+    const penerima = String(item.penerimaPO || '').toLowerCase();
+    const barang = String(item.namaBarang || '').toLowerCase();
+    return po.includes(query) || penerima.includes(query) || barang.includes(query);
+  });
   renderChecklistPO(filtered);
 }
 
