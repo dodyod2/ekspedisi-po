@@ -58,7 +58,6 @@
     font-size: 13px;
   }
 
-  /* Grid Statistik PO Belum Ada Vendor */
   .unassigned-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -168,7 +167,6 @@
     gap: 8px;
   }
 
-  /* Penyesuaian Tampilan Item Checklist */
   .checkbox-item {
     display: flex;
     align-items: flex-start;
@@ -404,7 +402,6 @@
     <p>Pilih PO KM8 & KM9</p>
   </div>
 
-  <!-- Statistik Informasi PO Tanpa Vendor di Bagian Atas -->
   <div class="unassigned-grid">
     <div class="unassigned-card km8">
       <div>
@@ -433,7 +430,6 @@
 
   <div class="card">
     <div class="form-grid">
-      <!-- Area Checklist PO -->
       <div class="form-group">
         <div class="checklist-header">
           <label style="margin:0;">Pilih PO Belum Ada Vendor:</label>
@@ -444,7 +440,6 @@
           </div>
         </div>
 
-        <!-- Kolom Pencarian / Filter PO -->
         <div class="search-po-box">
           <input type="text" id="searchPOInput" placeholder="🔍 Cari nomor PO, penerima, atau nama barang..." oninput="filterPOList()">
         </div>
@@ -454,7 +449,6 @@
         </div>
       </div>
 
-      <!-- Area Autocomplete Vendor -->
       <div class="form-group" style="position:relative;">
         <label for="vendorInput">Nama Vendor</label>
         <input type="text" id="vendorInput" placeholder="Ketik & pilih nama vendor...">
@@ -471,7 +465,6 @@
     <div id="status"></div>
   </div>
 
-  <!-- Counter Stats Tabel Hasil Proses -->
   <div class="stats-grid">
     <div class="stat-card">
       <h4>Total Diproses KM8 (Tabel Bawah)</h4>
@@ -483,7 +476,6 @@
     </div>
   </div>
 
-  <!-- Tabel Hasil Simpan -->
   <div class="table-wrapper">
     <div class="table-container">
       <h3 class="table-header-title">Feedmill KM8</h3>
@@ -518,8 +510,8 @@
 </div>
 
 <script>
-// URL WEB APP APPS SCRIPT
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwjkYgaXvBJy2ltKNlwpZc0fut03bI0cNagdHOr3OLn92YD15TLSBmL78vtayYG6Kyi/exec";
+// Mengambil URL Deployment Apps Script secara otomatis
+const SCRIPT_URL = "<?= ScriptApp.getService().getUrl() ?>";
 
 let dataTabelExport = [];
 let vendorList = [];
@@ -583,7 +575,6 @@ function updateUnassignedCounters() {
   document.getElementById('unassignedKM9').textContent = km9Unassigned;
 }
 
-/* Fungsi Render Checklist PO Terpercaya */
 function renderChecklistPO(poList) {
   const container = document.getElementById('checklistContainer');
   container.innerHTML = '';
@@ -612,7 +603,6 @@ function renderChecklistPO(poList) {
       handleCheckboxChange(this);
     };
 
-    // Kontainer Teks Informasi Lengkap
     const infoContainer = document.createElement('div');
     infoContainer.className = 'po-info';
 
@@ -622,7 +612,6 @@ function renderChecklistPO(poList) {
     const details = document.createElement('div');
     details.className = 'po-detail';
     
-    // Menggabungkan atribut informasi PO
     const parts = [];
     if (item.penerimaPO) parts.push(`Penerima: ${item.penerimaPO}`);
     if (item.namaBarang) parts.push(`Barang: ${item.namaBarang}`);
