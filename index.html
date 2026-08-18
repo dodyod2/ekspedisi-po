@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Input PO - Checklist Vendor</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --success: #10b981;
+    --success-hover: #059669;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+    --warning: #f59e0b;
+    --bg-main: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+  }
+
+  * {
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  body {
+    background: var(--bg-main);
+    margin: 0;
+    padding: 25px 20px;
+    color: var(--text-main);
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: auto;
+  }
+
+  .header-title {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .header-title h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.5px;
+  }
+
+  .header-title p {
+    margin: 4px 0 0;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  /* Grid Statistik PO Belum Ada Vendor */
+  .unassigned-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .unassigned-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 18px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  }
+
+  .unassigned-card.km8 { border-left: 4px solid var(--primary); }
+  .unassigned-card.km9 { border-left: 4px solid #8b5cf6; }
+  .unassigned-card.selected { border-left: 4px solid var(--success); }
+
+  .unassigned-card h4 {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .unassigned-card .count {
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .unassigned-card.km8 .count { color: var(--primary); }
+  .unassigned-card.km9 .count { color: #8b5cf6; }
+  .unassigned-card.selected .count { color: var(--success); }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    margin-bottom: 20px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-group {
+    margin-bottom: 8px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #334155;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.2s ease;
+    background: #f1f5f9;
+  }
+
+  input[type="text"]:focus {
+    background: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  .checklist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .search-po-box {
+    margin-bottom: 10px;
+  }
+
+  .checklist-box {
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px;
+    background: #fff;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 8px;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 13px;
+    background: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    transition: background 0.15s ease;
+  }
+
+  .checkbox-item:hover {
+    background: #f1f5f9;
+  }
+
+  .checkbox-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--primary);
+  }
+
+  .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    padding: 10px 18px;
+    cursor: pointer;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+  }
+
+  .btn-sm {
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  .btn-muted {
+    background: #64748b;
+  }
+  .btn-muted:hover {
+    background: #475569;
+  }
+
+  .btn-danger { background: var(--danger); }
+  .btn-danger:hover { background: var(--danger-hover); }
+
+  #status {
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    min-height: 20px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .stat-card h4 {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .stat-card .count {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .autocomplete-items {
+    position: absolute;
+    z-index: 9999;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    background: white;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .autocomplete-items div {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s ease;
+  }
+
+  .autocomplete-items div:hover,
+  .autocomplete-active {
+    background-color: #eff6ff !important;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .table-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 850px) {
+    .unassigned-grid { grid-template-columns: 1fr; }
+    .table-wrapper { grid-template-columns: 1fr; }
+  }
+
+  .table-container {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    max-height: 320px;
+    overflow-y: auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+
+  .table-header-title {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    padding: 14px 16px;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border-color);
+    z-index: 10;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    background: #f8fafc;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 48px;
+    z-index: 9;
+  }
+
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+  }
+
+  tr:hover td {
+    background: #f8fafc;
+  }
+
+  .btn-sm-danger {
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-title">
+    <h2>Form Input Purchase Order</h2>
+    <p>Pilih PO KM8 & KM9</p>
+  </div>
+
+  <!-- Statistik Informasi PO Tanpa Vendor di Bagian Atas -->
+  <div class="unassigned-grid">
+    <div class="unassigned-card km8">
+      <div>
+        <h4>Tanpa Vendor (KM8)</h4>
+        <span style="font-size:11px; color:var(--text-muted);">Baris ≥ 5061</span>
+      </div>
+      <span class="count" id="unassignedKM8">0</span>
+    </div>
+
+    <div class="unassigned-card km9">
+      <div>
+        <h4>Tanpa Vendor (KM9)</h4>
+        <span style="font-size:11px; color:var(--text-muted);">Baris > 6716</span>
+      </div>
+      <span class="count" id="unassignedKM9">0</span>
+    </div>
+
+    <div class="unassigned-card selected">
+      <div>
+        <h4>PO Terpilih</h4>
+        <span style="font-size:11px; color:var(--text-muted);">Total dicentang saat ini</span>
+      </div>
+      <span class="count" id="totalSelectedText">0</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-grid">
+      <!-- Area Checklist PO -->
+      <div class="form-group">
+        <div class="checklist-header">
+          <label style="margin:0;">Pilih PO Belum Ada Vendor:</label>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="btn-sm" onclick="toggleSelectAll(true)">Pilih Semua Tampil</button>
+            <button type="button" class="btn-sm btn-muted" onclick="toggleSelectAll(false)">Reset Centang</button>
+            <button type="button" class="btn-sm btn-muted" onclick="muatChecklistPO()">🔄 Refresh List</button>
+          </div>
+        </div>
+
+        <!-- Kolom Pencarian / Filter PO -->
+        <div class="search-po-box">
+          <input type="text" id="searchPOInput" placeholder="🔍 Cari / ketik nomor PO..." oninput="filterPOList()">
+        </div>
+
+        <div id="checklistContainer" class="checklist-box">
+          <span style="color:var(--text-muted); font-size:13px; grid-column:1/-1; text-align:center;">Memuat daftar PO...</span>
+        </div>
+      </div>
+
+      <!-- Area Autocomplete Vendor -->
+      <div class="form-group" style="position:relative;">
+        <label for="vendorInput">Nama Vendor</label>
+        <input type="text" id="vendorInput" placeholder="Ketik & pilih nama vendor...">
+        <div id="vendorSuggestions" class="autocomplete-items"></div>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button onclick="simpanData()">Simpan Data Terpilih</button>
+      <button type="button" class="btn-print" onclick="bukaPrintPO()">🖨️ PRINT PO</button>
+      <button class="btn-danger" onclick="resetTabel()">Reset Tabel Bawah</button>
+    </div>
+
+    <div id="status"></div>
+  </div>
+
+  <!-- Counter Stats Tabel Hasil Proses -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h4>Total Diproses KM8 (Tabel Bawah)</h4>
+      <span class="count" id="countKM8">0</span>
+    </div>
+    <div class="stat-card">
+      <h4>Total Diproses KM9 (Tabel Bawah)</h4>
+      <span class="count" id="countKM9">0</span>
+    </div>
+  </div>
+
+  <!-- Tabel Hasil Simpan -->
+  <div class="table-wrapper">
+    <div class="table-container">
+      <h3 class="table-header-title">Feedmill KM8</h3>
+      <table id="tabelKM8" style="display:none;">
+        <thead>
+          <tr>
+            <th>PO</th>
+            <th>Vendor</th>
+            <th>Penerima</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="table-container">
+      <h3 class="table-header-title">Feedmill KM9</h3>
+      <table id="tabelKM9" style="display:none;">
+        <thead>
+          <tr>
+            <th>PO</th>
+            <th>Vendor</th>
+            <th>Penerima</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// URL WEB APP APPS SCRIPT
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNDlDsswPNbPp5U5OhqhvvT3AEom8iRd1AefMVebXES1USr3jvC3iFipV2tNPd2tRM/exec";
+
+let dataTabelExport = [];
+let vendorList = [];
+let rawPOList = []; 
+let selectedPOs = new Set(); 
+
+window.onload = function() {
+  loadVendorList();
+  muatChecklistPO();
+};
+
+function loadVendorList() {
+  fetch(`${SCRIPT_URL}?action=getVendor`)
+    .then(res => res.json())
+    .then(result => {
+      if (result.status === 'success') {
+        isiVendorList(result.data);
+      }
+    })
+    .catch(err => console.error("Gagal memuat vendor:", err));
+}
+
+function isiVendorList(vendors) {
+  vendorList = vendors || [];
+  initAutocomplete(document.getElementById("vendorInput"), vendorList);
+}
+
+function muatChecklistPO() {
+  document.getElementById('checklistContainer').innerHTML = '<span style="color:var(--text-muted); font-size:13px; grid-column:1/-1; text-align:center;">⏳ Memuat data...</span>';
+  selectedPOs.clear();
+  updateSelectedCount();
+
+  fetch(`${SCRIPT_URL}?action=getUnassignedPO`)
+    .then(res => res.json())
+    .then(result => {
+      if (result.status === 'success') {
+        const poList = result.data || [];
+        rawPOList = poList.filter(item => {
+          const row = Number(item.row);
+          if (item.feedmill === 'KM8') return row >= 5061;
+          if (item.feedmill === 'KM9') return row > 6716;
+          return true;
+        });
+
+        updateUnassignedCounters();
+        renderChecklistPO(rawPOList);
+      } else {
+        document.getElementById('checklistContainer').innerHTML = `<span style="color:var(--danger); font-size:13px; grid-column:1/-1;">Gagal memuat data PO.</span>`;
+      }
+    })
+    .catch(err => {
+      document.getElementById('checklistContainer').innerHTML = `<span style="color:var(--danger); font-size:13px; grid-column:1/-1;">Gagal memuat PO: ${err.message}</span>`;
+    });
+}
+
+function updateUnassignedCounters() {
+  const km8Unassigned = rawPOList.filter(item => item.feedmill === 'KM8').length;
+  const km9Unassigned = rawPOList.filter(item => item.feedmill === 'KM9').length;
+  
+  document.getElementById('unassignedKM8').textContent = km8Unassigned;
+  document.getElementById('unassignedKM9').textContent = km9Unassigned;
+}
+
+function renderChecklistPO(poList) {
+  const container = document.getElementById('checklistContainer');
+  container.innerHTML = '';
+
+  if (!poList || poList.length === 0) {
+    container.innerHTML = '<span style="color:var(--success); font-size:13px; grid-column:1/-1; text-align:center;">🎉 Tidak ada PO belum ber-vendor di atas kriteria baris.</span>';
+    return;
+  }
+
+  poList.forEach(item => {
+    const poStr = String(item.po).trim();
+    const label = document.createElement('label');
+    label.className = 'checkbox-item';
+    label.dataset.po = poStr;
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.value = poStr;
+    checkbox.className = 'po-checkbox';
+
+    if (selectedPOs.has(poStr)) {
+      checkbox.checked = true;
+    }
+
+    checkbox.onchange = function() {
+      handleCheckboxChange(this);
+    };
+
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(`${poStr} (${item.feedmill})`));
+    container.appendChild(label);
+  });
+}
+
+function handleCheckboxChange(cb) {
+  const poVal = String(cb.value).trim();
+  if (cb.checked) {
+    selectedPOs.add(poVal);
+  } else {
+    selectedPOs.delete(poVal);
+  }
+  updateSelectedCount();
+}
+
+function filterPOList() {
+  const query = document.getElementById('searchPOInput').value.trim().toLowerCase();
+  const filtered = rawPOList.filter(item => String(item.po).toLowerCase().includes(query));
+  renderChecklistPO(filtered);
+}
+
+function toggleSelectAll(status) {
+  const visibleCheckboxes = document.querySelectorAll('.po-checkbox');
+  visibleCheckboxes.forEach(cb => {
+    cb.checked = status;
+    const poVal = String(cb.value).trim();
+    if (status) {
+      selectedPOs.add(poVal);
+    } else {
+      selectedPOs.delete(poVal);
+    }
+  });
+  updateSelectedCount();
+}
+
+function updateSelectedCount() {
+  document.getElementById('totalSelectedText').textContent = selectedPOs.size;
+}
+
+function updateCounters() {
+  const countKM8 = dataTabelExport.filter(i => i.feedmill === 'KM8').length;
+  const countKM9 = dataTabelExport.filter(i => i.feedmill === 'KM9').length;
+  document.getElementById('countKM8').textContent = countKM8;
+  document.getElementById('countKM9').textContent = countKM9;
+}
+
+function simpanData() {
+  const selectedPOList = Array.from(selectedPOs);
+  const vendor = document.getElementById('vendorInput').value.trim();
+
+  if (selectedPOList.length === 0) {
+    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ Pilih minimal satu PO dari checklist.</span>';
+    return;
+  }
+  if (!vendor) {
+    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ Isikan Nama Vendor.</span>';
+    return;
+  }
+
+  document.getElementById('status').innerHTML = `<span style="color:var(--primary)">⏳ Menyimpan ${selectedPOList.length} PO...</span>`;
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'simpanMultiplePO',
+      selectedPOList: selectedPOList,
+      vendor: vendor
+    })
+  })
+  .then(res => res.json())
+  .then(result => {
+    if (result.status === 'success') {
+      const results = result.data || [];
+      document.getElementById('status').innerHTML = `<span style="color:var(--success)">✅ Berhasil menyimpan ${results.length} PO.</span>`;
+      
+      results.forEach(item => tambahBarisTabel(item));
+
+      rawPOList = rawPOList.filter(item => !selectedPOList.includes(String(item.po).trim()));
+      
+      updateUnassignedCounters();
+      selectedPOs.clear();
+      updateSelectedCount();
+
+      document.getElementById('searchPOInput').value = '';
+      renderChecklistPO(rawPOList);
+      document.getElementById('vendorInput').value = '';
+    } else {
+      document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + result.message + '</span>';
+    }
+  })
+  .catch(err => {
+    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ Terjadi kesalahan: ' + err.message + '</span>';
+  });
+}
+
+function tambahBarisTabel(data) {
+  const tabelId = data.feedmill === 'KM8' ? 'tabelKM8' : 'tabelKM9';
+  const tbody = document.querySelector(`#${tabelId} tbody`);
+  const table = document.getElementById(tabelId);
+  table.style.display = '';
+
+  const tr = document.createElement('tr');
+  [data.po, data.vendor, data.penerimaPO || ''].forEach(val => {
+    const td = document.createElement('td');
+    td.textContent = val;
+    tr.appendChild(td);
+  });
+
+  const tdAksi = document.createElement('td');
+  const btnHapus = document.createElement('button');
+  btnHapus.textContent = 'Hapus';
+  btnHapus.className = "btn-danger btn-sm-danger";
+  btnHapus.onclick = () => hapusBaris(data.po, tr);
+  tdAksi.appendChild(btnHapus);
+  tr.appendChild(tdAksi);
+
+  tbody.appendChild(tr);
+  dataTabelExport.push(data);
+  updateCounters();
+
+  tr.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function hapusBaris(po, rowElement) {
+  Swal.fire({
+    title: `Hapus PO ${po}?`,
+    text: "Data vendor akan dikosongkan kembali pada sheet.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Ya, hapus',
+    cancelButtonText: 'Batal'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'hapusDariSheet',
+          po: po
+        })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status === 'success' && res.data) {
+          const index = dataTabelExport.findIndex(item => item.po === po);
+          if (index !== -1) dataTabelExport.splice(index, 1);
+          rowElement.remove();
+          
+          if (dataTabelExport.length === 0) {
+            document.getElementById('tabelKM8').style.display = 'none';
+            document.getElementById('tabelKM9').style.display = 'none';
+          }
+          updateCounters();
+          muatChecklistPO();
+          document.getElementById('status').innerHTML = `<span style="color:var(--success)">🗑️ PO ${po} berhasil dihapus.</span>`;
+        } else {
+          document.getElementById('status').innerHTML = `<span style="color:#d97706">⚠️ PO ${po} tidak ditemukan di sheet.</span>`;
+        }
+      })
+      .catch(err => {
+        document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
+      });
+    }
+  });
+}
+
+function bukaPrintPO() {
+  const targetUrl = SCRIPT_URL + "?page=printPO&sheet=CPI KM8";
+  window.open(targetUrl, '_blank');
+}
+
+function resetTabel() {
+  ['tabelKM8','tabelKM9'].forEach(id => {
+    document.querySelector(`#${id} tbody`).innerHTML = '';
+    document.getElementById(id).style.display = 'none';
+  });
+  dataTabelExport.length = 0;
+  updateCounters();
+  document.getElementById('status').innerHTML = '<span style="color:var(--text-muted)">🗑️ Tabel bawah dikosongkan.</span>';
+}
+
+function initAutocomplete(inp, arr) {
+  const suggestionBox = document.getElementById("vendorSuggestions");
+  let currentFocus = -1;
+
+  inp.addEventListener("input", function() {
+    const val = this.value.toLowerCase();
+    suggestionBox.innerHTML = "";
+    currentFocus = -1;
+    if (!val) return false;
+
+    const matches = arr.filter(v => v.toLowerCase().includes(val));
+    matches.slice(0, 10).forEach(v => {
+      const div = document.createElement("div");
+      div.textContent = v;
+      div.onclick = function() {
+        inp.value = v;
+        suggestionBox.innerHTML = "";
+      };
+      suggestionBox.appendChild(div);
+    });
+  });
+
+  inp.addEventListener("keydown", function(e) {
+    let items = suggestionBox.getElementsByTagName("div");
+    if (e.key === "ArrowDown") {
+      currentFocus++;
+      addActive(items);
+      e.preventDefault();
+    } else if (e.key === "ArrowUp") {
+      currentFocus--;
+      addActive(items);
+      e.preventDefault();
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (currentFocus > -1 && items[currentFocus]) {
+        items[currentFocus].click();
+      }
+    }
+  });
+
+  function addActive(items) {
+    if (!items) return false;
+    removeActive(items);
+    if (currentFocus >= items.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = items.length - 1;
+    items[currentFocus].classList.add("autocomplete-active");
+    items[currentFocus].scrollIntoView({ block: "nearest", inline: "nearest" });
+  }
+
+  function removeActive(items) {
+    for (let item of items) {
+      item.classList.remove("autocomplete-active");
+    }
+  }
+
+  document.addEventListener("click", function(e) {
+    if (e.target !== inp) suggestionBox.innerHTML = "";
+  });
+}
+</script>
+</body>
+</html>
