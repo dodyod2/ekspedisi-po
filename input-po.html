@@ -205,7 +205,6 @@
   </div>
 
   <script>
-    // URL Web App Google Apps Script Anda
     const scriptURL = "https://script.google.com/macros/s/AKfycbzQNIK1b3Spy-uvWY8bg0i6Bje-pWvVh4IlULKcIdOL4aQrwmWfyKlWvKgcde5dpz2s/exec";
     
     let allPO = [];
@@ -215,33 +214,26 @@
       loadVendorList();
     });
 
-    // Ambil data PO yang belum memiliki vendor
     function loadUnassignedPO() {
       const tbody = document.getElementById("poTableBody");
       tbody.innerHTML = `<tr><td colspan="4" class="loading"><i class="fa-solid fa-spinner fa-spin"></i> Mengambil data dari server...</td></tr>`;
 
       fetch(`${scriptURL}?action=getUnassignedPO`)
         .then(res => res.json())
-        .then(response => {
-          // Pengaman agar aman jika format berubah (Array langsung atau dibungkus .data)
-          let rawData = Array.isArray(response) ? response : (response.data || []);
-          allPO = Array.isArray(rawData) ? rawData : [];
-          
+        .then(data => {
+          allPO = data;
           renderTable(allPO);
         })
         .catch(err => {
           console.error("Gagal memuat PO:", err);
           tbody.innerHTML = `<tr><td colspan="4" class="loading" style="color: var(--danger);">Gagal memuat PO. Periksa koneksi atau deployment script.</td></tr>`;
-          Swal.fire('Error', 'Gagal memuat data PO dari server.', 'error');
         });
     }
 
-    // Ambil daftar vendor untuk dropdown
     function loadVendorList() {
       fetch(`${scriptURL}?action=getVendor`)
         .then(res => res.json())
-        .then(response => {
-          let vendors = Array.isArray(response) ? response : (response.data || []);
+        .then(vendors => {
           const select = document.getElementById("vendorSelect");
           select.innerHTML = '<option value="">Pilih Vendor Tujuan...</option>';
           
@@ -255,7 +247,6 @@
         .catch(err => console.error("Gagal memuat vendor:", err));
     }
 
-    // Render data ke dalam tabel HTML
     function renderTable(dataArray) {
       const tbody = document.getElementById("poTableBody");
       tbody.innerHTML = "";
@@ -279,7 +270,6 @@
       updateSelectedCount();
     }
 
-    // Filter pencarian dan dropdown feedmill
     function filterTable() {
       const keyword = document.getElementById("searchInput").value.toLowerCase();
       const feedmillVal = document.getElementById("feedmillFilter").value;
@@ -293,20 +283,17 @@
       renderTable(filtered);
     }
 
-    // Pilih / batalkan semua checkbox
     function toggleSelectAll(master) {
       const checkboxes = document.querySelectorAll(".po-checkbox");
       checkboxes.forEach(cb => cb.checked = master.checked);
       updateSelectedCount();
     }
 
-    // Update teks penghitung baris terpilih
     function updateSelectedCount() {
       const checkboxes = document.querySelectorAll(".po-checkbox:checked");
       document.getElementById("selectedCount").textContent = `${checkboxes.length} PO dipilih`;
     }
 
-    // Kirim data PO terpilih ke Google Apps Script via POST
     function submitSelectedPO() {
       const checkboxes = document.querySelectorAll(".po-checkbox:checked");
       const vendor = document.getElementById("vendorSelect").value;
@@ -330,7 +317,6 @@
         didOpen: () => Swal.showLoading()
       });
 
-      // Cek duplikasi terlebih dahulu
       fetch(scriptURL, {
         method: 'POST',
         body: JSON.stringify({ action: 'cekPODuplicate', poList: selectedPOList })
@@ -372,7 +358,7 @@
       .then(resData => {
         if (resData.status === 'success') {
           Swal.fire('Berhasil', 'Data PO berhasil disimpan!', 'success').then(() => {
-            loadUnassignedPO(); // Refresh tabel setelah berhasil
+            loadUnassignedPO();
           });
         } else {
           Swal.fire('Gagal', resData.message || 'Terjadi kesalahan saat menyimpan.', 'error');
