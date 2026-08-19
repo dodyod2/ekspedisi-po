@@ -1,885 +1,227 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Form Input PO - Checklist Vendor</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<style>
-  :root {
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --success: #10b981;
-    --success-hover: #059669;
-    --danger: #ef4444;
-    --danger-hover: #dc2626;
-    --warning: #f59e0b;
-    --bg-main: #f8fafc;
-    --card-bg: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --border-color: #e2e8f0;
-  }
-
-  * {
-    box-sizing: border-box;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-  }
-
-  body {
-    background: var(--bg-main);
-    margin: 0;
-    padding: 25px 20px;
-    color: var(--text-main);
-  }
-
-  .container {
-    max-width: 1100px;
-    margin: auto;
-  }
-
-  .header-title {
-    text-align: center;
-    margin-bottom: 24px;
-  }
-
-  .header-title h2 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-main);
-    letter-spacing: -0.5px;
-  }
-
-  .header-title p {
-    margin: 4px 0 0;
-    color: var(--text-muted);
-    font-size: 13px;
-  }
-
-  /* Grid Statistik PO Belum Ada Vendor */
-  .unassigned-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
-  .unassigned-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 14px 18px;
-    border: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-  }
-
-  .unassigned-card.km8 { border-left: 4px solid var(--primary); }
-  .unassigned-card.km9 { border-left: 4px solid #8b5cf6; }
-  .unassigned-card.selected { border-left: 4px solid var(--success); }
-
-  .unassigned-card h4 {
-    margin: 0;
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .unassigned-card .count {
-    font-size: 22px;
-    font-weight: 700;
-  }
-
-  .unassigned-card.km8 .count { color: var(--primary); }
-  .unassigned-card.km9 .count { color: #8b5cf6; }
-  .unassigned-card.selected .count { color: var(--success); }
-
-  .card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--border-color);
-    margin-bottom: 20px;
-  }
-
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .form-group {
-    margin-bottom: 8px;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    font-size: 13px;
-    color: #334155;
-  }
-
-  input[type="text"] {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    font-size: 13px;
-    outline: none;
-    transition: all 0.2s ease;
-    background: #f1f5f9;
-  }
-
-  input[type="text"]:focus {
-    background: #fff;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-  }
-
-  .checklist-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .search-po-box {
-    margin-bottom: 10px;
-  }
-
-  .checklist-box {
-    max-height: 220px;
-    overflow-y: auto;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 10px;
-    background: #fff;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 8px;
-  }
-
-  /* Penyesuaian Tampilan Item Checklist */
-  .checkbox-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-weight: 500;
-    cursor: pointer;
-    font-size: 13px;
-    background: #f8fafc;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    transition: background 0.15s ease;
-  }
-
-  .checkbox-item:hover {
-    background: #f1f5f9;
-  }
-
-  .checkbox-item input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    margin-top: 2px;
-    cursor: pointer;
-    accent-color: var(--primary);
-    flex-shrink: 0;
-  }
-
-  .po-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    overflow: hidden;
-  }
-
-  .po-info strong {
-    color: var(--text-main);
-    font-size: 13px;
-  }
-
-  .po-detail {
-    font-size: 11px;
-    color: var(--text-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .button-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-
-  button {
-    padding: 10px 18px;
-    cursor: pointer;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  button:hover {
-    background: var(--primary-hover);
-    transform: translateY(-1px);
-  }
-
-  .btn-sm {
-    padding: 4px 10px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-
-  .btn-muted {
-    background: #64748b;
-  }
-  .btn-muted:hover {
-    background: #475569;
-  }
-
-  .btn-danger { background: var(--danger); }
-  .btn-danger:hover { background: var(--danger-hover); }
-
-  #status {
-    margin-top: 14px;
-    font-size: 13px;
-    font-weight: 600;
-    text-align: center;
-    min-height: 20px;
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
-  .stat-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 16px;
-    border: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .stat-card h4 {
-    margin: 0;
-    font-size: 13px;
-    color: var(--text-muted);
-    font-weight: 500;
-  }
-
-  .stat-card .count {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--primary);
-  }
-
-  .autocomplete-items {
-    position: absolute;
-    z-index: 9999;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    background: white;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-
-  .autocomplete-items div {
-    padding: 10px 14px;
-    cursor: pointer;
-    font-size: 13px;
-    border-bottom: 1px solid #f1f5f9;
-    transition: background 0.15s ease;
-  }
-
-  .autocomplete-items div:hover,
-  .autocomplete-active {
-    background-color: #eff6ff !important;
-    color: var(--primary);
-    font-weight: 600;
-  }
-
-  .table-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  @media (max-width: 850px) {
-    .unassigned-grid { grid-template-columns: 1fr; }
-    .table-wrapper { grid-template-columns: 1fr; }
-  }
-
-  .table-container {
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    max-height: 320px;
-    overflow-y: auto;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-  }
-
-  .table-header-title {
-    position: sticky;
-    top: 0;
-    background: #fff;
-    padding: 14px 16px;
-    margin: 0;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-main);
-    border-bottom: 1px solid var(--border-color);
-    z-index: 10;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-
-  th {
-    background: #f8fafc;
-    color: var(--text-muted);
-    font-weight: 600;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 48px;
-    z-index: 9;
-  }
-
-  td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #f1f5f9;
-    color: #334155;
-  }
-
-  tr:hover td {
-    background: #f8fafc;
-  }
-
-  .btn-sm-danger {
-    padding: 4px 10px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Ekspedisi & PO</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f4f6f9; }
+        .sidebar {
+            width: 250px; background-color: #1e293b; height: 100vh;
+            position: fixed; color: white; padding-top: 20px;
+        }
+        .sidebar a {
+            color: #cbd5e1; text-decoration: none; padding: 12px 20px;
+            display: block; font-weight: 500; transition: 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #334155; color: white; border-left: 4px solid #3b82f6;
+        }
+        .main-content { margin-left: 250px; padding: 25px 30px; }
+        .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .badge-area {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 6px 8px;
+            text-align: center;
+            font-size: 13px;
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header-title">
-    <h2>Form Input Purchase Order</h2>
-    <p>Pilih PO KM8 & KM9</p>
-  </div>
-
-  <!-- Statistik Informasi PO Tanpa Vendor di Bagian Atas -->
-  <div class="unassigned-grid">
-    <div class="unassigned-card km8">
-      <div>
-        <h4>PO BELUM NAIK (KM8)</h4>
-        <span style="font-size:11px; color:var(--text-muted);"</span>
-      </div>
-      <span class="count" id="unassignedKM8">0</span>
+    <!-- SIDEBAR NAVIGASI -->
+    <div class="sidebar">
+        <h4 class="text-center fw-bold mb-4 text-white">Ekspedisi<span class="text-primary">Pro</span></h4>
+        <a href="#" class="active"><i class="fa-solid fa-chart-pie me-2"></i> Beranda</a>
+        <a href="#"><i class="fa-solid fa-file-invoice me-2"></i> Input Tagihan</a>
+        <a href="#"><i class="fa-solid fa-print me-2"></i> Print Ekspedisi</a>
+        <a href="#"><i class="fa-solid fa-magnifying-glass me-2"></i> Pencarian PO</a>
     </div>
 
-    <div class="unassigned-card km9">
-      <div>
-        <h4>PO BELUM NAIK (KM9)</h4>
-        <span style="font-size:11px; color:var(--text-muted);"</span>
-      </div>
-      <span class="count" id="unassignedKM9">0</span>
-    </div>
-
-    <div class="unassigned-card selected">
-      <div>
-        <h4>PO Terpilih</h4>
-        <span style="font-size:11px; color:var(--text-muted);">Total dicentang saat ini</span>
-      </div>
-      <span class="count" id="totalSelectedText">0</span>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="form-grid">
-      <!-- Area Checklist PO -->
-      <div class="form-group">
-        <div class="checklist-header">
-          <label style="margin:0;">Pilih PO Belum Ada Vendor:</label>
-          <div style="display:flex; gap:6px;">
-            <button type="button" class="btn-sm" onclick="toggleSelectAll(true)">Pilih Semua Tampil</button>
-            <button type="button" class="btn-sm btn-muted" onclick="toggleSelectAll(false)">Reset Centang</button>
-            <button type="button" class="btn-sm btn-muted" onclick="muatChecklistPO()">🔄 Refresh List</button>
-          </div>
+    <!-- KONTEN UTAMA -->
+    <div class="main-content">
+        
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 card-custom">
+            <h5 class="mb-0 fw-bold text-secondary">Dashboard Kondisi Hari Ini</h5>
+            <div class="text-end">
+                <span class="fw-bold text-dark">Halo, Admin</span>
+                <i class="fa-solid fa-circle-user fs-4 ms-2 text-primary align-middle"></i>
+            </div>
         </div>
 
-        <!-- Kolom Pencarian / Filter PO -->
-        <div class="search-po-box">
-          <input type="text" id="searchPOInput" placeholder="🔍 Cari nomor PO, penerima, atau nama barang..." oninput="filterPOList()">
+        <!-- 4 KARTU KPI UTAMA -->
+        <div class="row mb-4">
+            
+            <!-- 1. PO Belum Naik Akunting (KM8 & KM9) -->
+            <div class="col-md-6 mb-4">
+                <div class="card card-custom bg-danger text-white p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">🔴 PO Belum Naik Akunting</h5>
+                        <h2 class="fw-bold mb-0" id="kpi-po-belum-total">0</h2>
+                    </div>
+                    <div class="row g-2 mt-auto pt-3 border-top border-light">
+                        <div class="col-6">
+                            <div class="badge-area">
+                                <span class="d-block text-white-50">KM8</span>
+                                <b class="fs-4" id="kpi-km8">0</b>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="badge-area">
+                                <span class="d-block text-white-50">KM9</span>
+                                <b class="fs-4" id="kpi-km9">0</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. PO Sudah Naik Akunting Bulan Ini -->
+            <div class="col-md-6 mb-4">
+                <div class="card card-custom bg-success text-white p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">🟢 PO Sudah Naik (Bulan Ini)</h5>
+                        <h2 class="fw-bold mb-0" id="kpi-po-sudah-naik">0</h2>
+                    </div>
+                    <div class="mt-auto pt-3 border-top border-light text-white-50">
+                        <p class="mb-0 fs-6">Akumulasi total PO yang berhasil diproses ke akunting bulan ini.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Tagihan Belum Dikirim -->
+            <div class="col-md-6 mb-4">
+                <div class="card card-custom bg-warning text-dark p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0 fw-bold">🟡 Tagihan Belum Dikirim</h5>
+                        <h2 class="fw-bold mb-0" id="kpi-tagihan-total">0</h2>
+                    </div>
+                    <div class="row g-2 mt-auto pt-3 border-top border-dark text-dark">
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50">SL3: <b class="fs-5" id="tagih-sl3">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50">Pemalang: <b class="fs-5" id="tagih-pemalang">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50">Sragen: <b class="fs-5" id="tagih-sragen">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50">Banyumas: <b class="fs-5" id="tagih-banyumas">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50">Kebumen: <b class="fs-5" id="tagih-kebumen">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50">BISI SA: <b class="fs-5" id="tagih-bisisa">0</b></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. PO Belum Dikirim -->
+            <div class="col-md-6 mb-4">
+                <div class="card card-custom bg-info text-white p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">🔵 PO Belum Dikirim</h5>
+                        <h2 class="fw-bold mb-0" id="kpi-pobelum-total">0</h2>
+                    </div>
+                    <div class="row g-2 mt-auto pt-3 border-top border-light">
+                        <div class="col-4"><div class="badge-area">SL3: <b class="fs-5" id="pobelum-sl3">0</b></div></div>
+                        <div class="col-4"><div class="badge-area">Pemalang: <b class="fs-5" id="pobelum-pemalang">0</b></div></div>
+                        <div class="col-4"><div class="badge-area">Sragen: <b class="fs-5" id="pobelum-sragen">0</b></div></div>
+                        <div class="col-4"><div class="badge-area">Banyumas: <b class="fs-5" id="pobelum-banyumas">0</b></div></div>
+                        <div class="col-4"><div class="badge-area">Kebumen: <b class="fs-5" id="pobelum-kebumen">0</b></div></div>
+                        <div class="col-4"><div class="badge-area">BISI SA: <b class="fs-5" id="pobelum-bisisa">0</b></div></div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <div id="checklistContainer" class="checklist-box">
-          <span style="color:var(--text-muted); font-size:13px; grid-column:1/-1; text-align:center;">Memuat daftar PO...</span>
+        <!-- TABEL UTAMA UNTUK AKSI / TINDAK LANJUT -->
+        <div class="card card-custom p-4">
+            <h5 class="fw-bold mb-3 text-secondary"><i class="fa-solid fa-list-check me-2"></i> Daftar PO Belum Naik Akunting (Butuh Vendor)</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>No</th>
+                            <th>No PO</th>
+                            <th>Feedmill / Area</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-unassigned-body">
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Memuat data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-      </div>
 
-      <!-- Area Autocomplete Vendor -->
-      <div class="form-group" style="position:relative;">
-        <label for="vendorInput">Nama Vendor</label>
-        <input type="text" id="vendorInput" placeholder="Ketik & pilih nama vendor...">
-        <div id="vendorSuggestions" class="autocomplete-items"></div>
-      </div>
     </div>
 
-    <div class="button-group">
-      <button onclick="simpanData()">Simpan Data Terpilih</button>
-      <button type="button" class="btn-print" onclick="bukaPrintPO()">🖨️ PRINT PO</button>
-      <button class="btn-danger" onclick="resetTabel()">Reset Tabel Bawah</button>
-    </div>
+    <!-- SCRIPT JAVASCRIPT UNTUK MENARIK DATA DARI GAS -->
+    <script>
+        // Ganti URL di bawah ini dengan URL Web App Google Apps Script Anda yang aktif
+        const SCRIPT_URL = 'URL_WEB_APP_GOOGLE_APPS_SCRIPT_ANDA';
 
-    <div id="status"></div>
-  </div>
+        async function loadDashboardData() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getDashboardKPI`);
+                const result = await response.json();
+                
+                if(result.status === 'success') {
+                    const d = result.data;
 
-  <!-- Counter Stats Tabel Hasil Proses -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <h4>Total Diproses KM8 (Tabel Bawah)</h4>
-      <span class="count" id="countKM8">0</span>
-    </div>
-    <div class="stat-card">
-      <h4>Total Diproses KM9 (Tabel Bawah)</h4>
-      <span class="count" id="countKM9">0</span>
-    </div>
-  </div>
+                    // 1. Update KPI PO Belum Naik Akunting
+                    document.getElementById('kpi-po-belum-total').innerText = d.poBelumNaik.total;
+                    document.getElementById('kpi-km8').innerText = d.poBelumNaik.km8;
+                    document.getElementById('kpi-km9').innerText = d.poBelumNaik.km9;
 
-  <!-- Tabel Hasil Simpan -->
-  <div class="table-wrapper">
-    <div class="table-container">
-      <h3 class="table-header-title">Feedmill KM8</h3>
-      <table id="tabelKM8" style="display:none;">
-        <thead>
-          <tr>
-            <th>PO</th>
-            <th>Vendor</th>
-            <th>Penerima</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+                    // 2. Update KPI PO Sudah Naik Bulan Ini
+                    document.getElementById('kpi-po-sudah-naik').innerText = d.poSudahNaikBulanIni;
 
-    <div class="table-container">
-      <h3 class="table-header-title">Feedmill KM9</h3>
-      <table id="tabelKM9" style="display:none;">
-        <thead>
-          <tr>
-            <th>PO</th>
-            <th>Vendor</th>
-            <th>Penerima</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
-</div>
+                    // 3. Update KPI Tagihan Belum Dikirim
+                    document.getElementById('kpi-tagihan-total').innerText = d.tagihanBelumDikirim.total;
+                    document.getElementById('tagih-sl3').innerText = d.tagihanBelumDikirim.rincian.sl3;
+                    document.getElementById('tagih-pemalang').innerText = d.tagihanBelumDikirim.rincian.pemalang;
+                    document.getElementById('tagih-sragen').innerText = d.tagihanBelumDikirim.rincian.sragen;
+                    document.getElementById('tagih-banyumas').innerText = d.tagihanBelumDikirim.rincian.banyumas;
+                    document.getElementById('tagih-kebumen').innerText = d.tagihanBelumDikirim.rincian.kebumen;
+                    document.getElementById('tagih-bisisa').innerText = d.tagihanBelumDikirim.rincian.bisisa;
 
-<script>
-// URL WEB APP APPS SCRIPT
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4dBIEgclbIZZ1IUiExTV8x8PJaQW_4bTKKBBsDZd_yZZLA7VHD9uolz8ZOBtNOygm/exec";
+                    // 4. Update KPI PO Belum Dikirim
+                    document.getElementById('kpi-pobelum-total').innerText = d.poBelumDikirim.total;
+                    document.getElementById('pobelum-sl3').innerText = d.poBelumDikirim.rincian.sl3;
+                    document.getElementById('pobelum-pemalang').innerText = d.poBelumDikirim.rincian.pemalang;
+                    document.getElementById('pobelum-sragen').innerText = d.poBelumDikirim.rincian.sragen;
+                    document.getElementById('pobelum-banyumas').innerText = d.poBelumDikirim.rincian.banyumas;
+                    document.getElementById('pobelum-kebumen').innerText = d.poBelumDikirim.rincian.kebumen;
+                    document.getElementById('pobelum-bisisa').innerText = d.poBelumDikirim.rincian.bisisa;
 
-let dataTabelExport = [];
-let vendorList = [];
-let rawPOList = []; 
-let selectedPOs = new Set(); 
-
-window.onload = function() {
-  loadVendorList();
-  muatChecklistPO();
-};
-
-function loadVendorList() {
-  fetch(`${SCRIPT_URL}?action=getVendor`)
-    .then(res => res.json())
-    .then(result => {
-      if (result.status === 'success') {
-        isiVendorList(result.data);
-      }
-    })
-    .catch(err => console.error("Gagal memuat vendor:", err));
-}
-
-function isiVendorList(vendors) {
-  vendorList = vendors || [];
-  initAutocomplete(document.getElementById("vendorInput"), vendorList);
-}
-
-function muatChecklistPO() {
-  document.getElementById('checklistContainer').innerHTML = '<span style="color:var(--text-muted); font-size:13px; grid-column:1/-1; text-align:center;">⏳ Memuat data...</span>';
-  selectedPOs.clear();
-  updateSelectedCount();
-
-  fetch(`${SCRIPT_URL}?action=getUnassignedPO`)
-    .then(res => res.json())
-    .then(result => {
-      if (result.status === 'success') {
-        const poList = result.data || [];
-        rawPOList = poList.filter(item => {
-          const row = Number(item.row);
-          if (item.feedmill === 'KM8') return row >= 5061;
-          if (item.feedmill === 'KM9') return row > 6716;
-          return true;
-        });
-
-        updateUnassignedCounters();
-        renderChecklistPO(rawPOList);
-      } else {
-        document.getElementById('checklistContainer').innerHTML = `<span style="color:var(--danger); font-size:13px; grid-column:1/-1;">Gagal memuat data PO.</span>`;
-      }
-    })
-    .catch(err => {
-      document.getElementById('checklistContainer').innerHTML = `<span style="color:var(--danger); font-size:13px; grid-column:1/-1;">Gagal memuat PO: ${err.message}</span>`;
-    });
-}
-
-function updateUnassignedCounters() {
-  const km8Unassigned = rawPOList.filter(item => item.feedmill === 'KM8').length;
-  const km9Unassigned = rawPOList.filter(item => item.feedmill === 'KM9').length;
-  
-  document.getElementById('unassignedKM8').textContent = km8Unassigned;
-  document.getElementById('unassignedKM9').textContent = km9Unassigned;
-}
-
-/* Fungsi Render Checklist PO Terpercaya */
-function renderChecklistPO(poList) {
-  const container = document.getElementById('checklistContainer');
-  container.innerHTML = '';
-
-  if (!poList || poList.length === 0) {
-    container.innerHTML = '<span style="color:var(--success); font-size:13px; grid-column:1/-1; text-align:center;">🎉 Tidak ada PO belum ber-vendor di atas kriteria baris.</span>';
-    return;
-  }
-
-  poList.forEach(item => {
-    const poStr = String(item.po).trim();
-    const label = document.createElement('label');
-    label.className = 'checkbox-item';
-    label.dataset.po = poStr;
-
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.value = poStr;
-    checkbox.className = 'po-checkbox';
-
-    if (selectedPOs.has(poStr)) {
-      checkbox.checked = true;
-    }
-
-    checkbox.onchange = function() {
-      handleCheckboxChange(this);
-    };
-
-    // Kontainer Teks Informasi Lengkap
-    const infoContainer = document.createElement('div');
-    infoContainer.className = 'po-info';
-
-    const title = document.createElement('strong');
-    title.textContent = `${poStr} (${item.feedmill})`;
-
-    const details = document.createElement('div');
-    details.className = 'po-detail';
-    
-    // Menggabungkan atribut informasi PO
-    const parts = [];
-    if (item.penerimaPO) parts.push(`Penerima: ${item.penerimaPO}`);
-    if (item.namaBarang) parts.push(`Barang: ${item.namaBarang}`);
-    if (item.row) parts.push(`Baris: ${item.row}`);
-
-    details.textContent = parts.length > 0 ? parts.join(' • ') : `Baris: ${item.row}`;
-
-    infoContainer.appendChild(title);
-    infoContainer.appendChild(details);
-
-    label.appendChild(checkbox);
-    label.appendChild(infoContainer);
-    container.appendChild(label);
-  });
-}
-
-function handleCheckboxChange(cb) {
-  const poVal = String(cb.value).trim();
-  if (cb.checked) {
-    selectedPOs.add(poVal);
-  } else {
-    selectedPOs.delete(poVal);
-  }
-  updateSelectedCount();
-}
-
-function filterPOList() {
-  const query = document.getElementById('searchPOInput').value.trim().toLowerCase();
-  const filtered = rawPOList.filter(item => {
-    const po = String(item.po || '').toLowerCase();
-    const penerima = String(item.penerimaPO || '').toLowerCase();
-    const barang = String(item.namaBarang || '').toLowerCase();
-    return po.includes(query) || penerima.includes(query) || barang.includes(query);
-  });
-  renderChecklistPO(filtered);
-}
-
-function toggleSelectAll(status) {
-  const visibleCheckboxes = document.querySelectorAll('.po-checkbox');
-  visibleCheckboxes.forEach(cb => {
-    cb.checked = status;
-    const poVal = String(cb.value).trim();
-    if (status) {
-      selectedPOs.add(poVal);
-    } else {
-      selectedPOs.delete(poVal);
-    }
-  });
-  updateSelectedCount();
-}
-
-function updateSelectedCount() {
-  document.getElementById('totalSelectedText').textContent = selectedPOs.size;
-}
-
-function updateCounters() {
-  const countKM8 = dataTabelExport.filter(i => i.feedmill === 'KM8').length;
-  const countKM9 = dataTabelExport.filter(i => i.feedmill === 'KM9').length;
-  document.getElementById('countKM8').textContent = countKM8;
-  document.getElementById('countKM9').textContent = countKM9;
-}
-
-function simpanData() {
-  const selectedPOList = Array.from(selectedPOs);
-  const vendor = document.getElementById('vendorInput').value.trim();
-
-  if (selectedPOList.length === 0) {
-    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ Pilih minimal satu PO dari checklist.</span>';
-    return;
-  }
-  if (!vendor) {
-    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ Isikan Nama Vendor.</span>';
-    return;
-  }
-
-  document.getElementById('status').innerHTML = `<span style="color:var(--primary)">⏳ Menyimpan ${selectedPOList.length} PO...</span>`;
-
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify({
-      action: 'simpanMultiplePO',
-      selectedPOList: selectedPOList,
-      vendor: vendor
-    })
-  })
-  .then(res => res.json())
-  .then(result => {
-    if (result.status === 'success') {
-      const results = result.data || [];
-      document.getElementById('status').innerHTML = `<span style="color:var(--success)">✅ Berhasil menyimpan ${results.length} PO.</span>`;
-      
-      results.forEach(item => tambahBarisTabel(item));
-
-      rawPOList = rawPOList.filter(item => !selectedPOList.includes(String(item.po).trim()));
-      
-      updateUnassignedCounters();
-      selectedPOs.clear();
-      updateSelectedCount();
-
-      document.getElementById('searchPOInput').value = '';
-      renderChecklistPO(rawPOList);
-      document.getElementById('vendorInput').value = '';
-    } else {
-      document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + result.message + '</span>';
-    }
-  })
-  .catch(err => {
-    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ Terjadi kesalahan: ' + err.message + '</span>';
-  });
-}
-
-function tambahBarisTabel(data) {
-  const tabelId = data.feedmill === 'KM8' ? 'tabelKM8' : 'tabelKM9';
-  const tbody = document.querySelector(`#${tabelId} tbody`);
-  const table = document.getElementById(tabelId);
-  table.style.display = '';
-
-  const tr = document.createElement('tr');
-  [data.po, data.vendor, data.penerimaPO || ''].forEach(val => {
-    const td = document.createElement('td');
-    td.textContent = val;
-    tr.appendChild(td);
-  });
-
-  const tdAksi = document.createElement('td');
-  const btnHapus = document.createElement('button');
-  btnHapus.textContent = 'Hapus';
-  btnHapus.className = "btn-danger btn-sm-danger";
-  btnHapus.onclick = () => hapusBaris(data.po, tr);
-  tdAksi.appendChild(btnHapus);
-  tr.appendChild(tdAksi);
-
-  tbody.appendChild(tr);
-  dataTabelExport.push(data);
-  updateCounters();
-
-  tr.scrollIntoView({ behavior: "smooth", block: "nearest" });
-}
-
-function hapusBaris(po, rowElement) {
-  Swal.fire({
-    title: `Hapus PO ${po}?`,
-    text: "Data vendor akan dikosongkan kembali pada sheet.",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#ef4444',
-    cancelButtonColor: '#64748b',
-    confirmButtonText: 'Ya, hapus',
-    cancelButtonText: 'Batal'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify({
-          action: 'hapusDariSheet',
-          po: po
-        })
-      })
-      .then(res => res.json())
-      .then(res => {
-        if (res.status === 'success' && res.data) {
-          const index = dataTabelExport.findIndex(item => item.po === po);
-          if (index !== -1) dataTabelExport.splice(index, 1);
-          rowElement.remove();
-          
-          if (dataTabelExport.length === 0) {
-            document.getElementById('tabelKM8').style.display = 'none';
-            document.getElementById('tabelKM9').style.display = 'none';
-          }
-          updateCounters();
-          muatChecklistPO();
-          document.getElementById('status').innerHTML = `<span style="color:var(--success)">🗑️ PO ${po} berhasil dihapus.</span>`;
-        } else {
-          document.getElementById('status').innerHTML = `<span style="color:#d97706">⚠️ PO ${po} tidak ditemukan di sheet.</span>`;
+                    // 5. Update Tabel Unassigned PO
+                    const tbody = document.getElementById('table-unassigned-body');
+                    tbody.innerHTML = '';
+                    
+                    if(d.listUnassigned && d.listUnassigned.length > 0) {
+                        d.listUnassigned.forEach((item, index) => {
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${item.poNumber || '-'}</td>
+                                    <td>${item.feedmill || '-'}</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="assignVendor('${item.poNumber}')">Assign Vendor</button></td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Tidak ada antrean PO yang belum naik akunting.</td></tr>`;
+                    }
+                }
+            } catch (error) {
+                console.error("Gagal memuat data dashboard:", error);
+            }
         }
-      })
-      .catch(err => {
-        document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
-      });
-    }
-  });
-}
 
-function bukaPrintPO() {
-  const targetUrl = SCRIPT_URL + "?page=printPO&sheet=CPI KM8";
-  window.open(targetUrl, '_blank');
-}
-
-function resetTabel() {
-  ['tabelKM8','tabelKM9'].forEach(id => {
-    document.querySelector(`#${id} tbody`).innerHTML = '';
-    document.getElementById(id).style.display = 'none';
-  });
-  dataTabelExport.length = 0;
-  updateCounters();
-  document.getElementById('status').innerHTML = '<span style="color:var(--text-muted)">🗑️ Tabel bawah dikosongkan.</span>';
-}
-
-function initAutocomplete(inp, arr) {
-  const suggestionBox = document.getElementById("vendorSuggestions");
-  let currentFocus = -1;
-
-  inp.addEventListener("input", function() {
-    const val = this.value.toLowerCase();
-    suggestionBox.innerHTML = "";
-    currentFocus = -1;
-    if (!val) return false;
-
-    const matches = arr.filter(v => v.toLowerCase().includes(val));
-    matches.slice(0, 10).forEach(v => {
-      const div = document.createElement("div");
-      div.textContent = v;
-      div.onclick = function() {
-        inp.value = v;
-        suggestionBox.innerHTML = "";
-      };
-      suggestionBox.appendChild(div);
-    });
-  });
-
-  inp.addEventListener("keydown", function(e) {
-    let items = suggestionBox.getElementsByTagName("div");
-    if (e.key === "ArrowDown") {
-      currentFocus++;
-      addActive(items);
-      e.preventDefault();
-    } else if (e.key === "ArrowUp") {
-      currentFocus--;
-      addActive(items);
-      e.preventDefault();
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (currentFocus > -1 && items[currentFocus]) {
-        items[currentFocus].click();
-      }
-    }
-  });
-
-  function addActive(items) {
-    if (!items) return false;
-    removeActive(items);
-    if (currentFocus >= items.length) currentFocus = 0;
-    if (currentFocus < 0) currentFocus = items.length - 1;
-    items[currentFocus].classList.add("autocomplete-active");
-    items[currentFocus].scrollIntoView({ block: "nearest", inline: "nearest" });
-  }
-
-  function removeActive(items) {
-    for (let item of items) {
-      item.classList.remove("autocomplete-active");
-    }
-  }
-
-  document.addEventListener("click", function(e) {
-    if (e.target !== inp) suggestionBox.innerHTML = "";
-  });
-}
-</script>
+        // Panggil fungsi saat halaman selesai dimuat
+        window.onload = loadDashboardData;
+    </script>
 </body>
 </html>
