@@ -188,7 +188,7 @@
 
                 <!-- Container Checkbox -->
                 <div id="checklistContainer" class="checklist-box">
-                    <span class="text-muted text-center py-2 w-100" style="grid-column: 1/-1;">Memuat daftar PO...</span>
+                    <span class="text-muted text-center py-2 w-100" style="grid-column: 1/-1;">Memuat data...</span>
                 </div>
             </div>
 
@@ -269,328 +269,330 @@
 
     </div>
 
-<!-- SCRIPT LOGIKA UTAMA -->
+<!-- SCRIPT LOGIKA FETCH -->
 <script>
-let dataTabelExport = [];
-let vendorList = [];
-let rawPOList = []; 
-let selectedPOs = new Set(); 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx_Zkip336lc0c_znd8d_rgDcUp5ZNDh-YKKNvLYHsKHVvVax7pkcvqKoXQr-_8s4nc/exec";
 
-window.onload = function() {
-  google.script.run
-    .withSuccessHandler(isiVendorList)
-    .getVendorList();
+    let dataTabelExport = [];
+    let vendorList = [];
+    let rawPOList = []; 
+    let selectedPOs = new Set(); 
 
-  muatChecklistPO();
-};
-
-function isiVendorList(vendors) {
-  vendorList = vendors || [];
-  initAutocomplete(document.getElementById("vendorInput"), vendorList);
-}
-
-function muatChecklistPO() {
-  document.getElementById('checklistContainer').innerHTML = '<span class="text-muted text-center py-2 w-100" style="grid-column: 1/-1;">⏳ Memuat data...</span>';
-  selectedPOs.clear();
-  updateSelectedCount();
-
-  google.script.run
-    .withSuccessHandler(poList => {
-      const allPO = poList || [];
-      
-      rawPOList = allPO.filter(item => {
-        const row = Number(item.row);
-        if (item.feedmill === 'KM8') return row >= 5061;
-        if (item.feedmill === 'KM9') return row > 6716;
-        return true;
-      });
-
-      updateUnassignedCounters();
-      renderChecklistPO(rawPOList);
-    })
-    .withFailureHandler(err => {
-      document.getElementById('checklistContainer').innerHTML = `<span class="text-danger text-center py-2 w-100" style="grid-column: 1/-1;">Gagal memuat PO: ${err.message}</span>`;
-    })
-    .getUnassignedPOList();
-}
-
-function updateUnassignedCounters() {
-  const km8Unassigned = rawPOList.filter(item => item.feedmill === 'KM8').length;
-  const km9Unassigned = rawPOList.filter(item => item.feedmill === 'KM9').length;
-  
-  document.getElementById('unassignedKM8').textContent = km8Unassigned;
-  document.getElementById('unassignedKM9').textContent = km9Unassigned;
-}
-
-function renderChecklistPO(poList) {
-  const container = document.getElementById('checklistContainer');
-  container.innerHTML = '';
-
-  if (!poList || poList.length === 0) {
-    container.innerHTML = '<span class="text-success text-center py-2 w-100" style="grid-column: 1/-1;">🎉 Tidak ada PO belum ber-vendor di atas kriteria baris.</span>';
-    return;
-  }
-
-  poList.forEach(item => {
-    const poStr = String(item.po).trim();
-    const label = document.createElement('label');
-    label.className = 'checkbox-item';
-
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.value = poStr;
-    checkbox.className = 'po-checkbox form-check-input m-0';
-
-    if (selectedPOs.has(poStr)) {
-      checkbox.checked = true;
-    }
-
-    checkbox.onchange = function() {
-      handleCheckboxChange(this);
+    window.onload = function() {
+        loadVendorList();
+        muatChecklistPO();
     };
 
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(`${poStr} (${item.feedmill})`));
-    container.appendChild(label);
-  });
-}
-
-function handleCheckboxChange(cb) {
-  const poVal = String(cb.value).trim();
-  if (cb.checked) {
-    selectedPOs.add(poVal);
-  } else {
-    selectedPOs.delete(poVal);
-  }
-  updateSelectedCount();
-}
-
-function filterPOList() {
-  const query = document.getElementById('searchPOInput').value.trim().toLowerCase();
-  const filtered = rawPOList.filter(item => String(item.po).toLowerCase().includes(query));
-  renderChecklistPO(filtered);
-}
-
-function toggleSelectAll(status) {
-  const visibleCheckboxes = document.querySelectorAll('.po-checkbox');
-  visibleCheckboxes.forEach(cb => {
-    cb.checked = status;
-    const poVal = String(cb.value).trim();
-    if (status) {
-      selectedPOs.add(poVal);
-    } else {
-      selectedPOs.delete(poVal);
+    function loadVendorList() {
+        fetch(`${WEB_APP_URL}?action=getVendorList`)
+            .then(res => res.json())
+            .then(result => {
+                if(result.status === 'success') {
+                    vendorList = result.data || [];
+                    initAutocomplete(document.getElementById("vendorInput"), vendorList);
+                }
+            })
+            .catch(err => console.error("Gagal memuat vendor:", err));
     }
-  });
-  updateSelectedCount();
-}
 
-function updateSelectedCount() {
-  document.getElementById('totalSelectedText').textContent = selectedPOs.size;
-}
+    function muatChecklistPO() {
+        document.getElementById('checklistContainer').innerHTML = '<span class="text-muted text-center py-2 w-100" style="grid-column: 1/-1;">⏳ Memuat data...</span>';
+        selectedPOs.clear();
+        updateSelectedCount();
 
-function updateCounters() {
-  const countKM8 = dataTabelExport.filter(i => i.feedmill === 'KM8').length;
-  const countKM9 = dataTabelExport.filter(i => i.feedmill === 'KM9').length;
-  document.getElementById('countKM8').textContent = countKM8;
-  document.getElementById('countKM9').textContent = countKM9;
+        fetch(`${WEB_APP_URL}?action=getUnassignedPOList`)
+            .then(res => res.json())
+            .then(result => {
+                const allPO = (result.status === 'success') ? result.data : [];
+                
+                rawPOList = allPO.filter(item => {
+                    const row = Number(item.row);
+                    if (item.feedmill === 'KM8') return row >= 5061;
+                    if (item.feedmill === 'KM9') return row > 6716;
+                    return true;
+                });
 
-  document.getElementById('emptyKM8').style.display = countKM8 > 0 ? 'none' : 'block';
-  document.getElementById('emptyKM9').style.display = countKM9 > 0 ? 'none' : 'block';
-}
+                updateUnassignedCounters();
+                renderChecklistPO(rawPOList);
+            })
+            .catch(err => {
+                document.getElementById('checklistContainer').innerHTML = `<span class="text-danger text-center py-2 w-100" style="grid-column: 1/-1;">Gagal memuat PO: ${err.message}</span>`;
+            });
+    }
 
-function simpanData() {
-  const selectedPOList = Array.from(selectedPOs);
-  const vendor = document.getElementById('vendorInput').value.trim();
+    function updateUnassignedCounters() {
+        const km8Unassigned = rawPOList.filter(item => item.feedmill === 'KM8').length;
+        const km9Unassigned = rawPOList.filter(item => item.feedmill === 'KM9').length;
+        
+        document.getElementById('unassignedKM8').textContent = km8Unassigned;
+        document.getElementById('unassignedKM9').textContent = km9Unassigned;
+    }
 
-  if (selectedPOList.length === 0) {
-    document.getElementById('status').innerHTML = '<span class="text-danger">❌ Pilih minimal satu PO dari checklist.</span>';
-    return;
-  }
-  if (!vendor) {
-    document.getElementById('status').innerHTML = '<span class="text-danger">❌ Isikan Nama Vendor.</span>';
-    return;
-  }
+    function renderChecklistPO(poList) {
+        const container = document.getElementById('checklistContainer');
+        container.innerHTML = '';
 
-  document.getElementById('status').innerHTML = `<span class="text-primary">⏳ Menyimpan ${selectedPOList.length} PO...</span>`;
+        if (!poList || poList.length === 0) {
+            container.innerHTML = '<span class="text-success text-center py-2 w-100" style="grid-column: 1/-1;">🎉 Tidak ada PO belum ber-vendor di atas kriteria baris.</span>';
+            return;
+        }
 
-  google.script.run
-    .withSuccessHandler(results => {
-      document.getElementById('status').innerHTML = `<span class="text-success">✅ Berhasil menyimpan ${results.length} PO.</span>`;
-      
-      results.forEach(item => tambahBarisTabel(item));
+        poList.forEach(item => {
+            const poStr = String(item.po).trim();
+            const label = document.createElement('label');
+            label.className = 'checkbox-item';
 
-      rawPOList = rawPOList.filter(item => !selectedPOList.includes(String(item.po).trim()));
-      
-      updateUnassignedCounters();
-      selectedPOs.clear();
-      updateSelectedCount();
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = poStr;
+            checkbox.className = 'po-checkbox form-check-input m-0';
 
-      document.getElementById('searchPOInput').value = '';
-      renderChecklistPO(rawPOList);
-      document.getElementById('vendorInput').value = '';
-    })
-    .withFailureHandler(err => {
-      document.getElementById('status').innerHTML = '<span class="text-danger">❌ ' + err.message + '</span>';
-    })
-    .simpanMultiplePO(selectedPOList, vendor);
-}
-
-function tambahBarisTabel(data) {
-  const tabelId = data.feedmill === 'KM8' ? 'tabelKM8' : 'tabelKM9';
-  const tbody = document.querySelector(`#${tabelId} tbody`);
-  const table = document.getElementById(tabelId);
-  table.style.display = 'table';
-
-  const tr = document.createElement('tr');
-  [data.po, data.vendor, data.penerimaPO || ''].forEach(val => {
-    const td = document.createElement('td');
-    td.textContent = val;
-    tr.appendChild(td);
-  });
-
-  const tdAksi = document.createElement('td');
-  const btnHapus = document.createElement('button');
-  btnHapus.textContent = 'Hapus';
-  btnHapus.className = "btn btn-danger btn-sm";
-  btnHapus.onclick = () => hapusBaris(data.po, tr);
-  tdAksi.appendChild(btnHapus);
-  tr.appendChild(tdAksi);
-
-  tbody.appendChild(tr);
-  dataTabelExport.push(data);
-  updateCounters();
-
-  tr.scrollIntoView({ behavior: "smooth", block: "nearest" });
-}
-
-function hapusBaris(po, rowElement) {
-  Swal.fire({
-    title: `Hapus PO ${po}?`,
-    text: "Data vendor akan dikosongkan kembali pada sheet.",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#ef4444',
-    cancelButtonColor: '#64748b',
-    confirmButtonText: 'Ya, hapus',
-    cancelButtonText: 'Batal'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      google.script.run
-        .withSuccessHandler((success) => {
-          if (success) {
-            const index = dataTabelExport.findIndex(item => item.po === po);
-            if (index !== -1) dataTabelExport.splice(index, 1);
-            rowElement.remove();
-            
-            if (dataTabelExport.length === 0) {
-              document.getElementById('tabelKM8').style.display = 'none';
-              document.getElementById('tabelKM9').style.display = 'none';
+            if (selectedPOs.has(poStr)) {
+                checkbox.checked = true;
             }
-            updateCounters();
-            muatChecklistPO();
-            document.getElementById('status').innerHTML = `<span class="text-success">🗑️ PO ${po} berhasil dihapus.</span>`;
-          } else {
-            document.getElementById('status').innerHTML = `<span class="text-warning">⚠️ PO ${po} tidak ditemukan di sheet.</span>`;
-          }
+
+            checkbox.onchange = function() {
+                handleCheckboxChange(this);
+            };
+
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(`${poStr} (${item.feedmill})`));
+            container.appendChild(label);
+        });
+    }
+
+    function handleCheckboxChange(cb) {
+        const poVal = String(cb.value).trim();
+        if (cb.checked) {
+            selectedPOs.add(poVal);
+        } else {
+            selectedPOs.delete(poVal);
+        }
+        updateSelectedCount();
+    }
+
+    function filterPOList() {
+        const query = document.getElementById('searchPOInput').value.trim().toLowerCase();
+        const filtered = rawPOList.filter(item => String(item.po).toLowerCase().includes(query));
+        renderChecklistPO(filtered);
+    }
+
+    function toggleSelectAll(status) {
+        const visibleCheckboxes = document.querySelectorAll('.po-checkbox');
+        visibleCheckboxes.forEach(cb => {
+            cb.checked = status;
+            const poVal = String(cb.value).trim();
+            if (status) {
+                selectedPOs.add(poVal);
+            } else {
+                selectedPOs.delete(poVal);
+            }
+        });
+        updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+        document.getElementById('totalSelectedText').textContent = selectedPOs.size;
+    }
+
+    function updateCounters() {
+        const countKM8 = dataTabelExport.filter(i => i.feedmill === 'KM8').length;
+        const countKM9 = dataTabelExport.filter(i => i.feedmill === 'KM9').length;
+        document.getElementById('countKM8').textContent = countKM8;
+        document.getElementById('countKM9').textContent = countKM9;
+
+        document.getElementById('emptyKM8').style.display = countKM8 > 0 ? 'none' : 'block';
+        document.getElementById('emptyKM9').style.display = countKM9 > 0 ? 'none' : 'block';
+    }
+
+    function simpanData() {
+        const selectedPOList = Array.from(selectedPOs);
+        const vendor = document.getElementById('vendorInput').value.trim();
+
+        if (selectedPOList.length === 0) {
+            document.getElementById('status').innerHTML = '<span class="text-danger">❌ Pilih minimal satu PO dari checklist.</span>';
+            return;
+        }
+        if (!vendor) {
+            document.getElementById('status').innerHTML = '<span class="text-danger">❌ Isikan Nama Vendor.</span>';
+            return;
+        }
+
+        document.getElementById('status').innerHTML = `<span class="text-primary">⏳ Menyimpan ${selectedPOList.length} PO...</span>`;
+
+        fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'simpanMultiplePO', pos: selectedPOList, vendor: vendor })
         })
-        .withFailureHandler(err => {
-          document.getElementById('status').innerHTML = '<span class="text-danger">❌ ' + err.message + '</span>';
+        .then(res => res.json())
+        .then(result => {
+            if(result.status === 'success') {
+                const results = result.data;
+                document.getElementById('status').innerHTML = `<span class="text-success">✅ Berhasil menyimpan ${results.length} PO.</span>`;
+                
+                results.forEach(item => tambahBarisTabel(item));
+
+                rawPOList = rawPOList.filter(item => !selectedPOList.includes(String(item.po).trim()));
+                
+                updateUnassignedCounters();
+                selectedPOs.clear();
+                updateSelectedCount();
+
+                document.getElementById('searchPOInput').value = '';
+                renderChecklistPO(rawPOList);
+                document.getElementById('vendorInput').value = '';
+            } else {
+                document.getElementById('status').innerHTML = '<span class="text-danger">❌ ' + (result.message || 'Gagal menyimpan') + '</span>';
+            }
         })
-        .hapusDariSheet(po);
+        .catch(err => {
+            document.getElementById('status').innerHTML = '<span class="text-danger">❌ ' + err.message + '</span>';
+        });
     }
-  });
-}
 
-function bukaPrintPO() {
-  const newTab = window.open('', '_blank');
+    function tambahBarisTabel(data) {
+        const tabelId = data.feedmill === 'KM8' ? 'tabelKM8' : 'tabelKM9';
+        const tbody = document.querySelector(`#${tabelId} tbody`);
+        const table = document.getElementById(tabelId);
+        table.style.display = 'table';
 
-  google.script.run
-    .withSuccessHandler(function(webAppUrl) {
-      if (!webAppUrl) {
-        newTab.close();
-        alert("Gagal mendapatkan URL Web App.");
-        return;
-      }
-      const targetUrl = webAppUrl + "?page=printPO&sheet=CPI KM8";
-      newTab.location.href = targetUrl;
-    })
-    .withFailureHandler(function(error) {
-      newTab.close();
-      alert("Gagal memuat cetak PO: " + error.message);
-    })
-    .getScriptUrl();
-}
+        const tr = document.createElement('tr');
+        [data.po, data.vendor, data.penerimaPO || ''].forEach(val => {
+            const td = document.createElement('td');
+            td.textContent = val;
+            tr.appendChild(td);
+        });
 
-function resetTabel() {
-  ['tabelKM8','tabelKM9'].forEach(id => {
-    document.querySelector(`#${id} tbody`).innerHTML = '';
-    document.getElementById(id).style.display = 'none';
-  });
-  dataTabelExport.length = 0;
-  updateCounters();
-  document.getElementById('status').innerHTML = '<span class="text-muted">🗑️ Tabel bawah dikosongkan.</span>';
-}
+        const tdAksi = document.createElement('td');
+        const btnHapus = document.createElement('button');
+        btnHapus.textContent = 'Hapus';
+        btnHapus.className = "btn btn-danger btn-sm";
+        btnHapus.onclick = () => hapusBaris(data.po, tr);
+        tdAksi.appendChild(btnHapus);
+        tr.appendChild(tdAksi);
 
-function initAutocomplete(inp, arr) {
-  const suggestionBox = document.getElementById("vendorSuggestions");
-  let currentFocus = -1;
+        tbody.appendChild(tr);
+        dataTabelExport.push(data);
+        updateCounters();
 
-  inp.addEventListener("input", function() {
-    const val = this.value.toLowerCase();
-    suggestionBox.innerHTML = "";
-    currentFocus = -1;
-    if (!val) return false;
-
-    const matches = arr.filter(v => v.toLowerCase().includes(val));
-    matches.slice(0, 10).forEach(v => {
-      const div = document.createElement("div");
-      div.textContent = v;
-      div.onclick = function() {
-        inp.value = v;
-        suggestionBox.innerHTML = "";
-      };
-      suggestionBox.appendChild(div);
-    });
-  });
-
-  inp.addEventListener("keydown", function(e) {
-    let items = suggestionBox.getElementsByTagName("div");
-    if (e.key === "ArrowDown") {
-      currentFocus++;
-      addActive(items);
-      e.preventDefault();
-    } else if (e.key === "ArrowUp") {
-      currentFocus--;
-      addActive(items);
-      e.preventDefault();
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (currentFocus > -1 && items[currentFocus]) {
-        items[currentFocus].click();
-      }
+        tr.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
-  });
 
-  function addActive(items) {
-    if (!items) return false;
-    removeActive(items);
-    if (currentFocus >= items.length) currentFocus = 0;
-    if (currentFocus < 0) currentFocus = items.length - 1;
-    items[currentFocus].classList.add("autocomplete-active");
-    items[currentFocus].scrollIntoView({ block: "nearest", inline: "nearest" });
-  }
-
-  function removeActive(items) {
-    for (let item of items) {
-      item.classList.remove("autocomplete-active");
+    function hapusBaris(po, rowElement) {
+        Swal.fire({
+            title: `Hapus PO ${po}?`,
+            text: "Data vendor akan dikosongkan kembali pada sheet.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, hapus',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'hapusDariSheet', po: po })
+                })
+                .then(res => res.json())
+                .then(result => {
+                    if (result.status === 'success') {
+                        const index = dataTabelExport.findIndex(item => item.po === po);
+                        if (index !== -1) dataTabelExport.splice(index, 1);
+                        rowElement.remove();
+                        
+                        if (dataTabelExport.length === 0) {
+                            document.getElementById('tabelKM8').style.display = 'none';
+                            document.getElementById('tabelKM9').style.display = 'none';
+                        }
+                        updateCounters();
+                        muatChecklistPO();
+                        document.getElementById('status').innerHTML = `<span class="text-success">🗑️ PO ${po} berhasil dihapus.</span>`;
+                    } else {
+                        document.getElementById('status').innerHTML = `<span class="text-warning">⚠️ PO ${po} tidak ditemukan di sheet.</span>`;
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('status').innerHTML = '<span class="text-danger">❌ ' + err.message + '</span>';
+                });
+            }
+        });
     }
-  }
 
-  document.addEventListener("click", function(e) {
-    if (e.target !== inp) suggestionBox.innerHTML = "";
-  });
-}
+    function bukaPrintPO() {
+        const targetUrl = `${WEB_APP_URL}?page=printPO&sheet=CPI KM8`;
+        window.open(targetUrl, '_blank');
+    }
+
+    function resetTabel() {
+        ['tabelKM8','tabelKM9'].forEach(id => {
+            document.querySelector(`#${id} tbody`).innerHTML = '';
+            document.getElementById(id).style.display = 'none';
+        });
+        dataTabelExport.length = 0;
+        updateCounters();
+        document.getElementById('status').innerHTML = '<span class="text-muted">🗑️ Tabel bawah dikosongkan.</span>';
+    }
+
+    function initAutocomplete(inp, arr) {
+        const suggestionBox = document.getElementById("vendorSuggestions");
+        let currentFocus = -1;
+
+        inp.addEventListener("input", function() {
+            const val = this.value.toLowerCase();
+            suggestionBox.innerHTML = "";
+            currentFocus = -1;
+            if (!val) return false;
+
+            const matches = arr.filter(v => v.toLowerCase().includes(val));
+            matches.slice(0, 10).forEach(v => {
+                const div = document.createElement("div");
+                div.textContent = v;
+                div.onclick = function() {
+                    inp.value = v;
+                    suggestionBox.innerHTML = "";
+                };
+                suggestionBox.appendChild(div);
+            });
+        });
+
+        inp.addEventListener("keydown", function(e) {
+            let items = suggestionBox.getElementsByTagName("div");
+            if (e.key === "ArrowDown") {
+                currentFocus++;
+                addActive(items);
+                e.preventDefault();
+            } else if (e.key === "ArrowUp") {
+                currentFocus--;
+                addActive(items);
+                e.preventDefault();
+            } else if (e.key === "Enter") {
+                e.preventDefault();
+                if (currentFocus > -1 && items[currentFocus]) {
+                    items[currentFocus].click();
+                }
+            }
+        });
+
+        function addActive(items) {
+            if (!items) return false;
+            removeActive(items);
+            if (currentFocus >= items.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = items.length - 1;
+            items[currentFocus].classList.add("autocomplete-active");
+            items[currentFocus].scrollIntoView({ block: "nearest", inline: "nearest" });
+        }
+
+        function removeActive(items) {
+            for (let item of items) {
+                item.classList.remove("autocomplete-active");
+            }
+        }
+
+        document.addEventListener("click", function(e) {
+            if (e.target !== inp) suggestionBox.innerHTML = "";
+        });
+    }
 </script>
 </body>
 </html>
