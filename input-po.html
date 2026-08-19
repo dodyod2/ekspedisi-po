@@ -590,16 +590,16 @@
 </div>
 
 <script>
+// Ganti URL di bawah dengan Web App URL Google Apps Script Anda yang berakhiran /exec
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmTqXXu4RErXnYmw-zU65EbqmrD6z4vESny1jzWAbPVjaB10TEiszPfpus0fToX2M/exec";
+
 let dataTabelExport = [];
 let vendorList = [];
 let rawPOList = []; 
 let selectedPOs = new Set(); 
 
 window.onload = function() {
-  google.script.run
-    .withSuccessHandler(isiVendorList)
-    .getVendorList();
-
+  muatVendorList();
   muatChecklistPO();
 };
 
@@ -608,9 +608,14 @@ function toggleSidebar() {
   sidebar.classList.toggle('collapsed');
 }
 
-function isiVendorList(vendors) {
-  vendorList = vendors || [];
-  initAutocomplete(document.getElementById("vendorInput"), vendorList);
+function muatVendorList() {
+  fetch(`${SCRIPT_URL}?action=getVendorList`)
+    .then(res => res.json())
+    .then(vendors => {
+      vendorList = vendors || [];
+      initAutocomplete(document.getElementById("vendorInput"), vendorList);
+    })
+    .catch(err => console.error("Gagal memuat vendor:", err));
 }
 
 function muatChecklistPO() {
@@ -618,8 +623,9 @@ function muatChecklistPO() {
   selectedPOs.clear();
   updateSelectedCount();
 
-  google.script.run
-    .withSuccessHandler(poList => {
+  fetch(`${SCRIPT_URL}?action=getUnassignedPOList`)
+    .then(res => res.json())
+    .then(poList => {
       const allPO = poList || [];
       
       rawPOList = allPO.filter(item => {
@@ -632,10 +638,9 @@ function muatChecklistPO() {
       updateUnassignedCounters();
       renderChecklistPO(rawPOList);
     })
-    .withFailureHandler(err => {
+    .catch(err => {
       document.getElementById('checklistContainer').innerHTML = `<span style="color:var(--danger); font-size:13px; grid-column:1/-1;">Gagal memuat PO: ${err.message}</span>`;
-    })
-    .getUnassignedPOList();
+    });
 }
 
 function updateUnassignedCounters() {
@@ -651,7 +656,7 @@ function renderChecklistPO(poList) {
   container.innerHTML = '';
 
   if (!poList || poList.length === 0) {
-    container.innerHTML = '<span style="color:var(--success); font-size:13px; grid-column:1/-1; text-align:center;">🎉 Tidak ada PO belum ber-vendor di atas kriteria baris.</span>';
+    container.innerHTML = '<span style="color:var(--success); font-size:13px; grid-column:1/-1; text-align:center;">🎉 Tidak ada PO belum ber-vendor.</span>';
     return;
   }
 
@@ -736,26 +741,30 @@ function simpanData() {
 
   document.getElementById('status').innerHTML = `<span style="color:var(--primary)">⏳ Menyimpan ${selectedPOList.length} PO...</span>`;
 
-  google.script.run
-    .withSuccessHandler(results => {
-      document.getElementById('status').innerHTML = `<span style="color:var(--success)">✅ Berhasil menyimpan ${results.length} PO.</span>`;
-      
-      results.forEach(item => tambahBarisTabel(item));
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: "simpanMultiplePO", poList: selectedPOList, vendor: vendor })
+  })
+  .then(res => res.json())
+  .then(response => {
+    const results = response.data || [];
+    document.getElementById('status').innerHTML = `<span style="color:var(--success)">✅ Berhasil menyimpan ${results.length} PO.</span>`;
+    
+    results.forEach(item => tambahBarisTabel(item));
 
-      rawPOList = rawPOList.filter(item => !selectedPOList.includes(String(item.po).trim()));
-      
-      updateUnassignedCounters();
-      selectedPOs.clear();
-      updateSelectedCount();
+    rawPOList = rawPOList.filter(item => !selectedPOList.includes(String(item.po).trim()));
+    
+    updateUnassignedCounters();
+    selectedPOs.clear();
+    updateSelectedCount();
 
-      document.getElementById('searchPOInput').value = '';
-      renderChecklistPO(rawPOList);
-      document.getElementById('vendorInput').value = '';
-    })
-    .withFailureHandler(err => {
-      document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
-    })
-    .simpanMultiplePO(selectedPOList, vendor);
+    document.getElementById('searchPOInput').value = '';
+    renderChecklistPO(rawPOList);
+    document.getElementById('vendorInput').value = '';
+  })
+  .catch(err => {
+    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
+  });
 }
 
 function tambahBarisTabel(data) {
@@ -798,50 +807,38 @@ function hapusBaris(po, rowElement) {
     cancelButtonText: 'Batal'
   }).then((result) => {
     if (result.isConfirmed) {
-      google.script.run
-        .withSuccessHandler((success) => {
-          if (success) {
-            const index = dataTabelExport.findIndex(item => item.po === po);
-            if (index !== -1) dataTabelExport.splice(index, 1);
-            rowElement.remove();
-            
-            if (dataTabelExport.length === 0) {
-              document.getElementById('tabelKM8').style.display = 'none';
-              document.getElementById('tabelKM9').style.display = 'none';
-            }
-            updateCounters();
-            muatChecklistPO();
-            document.getElementById('status').innerHTML = `<span style="color:var(--success)">🗑️ PO ${po} berhasil dihapus.</span>`;
-          } else {
-            document.getElementById('status').innerHTML = `<span style="color:#d97706">⚠️ PO ${po} tidak ditemukan di sheet.</span>`;
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "hapusDariSheet", po: po })
+      })
+      .then(res => res.json())
+      .then(response => {
+        if (response.success) {
+          const index = dataTabelExport.findIndex(item => item.po === po);
+          if (index !== -1) dataTabelExport.splice(index, 1);
+          rowElement.remove();
+          
+          if (dataTabelExport.length === 0) {
+            document.getElementById('tabelKM8').style.display = 'none';
+            document.getElementById('tabelKM9').style.display = 'none';
           }
-        })
-        .withFailureHandler(err => {
-          document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
-        })
-        .hapusDariSheet(po);
+          updateCounters();
+          muatChecklistPO();
+          document.getElementById('status').innerHTML = `<span style="color:var(--success)">🗑️ PO ${po} berhasil dihapus.</span>`;
+        } else {
+          document.getElementById('status').innerHTML = `<span style="color:#d97706">⚠️ PO ${po} tidak ditemukan di sheet.</span>`;
+        }
+      })
+      .catch(err => {
+        document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
+      });
     }
   });
 }
 
 function bukaPrintPO() {
-  const newTab = window.open('', '_blank');
-
-  google.script.run
-    .withSuccessHandler(function(webAppUrl) {
-      if (!webAppUrl) {
-        newTab.close();
-        alert("Gagal mendapatkan URL Web App.");
-        return;
-      }
-      const targetUrl = webAppUrl + "?page=printPO&sheet=CPI KM8";
-      newTab.location.href = targetUrl;
-    })
-    .withFailureHandler(function(error) {
-      newTab.close();
-      alert("Gagal memuat cetak PO: " + error.message);
-    })
-    .getScriptUrl();
+  const targetUrl = SCRIPT_URL.replace('/exec', '/exec') + "?page=printPO&sheet=CPI KM8";
+  window.open(targetUrl, '_blank');
 }
 
 function resetTabel() {
