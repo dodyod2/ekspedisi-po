@@ -20,6 +20,17 @@
         }
         .sidebar a:hover, .sidebar a.active {
             background-color: #334155; color: white; border-left: 4px solid #3b82f6;
+
+            .sidebar {
+    width: 250px; 
+    background-color: #1e293b; 
+    height: 100vh;
+    position: fixed; 
+    color: white; 
+    padding-top: 20px; 
+    z-index: 1000;
+    overflow-y: auto; /* <-- Tambahkan baris ini agar sidebar bisa digulir ke bawah */
+}
         }
         .main-content { margin-left: 250px; padding: 25px 30px; }
         .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
