@@ -1,924 +1,388 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Form Input PO - Checklist Vendor</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<!-- Font Awesome untuk Ikon Sidebar -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<style>
-  :root {
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --success: #10b981;
-    --success-hover: #059669;
-    --danger: #ef4444;
-    --danger-hover: #dc2626;
-    --warning: #f59e0b;
-    --bg-main: #f8fafc;
-    --card-bg: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --border-color: #e2e8f0;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Input PO - Checklist Vendor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #10b981;
+      --success-hover: #059669;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --warning: #f59e0b;
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+    }
 
-  * {
-    box-sizing: border-box;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-  }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
 
-  body {
-    background: var(--bg-main);
-    margin: 0;
-    color: var(--text-main);
-  }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      padding: 20px;
+      line-height: 1.5;
+    }
 
-  /* SIDEBAR STYLING & TRANSISI */
-  .sidebar {
-      width: 250px; 
-      background-color: #1e293b; 
-      height: 100vh;
-      position: fixed; 
-      top: 0;
-      left: 0;
-      color: white; 
-      padding-top: 20px;
-      z-index: 1000;
-      overflow-y: auto;
-      transition: width 0.3s ease;
-  }
-  .sidebar a {
-      color: #cbd5e1; 
-      text-decoration: none; 
-      padding: 12px 20px;
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 24px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      font-weight: 500; 
-      transition: 0.3s;
-      white-space: nowrap;
-  }
-  .sidebar a i {
-      min-width: 25px;
-      font-size: 16px;
-  }
-  .sidebar a:hover, .sidebar a.active {
-      background-color: #334155; 
-      color: white; 
-      border-left: 4px solid #3b82f6;
-  }
+      flex-wrap: wrap;
+      gap: 16px;
+    }
 
-  /* KETIKA SIDEBAR DI-COLLAPSE (KECIL) */
-  .sidebar.collapsed {
-      width: 70px;
-  }
-  .sidebar.collapsed .sidebar-title,
-  .sidebar.collapsed .nav-text,
-  .sidebar.collapsed .submenu-title,
-  .sidebar.collapsed .submenu-items {
-      display: none;
-  }
-  .sidebar.collapsed + .main-content {
-      margin-left: 70px;
-  }
-  .sidebar.collapsed a {
-      padding: 12px;
-      justify-content: center;
-  }
-  .sidebar.collapsed a i {
-      margin-right: 0 !important;
-  }
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
 
-  /* KONTEN UTAMA */
-  .main-content {
-      margin-left: 250px;
-      padding: 25px 30px;
-      transition: margin-left 0.3s ease;
-  }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
 
-  .container {
-    max-width: 1100px;
-    margin: auto;
-  }
+    .filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 16px;
+    }
 
-  .header-title {
-    text-align: center;
-    margin-bottom: 24px;
-  }
+    .filters input, .filters select {
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
 
-  .header-title h2 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-main);
-    letter-spacing: -0.5px;
-  }
+    .filters input:focus, .filters select:focus {
+      border-color: var(--primary);
+    }
 
-  .header-title p {
-    margin: 4px 0 0;
-    color: var(--text-muted);
-    font-size: 13px;
-  }
+    .filters input {
+      flex: 1;
+      min-width: 240px;
+    }
 
-  /* Grid Statistik PO Belum Ada Vendor */
-  .unassigned-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 20px;
-  }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
 
-  .unassigned-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 14px 18px;
-    border: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-  }
+    th, td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
 
-  .unassigned-card.km8 { border-left: 4px solid var(--primary); }
-  .unassigned-card.km9 { border-left: 4px solid #8b5cf6; }
-  .unassigned-card.selected { border-left: 4px solid var(--success); }
+    th {
+      background-color: #f1f5f9;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
 
-  .unassigned-card h4 {
-    margin: 0;
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
+    tr:hover td {
+      background-color: #f8fafc;
+    }
 
-  .unassigned-card .count {
-    font-size: 22px;
-    font-weight: 700;
-  }
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-  .unassigned-card.km8 .count { color: var(--primary); }
-  .unassigned-card.km9 .count { color: #8b5cf6; }
-  .unassigned-card.selected .count { color: var(--success); }
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
 
-  .card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--border-color);
-    margin-bottom: 20px;
-  }
+    .btn-success {
+      background-color: var(--success);
+    }
+    .btn-success:hover {
+      background-color: var(--success-hover);
+    }
 
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+    }
 
-  .form-group {
-    margin-bottom: 8px;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    font-size: 13px;
-    color: #334155;
-  }
-
-  input[type="text"] {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    font-size: 13px;
-    outline: none;
-    transition: all 0.2s ease;
-    background: #f1f5f9;
-  }
-
-  input[type="text"]:focus {
-    background: #fff;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-  }
-
-  .checklist-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .search-po-box {
-    margin-bottom: 10px;
-  }
-
-  .checklist-box {
-    max-height: 180px;
-    overflow-y: auto;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 10px;
-    background: #fff;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    gap: 8px;
-  }
-
-  .checkbox-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    font-size: 13px;
-    background: #f8fafc;
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    transition: background 0.15s ease;
-  }
-
-  .checkbox-item:hover {
-    background: #f1f5f9;
-  }
-
-  .checkbox-item input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    accent-color: var(--primary);
-  }
-
-  .button-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-
-  button {
-    padding: 10px 18px;
-    cursor: pointer;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  button:hover {
-    background: var(--primary-hover);
-    transform: translateY(-1px);
-  }
-
-  .btn-sm {
-    padding: 4px 10px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-
-  .btn-muted {
-    background: #64748b;
-  }
-  .btn-muted:hover {
-    background: #475569;
-  }
-
-  .btn-danger { background: var(--danger); }
-  .btn-danger:hover { background: var(--danger-hover); }
-
-  #status {
-    margin-top: 14px;
-    font-size: 13px;
-    font-weight: 600;
-    text-align: center;
-    min-height: 20px;
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
-  .stat-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 16px;
-    border: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .stat-card h4 {
-    margin: 0;
-    font-size: 13px;
-    color: var(--text-muted);
-    font-weight: 500;
-  }
-
-  .stat-card .count {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--primary);
-  }
-
-  .autocomplete-items {
-    position: absolute;
-    z-index: 9999;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    background: white;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-
-  .autocomplete-items div {
-    padding: 10px 14px;
-    cursor: pointer;
-    font-size: 13px;
-    border-bottom: 1px solid #f1f5f9;
-    transition: background 0.15s ease;
-  }
-
-  .autocomplete-items div:hover,
-  .autocomplete-active {
-    background-color: #eff6ff !important;
-    color: var(--primary);
-    font-weight: 600;
-  }
-
-  .table-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  @media (max-width: 850px) {
-    .unassigned-grid { grid-template-columns: 1fr; }
-    .table-wrapper { grid-template-columns: 1fr; }
-  }
-
-  .table-container {
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    max-height: 320px;
-    overflow-y: auto;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-  }
-
-  .table-header-title {
-    position: sticky;
-    top: 0;
-    background: #fff;
-    padding: 14px 16px;
-    margin: 0;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-main);
-    border-bottom: 1px solid var(--border-color);
-    z-index: 10;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-
-  th {
-    background: #f8fafc;
-    color: var(--text-muted);
-    font-weight: 600;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 48px;
-    z-index: 9;
-  }
-
-  td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #f1f5f9;
-    color: #334155;
-  }
-
-  tr:hover td {
-    background: #f8fafc;
-  }
-
-  .btn-sm-danger {
-    padding: 4px 10px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-</style>
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+  </style>
 </head>
 <body>
 
-<!-- SIDEBAR NAVIGASI -->
-<div class="sidebar" id="sidebarNav">
-    <div class="d-flex justify-content-between align-items-center px-3 mb-3" style="display:flex; justify-content:space-between; align-items:center; padding: 0 15px;">
-        <h4 class="text-white fw-bold mb-0 sidebar-title" style="font-size: 18px; color:white; margin:0;">Ekspedisi<span style="color: #3b82f6;">Pro</span></h4>
-        <button class="btn btn-sm text-white" onclick="toggleSidebar()" style="background: #334155; border: none; color:white; padding:4px 8px; border-radius:4px; cursor:pointer;">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-    </div>
-
-    <a href="index.html"><i class="fa-solid fa-chart-pie me-2"></i> <span class="nav-text">Beranda</span></a>
-    <a href="input-po.html" class="active"><i class="fa-solid fa-file-invoice me-2"></i> <span class="nav-text">Input PO</span></a>
-    <a href="input-tagihan.html"><i class="fa-solid fa-file-pen me-2"></i> <span class="nav-text">Input Tagihan</span></a>
-    
-    <div class="px-3 py-2 text-white-50 small fw-bold text-uppercase submenu-title" style="font-size: 11px; letter-spacing: 0.5px; padding: 10px 20px; color: #94a3b8;">Rincian Tagihan</div>
-    
-    <div class="submenu-items">
-        <a href="tagihan-sl3.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> <span class="nav-text">SL3</span></a>
-        <a href="tagihan-pemalang.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> <span class="nav-text">Pemalang</span></a>
-        <a href="tagihan-sragen.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> <span class="nav-text">Sragen</span></a>
-        <a href="tagihan-banyumas.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> <span class="nav-text">Banyumas</span></a>
-        <a href="tagihan-kebumen.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> <span class="nav-text">Kebumen</span></a>
-        <a href="tagihan-bisi.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> <span class="nav-text">BISI SA</span></a>
-    </div>
-
-    <a href="printPO.html" style="margin-top: 10px;"><i class="fa-solid fa-print me-2"></i> <span class="nav-text">Print Ekspedisi</span></a>
-    <a href="searchAll.html"><i class="fa-solid fa-magnifying-glass me-2"></i> <span class="nav-text">Pencarian PO</span></a>
-</div>
-
-<!-- KONTEN UTAMA -->
-<div class="main-content">
   <div class="container">
-    <div class="header-title">
-      <h2>Form Input Purchase Order</h2>
-      <p>Pilih PO KM8 & KM9</p>
-    </div>
-
-    <!-- Statistik Informasi PO Tanpa Vendor -->
-    <div class="unassigned-grid">
-      <div class="unassigned-card km8">
-        <div>
-          <h4>Tanpa Vendor (KM8)</h4>
-          <span style="font-size:11px; color:var(--text-muted);">Baris ≥ 5061</span>
-        </div>
-        <span class="count" id="unassignedKM8">0</span>
-      </div>
-
-      <div class="unassigned-card km9">
-        <div>
-          <h4>Tanpa Vendor (KM9)</h4>
-          <span style="font-size:11px; color:var(--text-muted);">Baris > 6716</span>
-        </div>
-        <span class="count" id="unassignedKM9">0</span>
-      </div>
-
-      <div class="unassigned-card selected">
-        <div>
-          <h4>PO Terpilih</h4>
-          <span style="font-size:11px; color:var(--text-muted);">Total dicentang saat ini</span>
-        </div>
-        <span class="count" id="totalSelectedText">0</span>
-      </div>
-    </div>
+    <header>
+      <h1>Form Input PO - Checklist Vendor</h1>
+      <button class="btn" onclick="loadUnassignedPO()">
+        <i class="fa-solid fa-rotate"></i> Muat Ulang PO
+      </button>
+    </header>
 
     <div class="card">
-      <div class="form-grid">
-        <!-- Area Checklist PO -->
-        <div class="form-group">
-          <div class="checklist-header">
-            <label style="margin:0;">Pilih PO Belum Ada Vendor:</label>
-            <div style="display:flex; gap:6px;">
-              <button type="button" class="btn-sm" onclick="toggleSelectAll(true)">Pilih Semua Tampil</button>
-              <button type="button" class="btn-sm btn-muted" onclick="toggleSelectAll(false)">Reset Centang</button>
-              <button type="button" class="btn-sm btn-muted" onclick="muatChecklistPO()">🔄 Refresh List</button>
-            </div>
-          </div>
-
-          <!-- Kolom Pencarian / Filter PO -->
-          <div class="search-po-box">
-            <input type="text" id="searchPOInput" placeholder="🔍 Cari / ketik nomor PO..." oninput="filterPOList()">
-          </div>
-
-          <div id="checklistContainer" class="checklist-box">
-            <span style="color:var(--text-muted); font-size:13px; grid-column:1/-1; text-align:center;">Memuat daftar PO...</span>
-          </div>
-        </div>
-
-        <!-- Area Autocomplete Vendor -->
-        <div class="form-group" style="position:relative;">
-          <label for="vendorInput">Nama Vendor</label>
-          <input type="text" id="vendorInput" placeholder="Ketik & pilih nama vendor...">
-          <div id="vendorSuggestions" class="autocomplete-items"></div>
-        </div>
+      <div class="filters">
+        <input type="text" id="searchInput" placeholder="Cari Nomor PO..." onkeyup="filterTable()">
+        <select id="feedmillFilter" onchange="filterTable()">
+          <option value="">Semua Feedmill</option>
+          <option value="KM8">KM8</option>
+          <option value="KM9">KM9</option>
+        </select>
+        <select id="vendorSelect">
+          <option value="">Pilih Vendor Tujuan...</option>
+        </select>
       </div>
 
-      <div class="button-group">
-        <button onclick="simpanData()">Simpan Data Terpilih</button>
-        <button type="button" class="btn-print" onclick="bukaPrintPO()">🖨️ PRINT PO</button>
-        <button class="btn-danger" onclick="resetTabel()">Reset Tabel Bawah</button>
-      </div>
-
-      <div id="status"></div>
-    </div>
-
-    <!-- Counter Stats Tabel Hasil Proses -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <h4>Total Diproses KM8 (Tabel Bawah)</h4>
-        <span class="count" id="countKM8">0</span>
-      </div>
-      <div class="stat-card">
-        <h4>Total Diproses KM9 (Tabel Bawah)</h4>
-        <span class="count" id="countKM9">0</span>
-      </div>
-    </div>
-
-    <!-- Tabel Hasil Simpan -->
-    <div class="table-wrapper">
-      <div class="table-container">
-        <h3 class="table-header-title">Feedmill KM8</h3>
-        <table id="tabelKM8" style="display:none;">
+      <div style="overflow-x: auto;">
+        <table>
           <thead>
             <tr>
-              <th>PO</th>
-              <th>Vendor</th>
-              <th>Penerima</th>
-              <th>Aksi</th>
+              <th width="50"><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+              <th>No. PO</th>
+              <th>Feedmill</th>
+              <th>Baris Spreadsheet</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody id="poTableBody">
+            <tr>
+              <td colspan="4" class="loading">Memuat data PO...</td>
+            </tr>
+          </tbody>
         </table>
       </div>
 
-      <div class="table-container">
-        <h3 class="table-header-title">Feedmill KM9</h3>
-        <table id="tabelKM9" style="display:none;">
-          <thead>
-            <tr>
-              <th>PO</th>
-              <th>Vendor</th>
-              <th>Penerima</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div class="action-bar">
+        <span id="selectedCount">0 PO dipilih</span>
+        <button class="btn btn-success" onclick="submitSelectedPO()">
+          <i class="fa-solid fa-floppy-disk"></i> Simpan PO Terpilih
+        </button>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-// Ganti URL di bawah dengan Web App URL Google Apps Script Anda yang berakhiran /exec
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2morBDOfMo62jkqQ45neViPgCQGkbVp5fxfiddiBnf_OunVKFztV6D4Bw1lE4rFDg/exec";
+  <script>
+    // URL Web App Google Apps Script Anda
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzQNIK1b3Spy-uvWY8bg0i6Bje-pWvVh4IlULKcIdOL4aQrwmWfyKlWvKgcde5dpz2s/exec";
+    
+    let allPO = [];
 
-let dataTabelExport = [];
-let vendorList = [];
-let rawPOList = []; 
-let selectedPOs = new Set(); 
+    document.addEventListener("DOMContentLoaded", () => {
+      loadUnassignedPO();
+      loadVendorList();
+    });
 
-window.onload = function() {
-  muatVendorList();
-  muatChecklistPO();
-};
+    // Ambil data PO yang belum memiliki vendor
+    function loadUnassignedPO() {
+      const tbody = document.getElementById("poTableBody");
+      tbody.innerHTML = `<tr><td colspan="4" class="loading"><i class="fa-solid fa-spinner fa-spin"></i> Mengambil data dari server...</td></tr>`;
 
-function toggleSidebar() {
-  document.getElementById('sidebarNav').classList.toggle('collapsed');
-}
+      fetch(`${scriptURL}?action=getUnassignedPO`)
+        .then(res => res.json())
+        .then(response => {
+          // Pengaman agar aman jika format berubah (Array langsung atau dibungkus .data)
+          let rawData = Array.isArray(response) ? response : (response.data || []);
+          allPO = Array.isArray(rawData) ? rawData : [];
+          
+          renderTable(allPO);
+        })
+        .catch(err => {
+          console.error("Gagal memuat PO:", err);
+          tbody.innerHTML = `<tr><td colspan="4" class="loading" style="color: var(--danger);">Gagal memuat PO. Periksa koneksi atau deployment script.</td></tr>`;
+          Swal.fire('Error', 'Gagal memuat data PO dari server.', 'error');
+        });
+    }
 
-function muatVendorList() {
-  fetch(`${SCRIPT_URL}?action=getVendorList`)
-    .then(res => res.json())
-    .then(vendors => {
-      vendorList = vendors || [];
-      initAutocomplete(document.getElementById("vendorInput"), vendorList);
-    })
-    .catch(err => console.error("Gagal memuat vendor:", err));
-}
+    // Ambil daftar vendor untuk dropdown
+    function loadVendorList() {
+      fetch(`${scriptURL}?action=getVendor`)
+        .then(res => res.json())
+        .then(response => {
+          let vendors = Array.isArray(response) ? response : (response.data || []);
+          const select = document.getElementById("vendorSelect");
+          select.innerHTML = '<option value="">Pilih Vendor Tujuan...</option>';
+          
+          vendors.forEach(v => {
+            const opt = document.createElement("option");
+            opt.value = v;
+            opt.textContent = v;
+            select.appendChild(opt);
+          });
+        })
+        .catch(err => console.error("Gagal memuat vendor:", err));
+    }
 
-function muatChecklistPO() {
-  document.getElementById('checklistContainer').innerHTML = '<span style="color:var(--text-muted); font-size:13px; grid-column:1/-1; text-align:center;">⏳ Memuat data...</span>';
-  selectedPOs.clear();
-  updateSelectedCount();
+    // Render data ke dalam tabel HTML
+    function renderTable(dataArray) {
+      const tbody = document.getElementById("poTableBody");
+      tbody.innerHTML = "";
 
-  fetch(`${SCRIPT_URL}?action=getUnassignedPOList`)
-    .then(res => res.json())
-    .then(poList => {
-      const allPO = poList || [];
-      
-      rawPOList = allPO.filter(item => {
-        const row = Number(item.row);
-        if (item.feedmill === 'KM8') return row >= 5061;
-        if (item.feedmill === 'KM9') return row > 6716;
-        return true;
+      if (!dataArray || dataArray.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="loading">Tidak ada PO yang belum di-assign.</td></tr>`;
+        document.getElementById("selectedCount").textContent = "0 PO dipilih";
+        return;
+      }
+
+      dataArray.forEach((item, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input type="checkbox" class="po-checkbox" value="${item.po}" onchange="updateSelectedCount()"></td>
+          <td><b>${item.po}</b></td>
+          <td><span style="background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">${item.feedmill}</span></td>
+          <td>Baris ${item.row}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      updateSelectedCount();
+    }
+
+    // Filter pencarian dan dropdown feedmill
+    function filterTable() {
+      const keyword = document.getElementById("searchInput").value.toLowerCase();
+      const feedmillVal = document.getElementById("feedmillFilter").value;
+
+      const filtered = allPO.filter(item => {
+        const matchPo = item.po.toLowerCase().includes(keyword);
+        const matchFeedmill = feedmillVal === "" || item.feedmill === feedmillVal;
+        return matchPo && matchFeedmill;
       });
 
-      updateUnassignedCounters();
-      renderChecklistPO(rawPOList);
-    })
-    .catch(err => {
-      document.getElementById('checklistContainer').innerHTML = `<span style="color:var(--danger); font-size:13px; grid-column:1/-1;">Gagal memuat PO: ${err.message}</span>`;
-    });
-}
-
-function updateUnassignedCounters() {
-  const km8Unassigned = rawPOList.filter(item => item.feedmill === 'KM8').length;
-  const km9Unassigned = rawPOList.filter(item => item.feedmill === 'KM9').length;
-  
-  document.getElementById('unassignedKM8').textContent = km8Unassigned;
-  document.getElementById('unassignedKM9').textContent = km9Unassigned;
-}
-
-function renderChecklistPO(poList) {
-  const container = document.getElementById('checklistContainer');
-  container.innerHTML = '';
-
-  if (!poList || poList.length === 0) {
-    container.innerHTML = '<span style="color:var(--success); font-size:13px; grid-column:1/-1; text-align:center;">🎉 Tidak ada PO belum ber-vendor di atas kriteria baris.</span>';
-    return;
-  }
-
-  poList.forEach(item => {
-    const poStr = String(item.po).trim();
-    const label = document.createElement('label');
-    label.className = 'checkbox-item';
-    label.dataset.po = poStr;
-
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.value = poStr;
-    checkbox.className = 'po-checkbox';
-
-    if (selectedPOs.has(poStr)) {
-      checkbox.checked = true;
+      renderTable(filtered);
     }
 
-    checkbox.onchange = function() {
-      handleCheckboxChange(this);
-    };
-
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(`${poStr} (${item.feedmill})`));
-    container.appendChild(label);
-  });
-}
-
-function handleCheckboxChange(cb) {
-  const poVal = String(cb.value).trim();
-  if (cb.checked) {
-    selectedPOs.add(poVal);
-  } else {
-    selectedPOs.delete(poVal);
-  }
-  updateSelectedCount();
-}
-
-function filterPOList() {
-  const query = document.getElementById('searchPOInput').value.trim().toLowerCase();
-  const filtered = rawPOList.filter(item => String(item.po).toLowerCase().includes(query));
-  renderChecklistPO(filtered);
-}
-
-function toggleSelectAll(status) {
-  const visibleCheckboxes = document.querySelectorAll('.po-checkbox');
-  visibleCheckboxes.forEach(cb => {
-    cb.checked = status;
-    const poVal = String(cb.value).trim();
-    if (status) {
-      selectedPOs.add(poVal);
-    } else {
-      selectedPOs.delete(poVal);
-    }
-  });
-  updateSelectedCount();
-}
-
-function updateSelectedCount() {
-  document.getElementById('totalSelectedText').textContent = selectedPOs.size;
-}
-
-function updateCounters() {
-  const countKM8 = dataTabelExport.filter(i => i.feedmill === 'KM8').length;
-  const countKM9 = dataTabelExport.filter(i => i.feedmill === 'KM9').length;
-  document.getElementById('countKM8').textContent = countKM8;
-  document.getElementById('countKM9').textContent = countKM9;
-}
-
-function simpanData() {
-  const selectedPOList = Array.from(selectedPOs);
-  const vendor = document.getElementById('vendorInput').value.trim();
-
-  if (selectedPOList.length === 0) {
-    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ Pilih minimal satu PO dari checklist.</span>';
-    return;
-  }
-  if (!vendor) {
-    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ Isikan Nama Vendor.</span>';
-    return;
-  }
-
-  document.getElementById('status').innerHTML = `<span style="color:var(--primary)">⏳ Menyimpan ${selectedPOList.length} PO...</span>`;
-
-  fetch(SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify({ action: "simpanMultiplePO", poList: selectedPOList, vendor: vendor })
-  })
-  .then(res => res.json())
-  .then(resData => {
-    if (resData.status === "success") {
-      const results = resData.data;
-      document.getElementById('status').innerHTML = `<span style="color:var(--success)">✅ Berhasil menyimpan ${results.length} PO.</span>`;
-      
-      results.forEach(item => tambahBarisTabel(item));
-
-      rawPOList = rawPOList.filter(item => !selectedPOList.includes(String(item.po).trim()));
-      
-      updateUnassignedCounters();
-      selectedPOs.clear();
+    // Pilih / batalkan semua checkbox
+    function toggleSelectAll(master) {
+      const checkboxes = document.querySelectorAll(".po-checkbox");
+      checkboxes.forEach(cb => cb.checked = master.checked);
       updateSelectedCount();
-
-      document.getElementById('searchPOInput').value = '';
-      renderChecklistPO(rawPOList);
-      document.getElementById('vendorInput').value = '';
-    } else {
-      document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + (resData.message || "Gagal menyimpan") + '</span>';
     }
-  })
-  .catch(err => {
-    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
-  });
-}
 
-function tambahBarisTabel(data) {
-  const tabelId = data.feedmill === 'KM8' ? 'tabelKM8' : 'tabelKM9';
-  const tbody = document.querySelector(`#${tabelId} tbody`);
-  const table = document.getElementById(tabelId);
-  table.style.display = '';
+    // Update teks penghitung baris terpilih
+    function updateSelectedCount() {
+      const checkboxes = document.querySelectorAll(".po-checkbox:checked");
+      document.getElementById("selectedCount").textContent = `${checkboxes.length} PO dipilih`;
+    }
 
-  const tr = document.createElement('tr');
-  [data.po, data.vendor, data.penerimaPO || ''].forEach(val => {
-    const td = document.createElement('td');
-    td.textContent = val;
-    tr.appendChild(td);
-  });
+    // Kirim data PO terpilih ke Google Apps Script via POST
+    function submitSelectedPO() {
+      const checkboxes = document.querySelectorAll(".po-checkbox:checked");
+      const vendor = document.getElementById("vendorSelect").value;
 
-  const tdAksi = document.createElement('td');
-  const btnHapus = document.createElement('button');
-  btnHapus.textContent = 'Hapus';
-  btnHapus.className = "btn-danger btn-sm-danger";
-  btnHapus.onclick = () => hapusBaris(data.po, tr);
-  tdAksi.appendChild(btnHapus);
-  tr.appendChild(tdAksi);
+      if (checkboxes.length === 0) {
+        Swal.fire('Peringatan', 'Silakan pilih minimal 1 PO.', 'warning');
+        return;
+      }
 
-  tbody.appendChild(tr);
-  dataTabelExport.push(data);
-  updateCounters();
+      if (!vendor) {
+        Swal.fire('Peringatan', 'Silakan pilih Vendor terlebih dahulu.', 'warning');
+        return;
+      }
 
-  tr.scrollIntoView({ behavior: "smooth", block: "nearest" });
-}
+      const selectedPOList = Array.from(checkboxes).map(cb => cb.value);
 
-function hapusBaris(po, rowElement) {
-  Swal.fire({
-    title: `Hapus PO ${po}?`,
-    text: "Data vendor akan dikosongkan kembali pada sheet.",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#ef4444',
-    cancelButtonColor: '#64748b',
-    confirmButtonText: 'Ya, hapus',
-    cancelButtonText: 'Batal'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "hapusDariSheet", po: po })
+      Swal.fire({
+        title: 'Menyimpan...',
+        text: 'Mohon tunggu sebentar',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      // Cek duplikasi terlebih dahulu
+      fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'cekPODuplicate', poList: selectedPOList })
       })
       .then(res => res.json())
       .then(resData => {
-        if (resData.status === "success" && resData.success) {
-          const index = dataTabelExport.findIndex(item => item.po === po);
-          if (index !== -1) dataTabelExport.splice(index, 1);
-          rowElement.remove();
+        const duplicates = resData.data || [];
+        
+        if (duplicates.length > 0) {
+          let msg = "PO berikut sudah memiliki vendor:<br>";
+          duplicates.forEach(d => msg += `- <b>${d.po}</b> (${d.existingVendor})<br>`);
           
-          if (dataTabelExport.length === 0) {
-            document.getElementById('tabelKM8').style.display = 'none';
-            document.getElementById('tabelKM9').style.display = 'none';
-          }
-          updateCounters();
-          muatChecklistPO();
-          document.getElementById('status').innerHTML = `<span style="color:var(--success)">🗑️ PO ${po} berhasil dihapus.</span>`;
+          Swal.fire({
+            title: 'Konfirmasi Duplikasi',
+            html: msg + "<br>Tetap ingin melanjutkan penyimpanan?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Lanjutkan',
+            cancelButtonText: 'Batal'
+          }).then(result => {
+            if (result.isConfirmed) executeSave(selectedPOList, vendor);
+          });
         } else {
-          document.getElementById('status').innerHTML = `<span style="color:#d97706">⚠️ PO ${po} tidak ditemukan di sheet.</span>`;
+          executeSave(selectedPOList, vendor);
         }
       })
       .catch(err => {
-        document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
+        console.error("Error cek duplikasi:", err);
+        Swal.fire('Error', 'Gagal memeriksa duplikasi PO.', 'error');
       });
     }
-  });
-}
 
-function bukaPrintPO() {
-  fetch(`${SCRIPT_URL}?action=getScriptUrl`)
-    .then(res => res.json())
-    .then(url => {
-      const targetUrl = (url || SCRIPT_URL) + "?page=printPO&sheet=CPI KM8";
-      window.open(targetUrl, '_blank');
-    })
-    .catch(() => {
-      window.open(SCRIPT_URL + "?page=printPO&sheet=CPI KM8", '_blank');
-    });
-}
-
-function resetTabel() {
-  ['tabelKM8','tabelKM9'].forEach(id => {
-    document.querySelector(`#${id} tbody`).innerHTML = '';
-    document.getElementById(id).style.display = 'none';
-  });
-  dataTabelExport.length = 0;
-  updateCounters();
-  document.getElementById('status').innerHTML = '<span style="color:var(--text-muted)">🗑️ Tabel bawah dikosongkan.</span>';
-}
-
-function initAutocomplete(inp, arr) {
-  const suggestionBox = document.getElementById("vendorSuggestions");
-  let currentFocus = -1;
-
-  inp.addEventListener("input", function() {
-    const val = this.value.toLowerCase();
-    suggestionBox.innerHTML = "";
-    currentFocus = -1;
-    if (!val) return false;
-
-    const matches = arr.filter(v => v.toLowerCase().includes(val));
-    matches.slice(0, 10).forEach(v => {
-      const div = document.createElement("div");
-      div.textContent = v;
-      div.onclick = function() {
-        inp.value = v;
-        suggestionBox.innerHTML = "";
-      };
-      suggestionBox.appendChild(div);
-    });
-  });
-
-  inp.addEventListener("keydown", function(e) {
-    let items = suggestionBox.getElementsByTagName("div");
-    if (e.key === "ArrowDown") {
-      currentFocus++;
-      addActive(items);
-      e.preventDefault();
-    } else if (e.key === "ArrowUp") {
-      currentFocus--;
-      addActive(items);
-      e.preventDefault();
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (currentFocus > -1 && items[currentFocus]) {
-        items[currentFocus].click();
-      }
+    function executeSave(selectedPOList, vendor) {
+      fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'simpanMultiplePO', selectedPOList: selectedPOList, vendor: vendor })
+      })
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.status === 'success') {
+          Swal.fire('Berhasil', 'Data PO berhasil disimpan!', 'success').then(() => {
+            loadUnassignedPO(); // Refresh tabel setelah berhasil
+          });
+        } else {
+          Swal.fire('Gagal', resData.message || 'Terjadi kesalahan saat menyimpan.', 'error');
+        }
+      })
+      .catch(err => {
+        console.error("Error simpan:", err);
+        Swal.fire('Error', 'Gagal menghubungi server.', 'error');
+      });
     }
-  });
-
-  function addActive(items) {
-    if (!items) return false;
-    removeActive(items);
-    if (currentFocus >= items.length) currentFocus = 0;
-    if (currentFocus < 0) currentFocus = items.length - 1;
-    items[currentFocus].classList.add("autocomplete-active");
-    items[currentFocus].scrollIntoView({ block: "nearest", inline: "nearest" });
-  }
-
-  function removeActive(items) {
-    for (let item of items) {
-      item.classList.remove("autocomplete-active");
-    }
-  }
-
-  document.addEventListener("click", function(e) {
-    if (e.target !== inp) suggestionBox.innerHTML = "";
-  });
-}
-</script>
+  </script>
 </body>
 </html>
