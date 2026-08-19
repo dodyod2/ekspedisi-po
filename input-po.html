@@ -271,7 +271,7 @@
 
 <!-- SCRIPT LOGIKA FETCH -->
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx7BXgra11N_RyQWkCtcvWyoDX2SktU6zrv0EFNDafp6hk0_rmWvuhKwMR3PMzJyqKw/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwG8unxkWNbR9mcRj_frllYrEoa3rd0dHh3aejG5_4bKKaPcWARn_250PsoZHLNMlW9/exec";
 
     let dataTabelExport = [];
     let vendorList = [];
@@ -284,15 +284,16 @@
     };
 
     function loadVendorList() {
-        fetch(`${WEB_APP_URL}?action=getVendorList`)
-            .then(res => res.json())
-            .then(result => {
-                if(result.status === 'success') {
-                    vendorList = result.data || [];
-                    initAutocomplete(document.getElementById("vendorInput"), vendorList);
-                }
-            })
-            .catch(err => console.error("Gagal memuat vendor:", err));
+        fetch(`${WEB_APP_URL}?action=getUnassignedPOList`)
+  .then(res => res.json())
+  .then(res => {
+      // Mengambil data secara aman baik berupa array langsung atau di dalam properti .data
+      const listPO = Array.isArray(res) ? res : (res.data || []);
+
+      // Lanjutkan proses render tabel atau update jumlah badge di sini
+      console.log("Jumlah PO ditemukan:", listPO.length);
+  })
+  .catch(err => console.error("Error:", err));
     }
 
     function muatChecklistPO() {
