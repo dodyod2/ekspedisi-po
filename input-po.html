@@ -438,11 +438,11 @@
 </head>
 <body>
 
-<!-- SIDEBAR NAVIGASI DENGAN TOMBOL TOGGLE -->
+<!-- SIDEBAR NAVIGASI -->
 <div class="sidebar" id="sidebarNav">
-    <div class="d-flex justify-content-between align-items-center px-3 mb-3">
-        <h4 class="text-white fw-bold mb-0 sidebar-title" style="font-size: 18px;">Ekspedisi<span style="color: #3b82f6;">Pro</span></h4>
-        <button class="btn btn-sm text-white" onclick="toggleSidebar()" style="background: #334155; border: none;">
+    <div class="d-flex justify-content-between align-items-center px-3 mb-3" style="display:flex; justify-content:space-between; align-items:center; padding: 0 15px;">
+        <h4 class="text-white fw-bold mb-0 sidebar-title" style="font-size: 18px; color:white; margin:0;">Ekspedisi<span style="color: #3b82f6;">Pro</span></h4>
+        <button class="btn btn-sm text-white" onclick="toggleSidebar()" style="background: #334155; border: none; color:white; padding:4px 8px; border-radius:4px; cursor:pointer;">
             <i class="fa-solid fa-bars"></i>
         </button>
     </div>
@@ -451,7 +451,6 @@
     <a href="input-po.html" class="active"><i class="fa-solid fa-file-invoice me-2"></i> <span class="nav-text">Input PO</span></a>
     <a href="input-tagihan.html"><i class="fa-solid fa-file-pen me-2"></i> <span class="nav-text">Input Tagihan</span></a>
     
-    <!-- Sub-menu / Opsi Rincian Tagihan Per Area -->
     <div class="px-3 py-2 text-white-50 small fw-bold text-uppercase submenu-title" style="font-size: 11px; letter-spacing: 0.5px; padding: 10px 20px; color: #94a3b8;">Rincian Tagihan</div>
     
     <div class="submenu-items">
@@ -475,7 +474,7 @@
       <p>Pilih PO KM8 & KM9</p>
     </div>
 
-    <!-- Statistik Informasi PO Tanpa Vendor di Bagian Atas -->
+    <!-- Statistik Informasi PO Tanpa Vendor -->
     <div class="unassigned-grid">
       <div class="unassigned-card km8">
         <div>
@@ -595,20 +594,26 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUuNwxYMuA_4ni54CMs
 
 let dataTabelExport = [];
 let vendorList = [];
-let rawPOList = []; // Master list PO hasil filter baris
-let selectedPOs = new Set(); // Memori penyimpanan centang
+let rawPOList = []; 
+let selectedPOs = new Set(); 
 
 window.onload = function() {
-  google.script.run
-    .withSuccessHandler(isiVendorList)
-    .getVendorList();
-
+  muatVendorList();
   muatChecklistPO();
 };
 
-function isiVendorList(vendors) {
-  vendorList = vendors || [];
-  initAutocomplete(document.getElementById("vendorInput"), vendorList);
+function toggleSidebar() {
+  document.getElementById('sidebarNav').classList.toggle('collapsed');
+}
+
+function muatVendorList() {
+  fetch(`${SCRIPT_URL}?action=getVendorList`)
+    .then(res => res.json())
+    .then(vendors => {
+      vendorList = vendors || [];
+      initAutocomplete(document.getElementById("vendorInput"), vendorList);
+    })
+    .catch(err => console.error("Gagal memuat vendor:", err));
 }
 
 function muatChecklistPO() {
@@ -616,11 +621,11 @@ function muatChecklistPO() {
   selectedPOs.clear();
   updateSelectedCount();
 
-  google.script.run
-    .withSuccessHandler(poList => {
+  fetch(`${SCRIPT_URL}?action=getUnassignedPOList`)
+    .then(res => res.json())
+    .then(poList => {
       const allPO = poList || [];
       
-      // Mengikutsertakan KM8 dari baris 5061 ke atas (row >= 5061)
       rawPOList = allPO.filter(item => {
         const row = Number(item.row);
         if (item.feedmill === 'KM8') return row >= 5061;
@@ -631,10 +636,9 @@ function muatChecklistPO() {
       updateUnassignedCounters();
       renderChecklistPO(rawPOList);
     })
-    .withFailureHandler(err => {
+    .catch(err => {
       document.getElementById('checklistContainer').innerHTML = `<span style="color:var(--danger); font-size:13px; grid-column:1/-1;">Gagal memuat PO: ${err.message}</span>`;
-    })
-    .getUnassignedPOList();
+    });
 }
 
 function updateUnassignedCounters() {
@@ -735,8 +739,14 @@ function simpanData() {
 
   document.getElementById('status').innerHTML = `<span style="color:var(--primary)">⏳ Menyimpan ${selectedPOList.length} PO...</span>`;
 
-  google.script.run
-    .withSuccessHandler(results => {
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "simpanMultiplePO", poList: selectedPOList, vendor: vendor })
+  })
+  .then(res => res.json())
+  .then(resData => {
+    if (resData.status === "success") {
+      const results = resData.data;
       document.getElementById('status').innerHTML = `<span style="color:var(--success)">✅ Berhasil menyimpan ${results.length} PO.</span>`;
       
       results.forEach(item => tambahBarisTabel(item));
@@ -750,11 +760,13 @@ function simpanData() {
       document.getElementById('searchPOInput').value = '';
       renderChecklistPO(rawPOList);
       document.getElementById('vendorInput').value = '';
-    })
-    .withFailureHandler(err => {
-      document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
-    })
-    .simpanMultiplePO(selectedPOList, vendor);
+    } else {
+      document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + (resData.message || "Gagal menyimpan") + '</span>';
+    }
+  })
+  .catch(err => {
+    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
+  });
 }
 
 function tambahBarisTabel(data) {
@@ -797,50 +809,45 @@ function hapusBaris(po, rowElement) {
     cancelButtonText: 'Batal'
   }).then((result) => {
     if (result.isConfirmed) {
-      google.script.run
-        .withSuccessHandler((success) => {
-          if (success) {
-            const index = dataTabelExport.findIndex(item => item.po === po);
-            if (index !== -1) dataTabelExport.splice(index, 1);
-            rowElement.remove();
-            
-            if (dataTabelExport.length === 0) {
-              document.getElementById('tabelKM8').style.display = 'none';
-              document.getElementById('tabelKM9').style.display = 'none';
-            }
-            updateCounters();
-            muatChecklistPO();
-            document.getElementById('status').innerHTML = `<span style="color:var(--success)">🗑️ PO ${po} berhasil dihapus.</span>`;
-          } else {
-            document.getElementById('status').innerHTML = `<span style="color:#d97706">⚠️ PO ${po} tidak ditemukan di sheet.</span>`;
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "hapusDariSheet", po: po })
+      })
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.status === "success" && resData.success) {
+          const index = dataTabelExport.findIndex(item => item.po === po);
+          if (index !== -1) dataTabelExport.splice(index, 1);
+          rowElement.remove();
+          
+          if (dataTabelExport.length === 0) {
+            document.getElementById('tabelKM8').style.display = 'none';
+            document.getElementById('tabelKM9').style.display = 'none';
           }
-        })
-        .withFailureHandler(err => {
-          document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
-        })
-        .hapusDariSheet(po);
+          updateCounters();
+          muatChecklistPO();
+          document.getElementById('status').innerHTML = `<span style="color:var(--success)">🗑️ PO ${po} berhasil dihapus.</span>`;
+        } else {
+          document.getElementById('status').innerHTML = `<span style="color:#d97706">⚠️ PO ${po} tidak ditemukan di sheet.</span>`;
+        }
+      })
+      .catch(err => {
+        document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
+      });
     }
   });
 }
 
 function bukaPrintPO() {
-  const newTab = window.open('', '_blank');
-
-  google.script.run
-    .withSuccessHandler(function(webAppUrl) {
-      if (!webAppUrl) {
-        newTab.close();
-        alert("Gagal mendapatkan URL Web App.");
-        return;
-      }
-      const targetUrl = webAppUrl + "?page=printPO&sheet=CPI KM8";
-      newTab.location.href = targetUrl;
+  fetch(`${SCRIPT_URL}?action=getScriptUrl`)
+    .then(res => res.json())
+    .then(url => {
+      const targetUrl = (url || SCRIPT_URL) + "?page=printPO&sheet=CPI KM8";
+      window.open(targetUrl, '_blank');
     })
-    .withFailureHandler(function(error) {
-      newTab.close();
-      alert("Gagal memuat cetak PO: " + error.message);
-    })
-    .getScriptUrl();
+    .catch(() => {
+      window.open(SCRIPT_URL + "?page=printPO&sheet=CPI KM8", '_blank');
+    });
 }
 
 function resetTabel() {
