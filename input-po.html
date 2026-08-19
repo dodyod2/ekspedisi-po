@@ -284,16 +284,19 @@
     };
 
     function loadVendorList() {
-        fetch(`${WEB_APP_URL}?action=getUnassignedPOList`)
-  .then(res => res.json())
-  .then(res => {
-      // Mengambil data secara aman baik berupa array langsung atau di dalam properti .data
-      const listPO = Array.isArray(res) ? res : (res.data || []);
-
-      // Lanjutkan proses render tabel atau update jumlah badge di sini
-      console.log("Jumlah PO ditemukan:", listPO.length);
-  })
-  .catch(err => console.error("Error:", err));
+        fetch(`${WEB_APP_URL}?action=getVendorList`)
+            .then(res => res.json())
+            .then(res => {
+                // Mengambil data vendor secara aman baik berupa array langsung atau di dalam properti .data
+                vendorList = Array.isArray(res) ? res : (res.data || []);
+                
+                // Inisialisasi autocomplete pada input vendor
+                const inputVendor = document.getElementById("vendorInput");
+                initAutocomplete(inputVendor, vendorList);
+                
+                console.log("Jumlah vendor dimuat:", vendorList.length);
+            })
+            .catch(err => console.error("Gagal memuat daftar vendor:", err));
     }
 
     function muatChecklistPO() {
