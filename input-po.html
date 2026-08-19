@@ -20,6 +20,7 @@
     --text-main: #0f172a;
     --text-muted: #64748b;
     --border-color: #e2e8f0;
+    --sidebar-width: 260px;
   }
 
   * {
@@ -30,8 +31,107 @@
   body {
     background: var(--bg-main);
     margin: 0;
-    padding: 25px 20px;
+    padding: 0;
     color: var(--text-main);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar Navigasi */
+  aside {
+    width: var(--sidebar-width);
+    background: #ffffff;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+  }
+
+  aside.hidden {
+    transform: translateX(calc(-1 * var(--sidebar-width)));
+  }
+
+  .sidebar-header {
+    padding: 20px;
+    font-size: 16px;
+    font-weight: 700;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--primary);
+  }
+
+  .sidebar-menu {
+    list-style: none;
+    padding: 15px;
+    margin: 0;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .sidebar-menu li {
+    margin-bottom: 6px;
+  }
+
+  .sidebar-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .sidebar-menu a:hover, .sidebar-menu a.active {
+    background: #eff6ff;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  /* Main Wrapper */
+  .main-wrapper {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    transition: margin-left 0.3s ease;
+    padding: 25px 20px;
+    width: calc(100% - var(--sidebar-width));
+  }
+
+  .main-wrapper.expanded {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  /* Toggle Sidebar Button */
+  .toggle-sidebar-btn {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  }
+
+  .toggle-sidebar-btn:hover {
+    background: #f1f5f9;
+    transform: none;
   }
 
   .container {
@@ -312,6 +412,9 @@
   @media (max-width: 850px) {
     .unassigned-grid { grid-template-columns: 1fr; }
     .table-wrapper { grid-template-columns: 1fr; }
+    aside { transform: translateX(calc(-1 * var(--sidebar-width))); }
+    .main-wrapper { margin-left: 0; width: 100%; }
+    aside.show { transform: translateX(0); }
   }
 
   .table-container {
@@ -375,124 +478,152 @@
 </head>
 <body>
 
-<div class="container">
-  <div class="header-title">
-    <h2>Form Input Purchase Order</h2>
-    <p>Pilih PO KM8 & KM9</p>
-  </div>
-
-  <!-- Statistik Informasi PO Tanpa Vendor di Bagian Atas -->
-  <div class="unassigned-grid">
-    <div class="unassigned-card km8">
-      <div>
-        <h4>Tanpa Vendor (KM8)</h4>
-        <span style="font-size:11px; color:var(--text-muted);">Baris ≥ 5061</span>
-      </div>
-      <span class="count" id="unassignedKM8">0</span>
+  <!-- Sidebar Navigasi Menu -->
+  <aside id="appSidebar">
+    <div class="sidebar-header">
+      <span>📦 Ekspedisi PO</span>
     </div>
+    <ul class="sidebar-menu">
+      <li><a href="?page=index">🏠 Home / Index</a></li>
+      <li><a href="?page=input-po" class="active">📝 Input PO</a></li>
+      <li><a href="?page=printPO">🖨️ Cetak PO</a></li>
+      <li><a href="?page=searchAll">🔍 Cari Data PO</a></li>
+      <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
+      <li style="font-size: 11px; padding: 0 14px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Tagihan Ekspedisi</li>
+      <li><a href="?page=tagihan-banyumas">📂 Banyumas</a></li>
+      <li><a href="?page=tagihan-bisi">📂 Bisi</a></li>
+      <li><a href="?page=tagihan-kebumen">📂 Kebumen</a></li>
+      <li><a href="?page=tagihan-pemalang">📂 Pemalang</a></li>
+      <li><a href="?page=tagihan-sl3">📂 SL3</a></li>
+      <li><a href="?page=tagihan-sragen">📂 Sragen</a></li>
+    </ul>
+  </aside>
 
-    <div class="unassigned-card km9">
-      <div>
-        <h4>Tanpa Vendor (KM9)</h4>
-        <span style="font-size:11px; color:var(--text-muted);">Baris > 6716</span>
+  <!-- Main Content Wrapper -->
+  <div class="main-wrapper" id="mainWrapper">
+    <button class="toggle-sidebar-btn" onclick="toggleSidebar()">
+      ☰ <span id="toggleText">Sembunyikan Menu</span>
+    </button>
+
+    <div class="container">
+      <div class="header-title">
+        <h2>Form Input Purchase Order</h2>
+        <p>Pilih PO KM8 & KM9</p>
       </div>
-      <span class="count" id="unassignedKM9">0</span>
-    </div>
 
-    <div class="unassigned-card selected">
-      <div>
-        <h4>PO Terpilih</h4>
-        <span style="font-size:11px; color:var(--text-muted);">Total dicentang saat ini</span>
+      <!-- Statistik Informasi PO Tanpa Vendor di Bagian Atas -->
+      <div class="unassigned-grid">
+        <div class="unassigned-card km8">
+          <div>
+            <h4>Tanpa Vendor (KM8)</h4>
+            <span style="font-size:11px; color:var(--text-muted);">Baris ≥ 5061</span>
+          </div>
+          <span class="count" id="unassignedKM8">0</span>
+        </div>
+
+        <div class="unassigned-card km9">
+          <div>
+            <h4>Tanpa Vendor (KM9)</h4>
+            <span style="font-size:11px; color:var(--text-muted);">Baris > 6716</span>
+          </div>
+          <span class="count" id="unassignedKM9">0</span>
+        </div>
+
+        <div class="unassigned-card selected">
+          <div>
+            <h4>PO Terpilih</h4>
+            <span style="font-size:11px; color:var(--text-muted);">Total dicentang saat ini</span>
+          </div>
+          <span class="count" id="totalSelectedText">0</span>
+        </div>
       </div>
-      <span class="count" id="totalSelectedText">0</span>
-    </div>
-  </div>
 
-  <div class="card">
-    <div class="form-grid">
-      <!-- Area Checklist PO -->
-      <div class="form-group">
-        <div class="checklist-header">
-          <label style="margin:0;">Pilih PO Belum Ada Vendor:</label>
-          <div style="display:flex; gap:6px;">
-            <button type="button" class="btn-sm" onclick="toggleSelectAll(true)">Pilih Semua Tampil</button>
-            <button type="button" class="btn-sm btn-muted" onclick="toggleSelectAll(false)">Reset Centang</button>
-            <button type="button" class="btn-sm btn-muted" onclick="muatChecklistPO()">🔄 Refresh List</button>
+      <div class="card">
+        <div class="form-grid">
+          <!-- Area Checklist PO -->
+          <div class="form-group">
+            <div class="checklist-header">
+              <label style="margin:0;">Pilih PO Belum Ada Vendor:</label>
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="btn-sm" onclick="toggleSelectAll(true)">Pilih Semua Tampil</button>
+                <button type="button" class="btn-sm btn-muted" onclick="toggleSelectAll(false)">Reset Centang</button>
+                <button type="button" class="btn-sm btn-muted" onclick="muatChecklistPO()">🔄 Refresh List</button>
+              </div>
+            </div>
+
+            <!-- Kolom Pencarian / Filter PO -->
+            <div class="search-po-box">
+              <input type="text" id="searchPOInput" placeholder="🔍 Cari / ketik nomor PO..." oninput="filterPOList()">
+            </div>
+
+            <div id="checklistContainer" class="checklist-box">
+              <span style="color:var(--text-muted); font-size:13px; grid-column:1/-1; text-align:center;">Memuat daftar PO...</span>
+            </div>
+          </div>
+
+          <!-- Area Autocomplete Vendor -->
+          <div class="form-group" style="position:relative;">
+            <label for="vendorInput">Nama Vendor</label>
+            <input type="text" id="vendorInput" placeholder="Ketik & pilih nama vendor...">
+            <div id="vendorSuggestions" class="autocomplete-items"></div>
           </div>
         </div>
 
-        <!-- Kolom Pencarian / Filter PO -->
-        <div class="search-po-box">
-          <input type="text" id="searchPOInput" placeholder="🔍 Cari / ketik nomor PO..." oninput="filterPOList()">
+        <div class="button-group">
+          <button onclick="simpanData()">Simpan Data Terpilih</button>
+          <button type="button" class="btn-print" onclick="bukaPrintPO()">🖨️ PRINT PO</button>
+          <button class="btn-danger" onclick="resetTabel()">Reset Tabel Bawah</button>
         </div>
 
-        <div id="checklistContainer" class="checklist-box">
-          <span style="color:var(--text-muted); font-size:13px; grid-column:1/-1; text-align:center;">Memuat daftar PO...</span>
+        <div id="status"></div>
+      </div>
+
+      <!-- Counter Stats Tabel Hasil Proses -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h4>Total Diproses KM8 (Tabel Bawah)</h4>
+          <span class="count" id="countKM8">0</span>
+        </div>
+        <div class="stat-card">
+          <h4>Total Diproses KM9 (Tabel Bawah)</h4>
+          <span class="count" id="countKM9">0</span>
         </div>
       </div>
 
-      <!-- Area Autocomplete Vendor -->
-      <div class="form-group" style="position:relative;">
-        <label for="vendorInput">Nama Vendor</label>
-        <input type="text" id="vendorInput" placeholder="Ketik & pilih nama vendor...">
-        <div id="vendorSuggestions" class="autocomplete-items"></div>
+      <!-- Tabel Hasil Simpan -->
+      <div class="table-wrapper">
+        <div class="table-container">
+          <h3 class="table-header-title">Feedmill KM8</h3>
+          <table id="tabelKM8" style="display:none;">
+            <thead>
+              <tr>
+                <th>PO</th>
+                <th>Vendor</th>
+                <th>Penerima</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="table-container">
+          <h3 class="table-header-title">Feedmill KM9</h3>
+          <table id="tabelKM9" style="display:none;">
+            <thead>
+              <tr>
+                <th>PO</th>
+                <th>Vendor</th>
+                <th>Penerima</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
     </div>
-
-    <div class="button-group">
-      <button onclick="simpanData()">Simpan Data Terpilih</button>
-      <button type="button" class="btn-print" onclick="bukaPrintPO()">🖨️ PRINT PO</button>
-      <button class="btn-danger" onclick="resetTabel()">Reset Tabel Bawah</button>
-    </div>
-
-    <div id="status"></div>
   </div>
-
-  <!-- Counter Stats Tabel Hasil Proses -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <h4>Total Diproses KM8 (Tabel Bawah)</h4>
-      <span class="count" id="countKM8">0</span>
-    </div>
-    <div class="stat-card">
-      <h4>Total Diproses KM9 (Tabel Bawah)</h4>
-      <span class="count" id="countKM9">0</span>
-    </div>
-  </div>
-
-  <!-- Tabel Hasil Simpan -->
-  <div class="table-wrapper">
-    <div class="table-container">
-      <h3 class="table-header-title">Feedmill KM8</h3>
-      <table id="tabelKM8" style="display:none;">
-        <thead>
-          <tr>
-            <th>PO</th>
-            <th>Vendor</th>
-            <th>Penerima</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-
-    <div class="table-container">
-      <h3 class="table-header-title">Feedmill KM9</h3>
-      <table id="tabelKM9" style="display:none;">
-        <thead>
-          <tr>
-            <th>PO</th>
-            <th>Vendor</th>
-            <th>Penerima</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
-</div>
 
 <script>
 let dataTabelExport = [];
@@ -507,6 +638,21 @@ window.onload = function() {
 
   muatChecklistPO();
 };
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('appSidebar');
+  const wrapper = document.getElementById('mainWrapper');
+  const toggleText = document.getElementById('toggleText');
+  
+  sidebar.classList.toggle('hidden');
+  wrapper.classList.toggle('expanded');
+  
+  if (sidebar.classList.contains('hidden')) {
+    toggleText.textContent = 'Tampilkan Menu';
+  } else {
+    toggleText.textContent = 'Sembunyikan Menu';
+  }
+}
 
 function isiVendorList(vendors) {
   vendorList = vendors || [];
