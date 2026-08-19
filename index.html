@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background-color: #f4f6f9; }
+        /* Transisi halus untuk sidebar dan konten utama */
         .sidebar {
             width: 250px; 
             background-color: #1e293b; 
@@ -17,30 +18,49 @@
             position: fixed; 
             color: white; 
             padding-top: 20px; 
-            z-index: 1000; 
+            z-index: 1000;
             overflow-y: auto;
+            transition: width 0.3s ease; /* Transisi lebar sidebar */
         }
         .sidebar a {
             color: #cbd5e1; 
             text-decoration: none; 
             padding: 12px 20px;
-            display: block; 
+            display: flex; /* Diubah ke flex agar ikon & teks rapi saat minimize */
+            align-items: center;
             font-weight: 500; 
             transition: 0.3s;
+            white-space: nowrap; /* Mencegah teks turun baris saat menyusut */
         }
-        .sidebar a:hover, .sidebar a.active {
-            background-color: #334155; 
-            color: white; 
-            border-left: 4px solid #3b82f6;
+        .sidebar a span.menu-text {
+            transition: opacity 0.2s ease;
         }
-        .main-content { margin-left: 250px; padding: 25px 30px; }
-        .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .badge-area {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 6px 8px;
-            text-align: center;
-            font-size: 13px;
+        .main-content { 
+            margin-left: 250px; 
+            padding: 25px 30px; 
+            transition: margin-left 0.3s ease; /* Transisi penyesuaian margin konten */
+        }
+
+        /* State ketika Sidebar dalam posisi Minimize */
+        .sidebar.minimized {
+            width: 70px;
+        }
+        .sidebar.minimized .sidebar-title,
+        .sidebar.minimized span.menu-text,
+        .sidebar.minimized .fa-chevron-down {
+            display: none !important; /* Sembunyikan teks & panah dropdown */
+        }
+        .sidebar.minimized a {
+            justify-content: center;
+            padding: 12px 10px;
+        }
+        .sidebar.minimized a i {
+            margin-right: 0 !important;
+            font-size: 1.2rem;
+        }
+        /* Sesuaikan margin konten utama saat sidebar minimized */
+        .main-content.expanded {
+            margin-left: 70px;
         }
 
         /* Animasi putar ikon panah dropdown */
