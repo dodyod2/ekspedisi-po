@@ -3,633 +3,251 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Form Input PO - Checklist Vendor</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Input PO - EkspedisiPro</title>
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome untuk Ikon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
-  :root {
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --success: #10b981;
-    --success-hover: #059669;
-    --danger: #ef4444;
-    --danger-hover: #dc2626;
-    --warning: #f59e0b;
-    --bg-main: #f8fafc;
-    --card-bg: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --border-color: #e2e8f0;
-    --sidebar-width: 260px;
-  }
+    body { background-color: #f4f6f9; }
+    .sidebar {
+        width: 250px; background-color: #1e293b; height: 100vh;
+        position: fixed; color: white; padding-top: 20px; z-index: 1000;
+        overflow-y: auto;
+    }
+    .sidebar a {
+        color: #cbd5e1; text-decoration: none; padding: 12px 20px;
+        display: block; font-weight: 500; transition: 0.3s;
+    }
+    .sidebar a:hover, .sidebar a.active {
+        background-color: #334155; color: white; border-left: 4px solid #3b82f6;
+    }
+    .main-content { margin-left: 250px; padding: 25px 30px; }
+    .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); background: #ffffff; }
+    
+    /* Autocomplete custom styling */
+    .autocomplete-items {
+        position: absolute;
+        z-index: 9999;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        background: white;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .autocomplete-items div {
+        padding: 10px 14px;
+        cursor: pointer;
+        font-size: 14px;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.15s ease;
+    }
+    .autocomplete-items div:hover, .autocomplete-active {
+        background-color: #eff6ff !important;
+        color: #2563eb;
+        font-weight: 600;
+    }
 
-  * {
-    box-sizing: border-box;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-  }
+    .checklist-box {
+        max-height: 220px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 12px;
+        background: #f8f9fa;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 8px;
+    }
 
-  body {
-    background: var(--bg-main);
-    margin: 0;
-    padding: 0;
-    color: var(--text-main);
-    display: flex;
-    min-height: 100vh;
-  }
-
-  /* Sidebar Navigasi */
-  aside {
-    width: var(--sidebar-width);
-    background: #ffffff;
-    border-right: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
-  }
-
-  aside.hidden {
-    transform: translateX(calc(-1 * var(--sidebar-width)));
-  }
-
-  .sidebar-header {
-    padding: 20px;
-    font-size: 16px;
-    font-weight: 700;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color: var(--primary);
-  }
-
-  .sidebar-menu {
-    list-style: none;
-    padding: 15px;
-    margin: 0;
-    overflow-y: auto;
-    flex: 1;
-  }
-
-  .sidebar-menu li {
-    margin-bottom: 6px;
-  }
-
-  .sidebar-menu a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-  }
-
-  .sidebar-menu a:hover, .sidebar-menu a.active {
-    background: #eff6ff;
-    color: var(--primary);
-    font-weight: 600;
-  }
-
-  /* Main Wrapper */
-  .main-wrapper {
-    flex: 1;
-    margin-left: var(--sidebar-width);
-    transition: margin-left 0.3s ease;
-    padding: 25px 20px;
-    width: calc(100% - var(--sidebar-width));
-  }
-
-  .main-wrapper.expanded {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  /* Toggle Sidebar Button */
-  .toggle-sidebar-btn {
-    background: #ffffff;
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-  }
-
-  .toggle-sidebar-btn:hover {
-    background: #f1f5f9;
-    transform: none;
-  }
-
-  .container {
-    max-width: 1100px;
-    margin: auto;
-  }
-
-  .header-title {
-    text-align: center;
-    margin-bottom: 24px;
-  }
-
-  .header-title h2 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-main);
-    letter-spacing: -0.5px;
-  }
-
-  .header-title p {
-    margin: 4px 0 0;
-    color: var(--text-muted);
-    font-size: 13px;
-  }
-
-  /* Grid Statistik PO Belum Ada Vendor */
-  .unassigned-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
-  .unassigned-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 14px 18px;
-    border: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-  }
-
-  .unassigned-card.km8 { border-left: 4px solid var(--primary); }
-  .unassigned-card.km9 { border-left: 4px solid #8b5cf6; }
-  .unassigned-card.selected { border-left: 4px solid var(--success); }
-
-  .unassigned-card h4 {
-    margin: 0;
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .unassigned-card .count {
-    font-size: 22px;
-    font-weight: 700;
-  }
-
-  .unassigned-card.km8 .count { color: var(--primary); }
-  .unassigned-card.km9 .count { color: #8b5cf6; }
-  .unassigned-card.selected .count { color: var(--success); }
-
-  .card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--border-color);
-    margin-bottom: 20px;
-  }
-
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .form-group {
-    margin-bottom: 8px;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    font-size: 13px;
-    color: #334155;
-  }
-
-  input[type="text"] {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    font-size: 13px;
-    outline: none;
-    transition: all 0.2s ease;
-    background: #f1f5f9;
-  }
-
-  input[type="text"]:focus {
-    background: #fff;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-  }
-
-  .checklist-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .search-po-box {
-    margin-bottom: 10px;
-  }
-
-  .checklist-box {
-    max-height: 180px;
-    overflow-y: auto;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 10px;
-    background: #fff;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    gap: 8px;
-  }
-
-  .checkbox-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    font-size: 13px;
-    background: #f8fafc;
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    transition: background 0.15s ease;
-  }
-
-  .checkbox-item:hover {
-    background: #f1f5f9;
-  }
-
-  .checkbox-item input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    accent-color: var(--primary);
-  }
-
-  .button-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-
-  button {
-    padding: 10px 18px;
-    cursor: pointer;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  button:hover {
-    background: var(--primary-hover);
-    transform: translateY(-1px);
-  }
-
-  .btn-sm {
-    padding: 4px 10px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-
-  .btn-muted {
-    background: #64748b;
-  }
-  .btn-muted:hover {
-    background: #475569;
-  }
-
-  .btn-danger { background: var(--danger); }
-  .btn-danger:hover { background: var(--danger-hover); }
-
-  #status {
-    margin-top: 14px;
-    font-size: 13px;
-    font-weight: 600;
-    text-align: center;
-    min-height: 20px;
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
-  .stat-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 16px;
-    border: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .stat-card h4 {
-    margin: 0;
-    font-size: 13px;
-    color: var(--text-muted);
-    font-weight: 500;
-  }
-
-  .stat-card .count {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--primary);
-  }
-
-  .autocomplete-items {
-    position: absolute;
-    z-index: 9999;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    background: white;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-
-  .autocomplete-items div {
-    padding: 10px 14px;
-    cursor: pointer;
-    font-size: 13px;
-    border-bottom: 1px solid #f1f5f9;
-    transition: background 0.15s ease;
-  }
-
-  .autocomplete-items div:hover,
-  .autocomplete-active {
-    background-color: #eff6ff !important;
-    color: var(--primary);
-    font-weight: 600;
-  }
-
-  .table-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  @media (max-width: 850px) {
-    .unassigned-grid { grid-template-columns: 1fr; }
-    .table-wrapper { grid-template-columns: 1fr; }
-    aside { transform: translateX(calc(-1 * var(--sidebar-width))); }
-    .main-wrapper { margin-left: 0; width: 100%; }
-    aside.show { transform: translateX(0); }
-  }
-
-  .table-container {
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    max-height: 320px;
-    overflow-y: auto;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-  }
-
-  .table-header-title {
-    position: sticky;
-    top: 0;
-    background: #fff;
-    padding: 14px 16px;
-    margin: 0;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-main);
-    border-bottom: 1px solid var(--border-color);
-    z-index: 10;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-
-  th {
-    background: #f8fafc;
-    color: var(--text-muted);
-    font-weight: 600;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 48px;
-    z-index: 9;
-  }
-
-  td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #f1f5f9;
-    color: #334155;
-  }
-
-  tr:hover td {
-    background: #f8fafc;
-  }
-
-  .btn-sm-danger {
-    padding: 4px 10px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        font-size: 13px;
+        background: #ffffff;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        transition: background 0.15s ease;
+    }
+    .checkbox-item:hover {
+        background: #f1f5f9;
+    }
 </style>
 </head>
 <body>
 
-  <!-- Sidebar Navigasi Menu -->
-  <aside id="appSidebar">
-    <div class="sidebar-header">
-      <span>📦 Ekspedisi PO</span>
+    <!-- SIDEBAR NAVIGASI (Sinkron dengan Beranda) -->
+    <div class="sidebar">
+        <h4 class="text-center fw-bold mb-4 text-white">Ekspedisi<span class="text-primary">Pro</span></h4>
+        <a href="index.html"><i class="fa-solid fa-chart-pie me-2"></i> Beranda</a>
+        <a href="input-po.html" class="active"><i class="fa-solid fa-file-invoice me-2"></i> Input PO</a>
+        <a href="input-tagihan.html"><i class="fa-solid fa-file-pen me-2"></i> Input Tagihan</a>
+        
+        <div class="px-3 py-2 text-white-50 small fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">Rincian Tagihan</div>
+        <a href="tagihan-sl3.html" class="ps-4"><i class="fa-solid fa-angle-right me-2"></i> SL3</a>
+        <a href="tagihan-pemalang.html" class="ps-4"><i class="fa-solid fa-angle-right me-2"></i> Pemalang</a>
+        <a href="tagihan-sragen.html" class="ps-4"><i class="fa-solid fa-angle-right me-2"></i> Sragen</a>
+        <a href="tagihan-banyumas.html" class="ps-4"><i class="fa-solid fa-angle-right me-2"></i> Banyumas</a>
+        <a href="tagihan-kebumen.html" class="ps-4"><i class="fa-solid fa-angle-right me-2"></i> Kebumen</a>
+        <a href="tagihan-bisi.html" class="ps-4"><i class="fa-solid fa-angle-right me-2"></i> BISI SA</a>
+
+        <a href="printPO.html" class="mt-2"><i class="fa-solid fa-print me-2"></i> Print Ekspedisi</a>
+        <a href="searchAll.html"><i class="fa-solid fa-magnifying-glass me-2"></i> Pencarian PO</a>
     </div>
-    <ul class="sidebar-menu">
-      <li><a href="?page=index">🏠 Home / Index</a></li>
-      <li><a href="?page=input-po" class="active">📝 Input PO</a></li>
-      <li><a href="?page=printPO">🖨️ Cetak PO</a></li>
-      <li><a href="?page=searchAll">🔍 Cari Data PO</a></li>
-      <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
-      <li style="font-size: 11px; padding: 0 14px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Tagihan Ekspedisi</li>
-      <li><a href="?page=tagihan-banyumas">📂 Banyumas</a></li>
-      <li><a href="?page=tagihan-bisi">📂 Bisi</a></li>
-      <li><a href="?page=tagihan-kebumen">📂 Kebumen</a></li>
-      <li><a href="?page=tagihan-pemalang">📂 Pemalang</a></li>
-      <li><a href="?page=tagihan-sl3">📂 SL3</a></li>
-      <li><a href="?page=tagihan-sragen">📂 Sragen</a></li>
-    </ul>
-  </aside>
 
-  <!-- Main Content Wrapper -->
-  <div class="main-wrapper" id="mainWrapper">
-    <button class="toggle-sidebar-btn" onclick="toggleSidebar()">
-      ☰ <span id="toggleText">Sembunyikan Menu</span>
-    </button>
-
-    <div class="container">
-      <div class="header-title">
-        <h2>Form Input Purchase Order</h2>
-        <p>Pilih PO KM8 & KM9</p>
-      </div>
-
-      <!-- Statistik Informasi PO Tanpa Vendor di Bagian Atas -->
-      <div class="unassigned-grid">
-        <div class="unassigned-card km8">
-          <div>
-            <h4>Tanpa Vendor (KM8)</h4>
-            <span style="font-size:11px; color:var(--text-muted);">Baris ≥ 5061</span>
-          </div>
-          <span class="count" id="unassignedKM8">0</span>
+    <!-- KONTEN UTAMA -->
+    <div class="main-content">
+        
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 card-custom">
+            <h5 class="mb-0 fw-bold text-secondary"><i class="fa-solid fa-file-invoice me-2"></i> Form Input Purchase Order (Assign Vendor)</h5>
+            <div class="text-end">
+                <span class="fw-bold text-dark">Halo, Admin</span>
+                <i class="fa-solid fa-circle-user fs-4 ms-2 text-primary align-middle"></i>
+            </div>
         </div>
 
-        <div class="unassigned-card km9">
-          <div>
-            <h4>Tanpa Vendor (KM9)</h4>
-            <span style="font-size:11px; color:var(--text-muted);">Baris > 6716</span>
-          </div>
-          <span class="count" id="unassignedKM9">0</span>
+        <!-- STATISTIK INFO PO TANPA VENDOR -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card card-custom p-3 border-start border-primary border-4">
+                    <span class="text-muted small fw-bold text-uppercase">Tanpa Vendor (KM8)</span>
+                    <h3 class="fw-bold text-primary mb-0 mt-1" id="unassignedKM8">0</h3>
+                    <small class="text-muted">Baris ≥ 5061</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom p-3 border-start border-info border-4">
+                    <span class="text-muted small fw-bold text-uppercase">Tanpa Vendor (KM9)</span>
+                    <h3 class="fw-bold text-info mb-0 mt-1" id="unassignedKM9">0</h3>
+                    <small class="text-muted">Baris > 6716</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom p-3 border-start border-success border-4">
+                    <span class="text-muted small fw-bold text-uppercase">PO Terpilih (Dicentang)</span>
+                    <h3 class="fw-bold text-success mb-0 mt-1" id="totalSelectedText">0</h3>
+                    <small class="text-muted">Siap diproses</small>
+                </div>
+            </div>
         </div>
 
-        <div class="unassigned-card selected">
-          <div>
-            <h4>PO Terpilih</h4>
-            <span style="font-size:11px; color:var(--text-muted);">Total dicentang saat ini</span>
-          </div>
-          <span class="count" id="totalSelectedText">0</span>
-        </div>
-      </div>
+        <!-- CARD FORM UTAMA -->
+        <div class="card card-custom p-4 mb-4">
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                    <label class="fw-bold text-dark">Pilih PO Belum Ada Vendor:</label>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleSelectAll(true)">Pilih Semua</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleSelectAll(false)">Reset Centang</button>
+                        <button type="button" class="btn btn-sm btn-light border" onclick="muatChecklistPO()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                    </div>
+                </div>
 
-      <div class="card">
-        <div class="form-grid">
-          <!-- Area Checklist PO -->
-          <div class="form-group">
-            <div class="checklist-header">
-              <label style="margin:0;">Pilih PO Belum Ada Vendor:</label>
-              <div style="display:flex; gap:6px;">
-                <button type="button" class="btn-sm" onclick="toggleSelectAll(true)">Pilih Semua Tampil</button>
-                <button type="button" class="btn-sm btn-muted" onclick="toggleSelectAll(false)">Reset Centang</button>
-                <button type="button" class="btn-sm btn-muted" onclick="muatChecklistPO()">🔄 Refresh List</button>
-              </div>
+                <!-- Kolom Filter / Pencarian PO -->
+                <div class="mb-2">
+                    <input type="text" id="searchPOInput" class="form-control" placeholder="🔍 Cari nomor PO..." oninput="filterPOList()">
+                </div>
+
+                <!-- Container Checkbox -->
+                <div id="checklistContainer" class="checklist-box">
+                    <span class="text-muted text-center py-2 w-100" style="grid-column: 1/-1;">Memuat daftar PO...</span>
+                </div>
             </div>
 
-            <!-- Kolom Pencarian / Filter PO -->
-            <div class="search-po-box">
-              <input type="text" id="searchPOInput" placeholder="🔍 Cari / ketik nomor PO..." oninput="filterPOList()">
+            <!-- Input Vendor dengan Autocomplete -->
+            <div class="mb-3 position-relative">
+                <label for="vendorInput" class="form-label fw-bold">Nama Vendor</label>
+                <input type="text" id="vendorInput" class="form-control" placeholder="Ketik & pilih nama vendor...">
+                <div id="vendorSuggestions" class="autocomplete-items"></div>
             </div>
 
-            <div id="checklistContainer" class="checklist-box">
-              <span style="color:var(--text-muted); font-size:13px; grid-column:1/-1; text-align:center;">Memuat daftar PO...</span>
+            <div class="d-flex gap-2 flex-wrap mt-3">
+                <button class="btn btn-primary fw-semibold" onclick="simpanData()"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Data Terpilih</button>
+                <button class="btn btn-success fw-semibold" onclick="bukaPrintPO()"><i class="fa-solid fa-print me-1"></i> PRINT PO</button>
+                <button class="btn btn-outline-danger fw-semibold" onclick="resetTabel()"><i class="fa-solid fa-trash me-1"></i> Reset Tabel Bawah</button>
             </div>
-          </div>
 
-          <!-- Area Autocomplete Vendor -->
-          <div class="form-group" style="position:relative;">
-            <label for="vendorInput">Nama Vendor</label>
-            <input type="text" id="vendorInput" placeholder="Ketik & pilih nama vendor...">
-            <div id="vendorSuggestions" class="autocomplete-items"></div>
-          </div>
+            <div id="status" class="mt-3 text-center fw-semibold"></div>
         </div>
 
-        <div class="button-group">
-          <button onclick="simpanData()">Simpan Data Terpilih</button>
-          <button type="button" class="btn-print" onclick="bukaPrintPO()">🖨️ PRINT PO</button>
-          <button class="btn-danger" onclick="resetTabel()">Reset Tabel Bawah</button>
+        <!-- STATISTIK HASIL PROSES -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="card card-custom p-3 d-flex flex-row justify-content-between align-items-center">
+                    <span class="text-secondary fw-semibold">Total Diproses KM8 (Tabel Bawah)</span>
+                    <span class="fs-4 fw-bold text-primary" id="countKM8">0</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card-custom p-3 d-flex flex-row justify-content-between align-items-center">
+                    <span class="text-secondary fw-semibold">Total Diproses KM9 (Tabel Bawah)</span>
+                    <span class="fs-4 fw-bold text-info" id="countKM9">0</span>
+                </div>
+            </div>
         </div>
 
-        <div id="status"></div>
-      </div>
+        <!-- TABEL HASIL SIMPAN -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card card-custom p-3">
+                    <h5 class="fw-bold text-secondary mb-3">Feedmill KM8</h5>
+                    <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0" id="tabelKM8" style="display:none;">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>PO</th>
+                                    <th>Vendor</th>
+                                    <th>Penerima</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <div id="emptyKM8" class="text-center text-muted py-3 small">Belum ada data tersimpan untuk KM8</div>
+                    </div>
+                </div>
+            </div>
 
-      <!-- Counter Stats Tabel Hasil Proses -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <h4>Total Diproses KM8 (Tabel Bawah)</h4>
-          <span class="count" id="countKM8">0</span>
-        </div>
-        <div class="stat-card">
-          <h4>Total Diproses KM9 (Tabel Bawah)</h4>
-          <span class="count" id="countKM9">0</span>
-        </div>
-      </div>
-
-      <!-- Tabel Hasil Simpan -->
-      <div class="table-wrapper">
-        <div class="table-container">
-          <h3 class="table-header-title">Feedmill KM8</h3>
-          <table id="tabelKM8" style="display:none;">
-            <thead>
-              <tr>
-                <th>PO</th>
-                <th>Vendor</th>
-                <th>Penerima</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+            <div class="col-md-6">
+                <div class="card card-custom p-3">
+                    <h5 class="fw-bold text-secondary mb-3">Feedmill KM9</h5>
+                    <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0" id="tabelKM9" style="display:none;">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>PO</th>
+                                    <th>Vendor</th>
+                                    <th>Penerima</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <div id="emptyKM9" class="text-center text-muted py-3 small">Belum ada data tersimpan untuk KM9</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="table-container">
-          <h3 class="table-header-title">Feedmill KM9</h3>
-          <table id="tabelKM9" style="display:none;">
-            <thead>
-              <tr>
-                <th>PO</th>
-                <th>Vendor</th>
-                <th>Penerima</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
     </div>
-  </div>
 
+<!-- SCRIPT LOGIKA UTAMA -->
 <script>
 let dataTabelExport = [];
 let vendorList = [];
-let rawPOList = []; // Master list PO hasil filter baris
-let selectedPOs = new Set(); // Memori penyimpanan centang
+let rawPOList = []; 
+let selectedPOs = new Set(); 
 
 window.onload = function() {
   google.script.run
@@ -639,28 +257,13 @@ window.onload = function() {
   muatChecklistPO();
 };
 
-function toggleSidebar() {
-  const sidebar = document.getElementById('appSidebar');
-  const wrapper = document.getElementById('mainWrapper');
-  const toggleText = document.getElementById('toggleText');
-  
-  sidebar.classList.toggle('hidden');
-  wrapper.classList.toggle('expanded');
-  
-  if (sidebar.classList.contains('hidden')) {
-    toggleText.textContent = 'Tampilkan Menu';
-  } else {
-    toggleText.textContent = 'Sembunyikan Menu';
-  }
-}
-
 function isiVendorList(vendors) {
   vendorList = vendors || [];
   initAutocomplete(document.getElementById("vendorInput"), vendorList);
 }
 
 function muatChecklistPO() {
-  document.getElementById('checklistContainer').innerHTML = '<span style="color:var(--text-muted); font-size:13px; grid-column:1/-1; text-align:center;">⏳ Memuat data...</span>';
+  document.getElementById('checklistContainer').innerHTML = '<span class="text-muted text-center py-2 w-100" style="grid-column: 1/-1;">⏳ Memuat data...</span>';
   selectedPOs.clear();
   updateSelectedCount();
 
@@ -668,7 +271,6 @@ function muatChecklistPO() {
     .withSuccessHandler(poList => {
       const allPO = poList || [];
       
-      // Mengikutsertakan KM8 dari baris 5061 ke atas (row >= 5061)
       rawPOList = allPO.filter(item => {
         const row = Number(item.row);
         if (item.feedmill === 'KM8') return row >= 5061;
@@ -680,7 +282,7 @@ function muatChecklistPO() {
       renderChecklistPO(rawPOList);
     })
     .withFailureHandler(err => {
-      document.getElementById('checklistContainer').innerHTML = `<span style="color:var(--danger); font-size:13px; grid-column:1/-1;">Gagal memuat PO: ${err.message}</span>`;
+      document.getElementById('checklistContainer').innerHTML = `<span class="text-danger text-center py-2 w-100" style="grid-column: 1/-1;">Gagal memuat PO: ${err.message}</span>`;
     })
     .getUnassignedPOList();
 }
@@ -698,7 +300,7 @@ function renderChecklistPO(poList) {
   container.innerHTML = '';
 
   if (!poList || poList.length === 0) {
-    container.innerHTML = '<span style="color:var(--success); font-size:13px; grid-column:1/-1; text-align:center;">🎉 Tidak ada PO belum ber-vendor di atas kriteria baris.</span>';
+    container.innerHTML = '<span class="text-success text-center py-2 w-100" style="grid-column: 1/-1;">🎉 Tidak ada PO belum ber-vendor di atas kriteria baris.</span>';
     return;
   }
 
@@ -706,12 +308,11 @@ function renderChecklistPO(poList) {
     const poStr = String(item.po).trim();
     const label = document.createElement('label');
     label.className = 'checkbox-item';
-    label.dataset.po = poStr;
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.value = poStr;
-    checkbox.className = 'po-checkbox';
+    checkbox.className = 'po-checkbox form-check-input m-0';
 
     if (selectedPOs.has(poStr)) {
       checkbox.checked = true;
@@ -766,6 +367,9 @@ function updateCounters() {
   const countKM9 = dataTabelExport.filter(i => i.feedmill === 'KM9').length;
   document.getElementById('countKM8').textContent = countKM8;
   document.getElementById('countKM9').textContent = countKM9;
+
+  document.getElementById('emptyKM8').style.display = countKM8 > 0 ? 'none' : 'block';
+  document.getElementById('emptyKM9').style.display = countKM9 > 0 ? 'none' : 'block';
 }
 
 function simpanData() {
@@ -773,19 +377,19 @@ function simpanData() {
   const vendor = document.getElementById('vendorInput').value.trim();
 
   if (selectedPOList.length === 0) {
-    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ Pilih minimal satu PO dari checklist.</span>';
+    document.getElementById('status').innerHTML = '<span class="text-danger">❌ Pilih minimal satu PO dari checklist.</span>';
     return;
   }
   if (!vendor) {
-    document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ Isikan Nama Vendor.</span>';
+    document.getElementById('status').innerHTML = '<span class="text-danger">❌ Isikan Nama Vendor.</span>';
     return;
   }
 
-  document.getElementById('status').innerHTML = `<span style="color:var(--primary)">⏳ Menyimpan ${selectedPOList.length} PO...</span>`;
+  document.getElementById('status').innerHTML = `<span class="text-primary">⏳ Menyimpan ${selectedPOList.length} PO...</span>`;
 
   google.script.run
     .withSuccessHandler(results => {
-      document.getElementById('status').innerHTML = `<span style="color:var(--success)">✅ Berhasil menyimpan ${results.length} PO.</span>`;
+      document.getElementById('status').innerHTML = `<span class="text-success">✅ Berhasil menyimpan ${results.length} PO.</span>`;
       
       results.forEach(item => tambahBarisTabel(item));
 
@@ -800,7 +404,7 @@ function simpanData() {
       document.getElementById('vendorInput').value = '';
     })
     .withFailureHandler(err => {
-      document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
+      document.getElementById('status').innerHTML = '<span class="text-danger">❌ ' + err.message + '</span>';
     })
     .simpanMultiplePO(selectedPOList, vendor);
 }
@@ -809,7 +413,7 @@ function tambahBarisTabel(data) {
   const tabelId = data.feedmill === 'KM8' ? 'tabelKM8' : 'tabelKM9';
   const tbody = document.querySelector(`#${tabelId} tbody`);
   const table = document.getElementById(tabelId);
-  table.style.display = '';
+  table.style.display = 'table';
 
   const tr = document.createElement('tr');
   [data.po, data.vendor, data.penerimaPO || ''].forEach(val => {
@@ -821,7 +425,7 @@ function tambahBarisTabel(data) {
   const tdAksi = document.createElement('td');
   const btnHapus = document.createElement('button');
   btnHapus.textContent = 'Hapus';
-  btnHapus.className = "btn-danger btn-sm-danger";
+  btnHapus.className = "btn btn-danger btn-sm";
   btnHapus.onclick = () => hapusBaris(data.po, tr);
   tdAksi.appendChild(btnHapus);
   tr.appendChild(tdAksi);
@@ -858,13 +462,13 @@ function hapusBaris(po, rowElement) {
             }
             updateCounters();
             muatChecklistPO();
-            document.getElementById('status').innerHTML = `<span style="color:var(--success)">🗑️ PO ${po} berhasil dihapus.</span>`;
+            document.getElementById('status').innerHTML = `<span class="text-success">🗑️ PO ${po} berhasil dihapus.</span>`;
           } else {
-            document.getElementById('status').innerHTML = `<span style="color:#d97706">⚠️ PO ${po} tidak ditemukan di sheet.</span>`;
+            document.getElementById('status').innerHTML = `<span class="text-warning">⚠️ PO ${po} tidak ditemukan di sheet.</span>`;
           }
         })
         .withFailureHandler(err => {
-          document.getElementById('status').innerHTML = '<span style="color:var(--danger)">❌ ' + err.message + '</span>';
+          document.getElementById('status').innerHTML = '<span class="text-danger">❌ ' + err.message + '</span>';
         })
         .hapusDariSheet(po);
     }
@@ -898,7 +502,7 @@ function resetTabel() {
   });
   dataTabelExport.length = 0;
   updateCounters();
-  document.getElementById('status').innerHTML = '<span style="color:var(--text-muted)">🗑️ Tabel bawah dikosongkan.</span>';
+  document.getElementById('status').innerHTML = '<span class="text-muted">🗑️ Tabel bawah dikosongkan.</span>';
 }
 
 function initAutocomplete(inp, arr) {
