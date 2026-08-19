@@ -264,8 +264,8 @@
         <div class="collapse show" id="subTagihanMenu">
             <div class="ps-2 py-1 bg-dark bg-opacity-25">
                 <a href="tagihan-sl3.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Salatiga</a>
-                <a href="tagihan-pemalang.html" class="ps-4 py-2 d-block text-white small bg-primary bg-opacity-25 rounded"><i class="fa-solid fa-angle-right me-2"></i> Pemalang</a>
-                <a href="tagihan-sragen.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Sragen</a>
+                <a href="tagihan-pemalang.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Pemalang</a>
+                <a href="tagihan-sragen.html" class="ps-4 py-2 d-block text-white small bg-primary bg-opacity-25 rounded"><i class="fa-solid fa-angle-right me-2"></i> Sragen</a>
                 <a href="tagihan-banyumas.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Banyumas</a>
                 <a href="tagihan-kebumen.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Kebumen</a>
                 <a href="tagihan-bisi.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> BISI SA</a>
@@ -281,7 +281,7 @@
     <!-- KONTEN UTAMA -->
     <div class="main-content">
         <div class="form-card">
-            <h3 class="form-title">EXPEDISI TAGIHAN CPI PEMALANG</h3>
+            <h3 class="form-title">EXPEDISI TAGIHAN CPI SRAGEN</h3>
 
             <div class="mb-3">
                 <label>No PO</label>
@@ -341,8 +341,8 @@
     </div>
 
 <script>
-// prefix untuk Pemalang
-const PREFIX_PO = "3237";
+// prefix untuk Sragen
+const PREFIX_PO = "3247";
 
 // Ganti URL di bawah ini dengan URL Web App Apps Script Anda yang berakhiran /exec
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmWFS_nAV1WAuB34-v6Mnh5aev8y8QIi3vrzHJ7w7IACDvghBGGP_n-dztlleDlo5A/exec";
@@ -395,8 +395,8 @@ function submitData() {
     return;
   }
 
-  if (!po.startsWith("3237")) {
-    document.getElementById('status').textContent = `⚠️ Nomor PO untuk PEMALANG harus diawali dengan 3237`;
+  if (!po.startsWith("3247")) {
+    document.getElementById('status').textContent = `⚠️ Nomor PO untuk SRAGEN harus diawali dengan 3247`;
     document.getElementById('status').style.color = '#dc2626';
     return;
   }
@@ -411,7 +411,7 @@ function submitData() {
   fetch(SCRIPT_URL, {
     method: "POST",
     body: JSON.stringify({
-      action: "addExpedisiPML",
+      action: "addExpedisiSRG",
       po: po,
       vendor: vendor,
       nominal: nominal,
