@@ -344,22 +344,33 @@
 // prefix untuk Salatiga
 const PREFIX_PO = "1887";
 
+// Ganti URL di bawah ini dengan URL Web App Apps Script Anda yang berakhiran /exec
+const SCRIPT_URL = "URL_WEB_APP_APPS_SCRIPT_ANDA_DISINI";
+
 let vendors = [];
 let currentFocus = -1;
 
-// ambil daftar vendor dari Apps Script
-google.script.run.withSuccessHandler(data => {
-  vendors = data;
-}).getVendorList();
+// Ambil daftar vendor dari Web App Apps Script
+fetch(SCRIPT_URL, {
+  method: "POST",
+  body: JSON.stringify({ action: "getVendorList" })
+})
+.then(res => res.json())
+.then(result => {
+  if (result.status === "success") {
+    vendors = result.data;
+  }
+})
+.catch(err => console.error("Gagal memuat vendor:", err));
 
-// format rupiah
+// Format rupiah (tetap sama)
 function formatNominal(el) {
   const angka = el.value.replace(/\D/g, '');
   if (!angka) { el.value = ''; return; }
   el.value = 'Rp. ' + parseInt(angka).toLocaleString('id-ID');
 }
 
-// submit ke Apps Script
+// Submit data ke Web App Apps Script via Fetch
 function submitData() {
   const po = document.getElementById('po').value.trim();
   const vendor = document.getElementById('vendor').value.trim();
@@ -371,12 +382,12 @@ function submitData() {
     list.push(c.value);
   });
 
-  const custom=document.getElementById("customNote").value.trim();
-  if(custom!=""){
+  const custom = document.getElementById("customNote").value.trim();
+  if(custom !== ""){
     list.push(custom);
   }
 
-  const note=list.join(", ");
+  const note = list.join(", ");
   
   if (!po || !vendor || !nominalText) {
     document.getElementById('status').textContent = '⚠️ Semua field wajib diisi.';
@@ -384,8 +395,8 @@ function submitData() {
     return;
   }
 
-  if (!po.startsWith(PREFIX_PO)) {
-    document.getElementById('status').textContent = `⚠️ Nomor PO untuk SALATIGA harus diawali dengan ${PREFIX_PO}`;
+  if (!po.startsWith("1887")) {
+    document.getElementById('status').textContent = `⚠️ Nomor PO untuk SALATIGA harus diawali dengan 1887`;
     document.getElementById('status').style.color = '#dc2626';
     return;
   }
@@ -396,8 +407,21 @@ function submitData() {
   document.getElementById('status').textContent = 'Menyimpan data...';
   document.getElementById('status').style.color = '#0b6b4b';
 
-  google.script.run
-    .withSuccessHandler(() => {
+  // Kirim data menggunakan fetch ke Apps Script
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "addExpedisiSL3",
+      po: po,
+      vendor: vendor,
+      nominal: nominal,
+      invoice: invoice,
+      note: note
+    })
+  })
+  .then(res => res.json())
+  .then(result => {
+    if (result.status === "success") {
       document.getElementById("status").textContent = "✅ Data berhasil disimpan!";
       document.getElementById("status").style.color = '#0b6b4b';
 
@@ -405,15 +429,16 @@ function submitData() {
           document.getElementById("status").textContent = "";
           resetForm();
       }, 1000);
-
-      btn.disabled = false;
-    })
-    .withFailureHandler(err => {
-      document.getElementById('status').textContent = '❌ Gagal: ' + err.message;
-      document.getElementById('status').style.color = '#dc2626';
-      btn.disabled = false;
-    })
-    .addExpedisiSL3(po, vendor, nominal, invoice, note);
+    } else {
+      throw new Error(result.message || "Gagal menyimpan");
+    }
+    btn.disabled = false;
+  })
+  .catch(err => {
+    document.getElementById('status').textContent = '❌ Gagal: ' + err.message;
+    document.getElementById('status').style.color = '#dc2626';
+    btn.disabled = false;
+  });
 }
 
 /* === Autocomplete === */
