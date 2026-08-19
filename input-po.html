@@ -35,7 +35,7 @@
     color: var(--text-main);
   }
 
-  /* SIDEBAR STYLING */
+  /* SIDEBAR STYLING & TRANSISI */
   .sidebar {
       width: 250px; 
       background-color: #1e293b; 
@@ -47,14 +47,21 @@
       padding-top: 20px;
       z-index: 1000;
       overflow-y: auto;
+      transition: width 0.3s ease;
   }
   .sidebar a {
       color: #cbd5e1; 
       text-decoration: none; 
       padding: 12px 20px;
-      display: block; 
+      display: flex;
+      align-items: center;
       font-weight: 500; 
       transition: 0.3s;
+      white-space: nowrap;
+  }
+  .sidebar a i {
+      min-width: 25px;
+      font-size: 16px;
   }
   .sidebar a:hover, .sidebar a.active {
       background-color: #334155; 
@@ -62,10 +69,32 @@
       border-left: 4px solid #3b82f6;
   }
 
-  /* KONTEN UTAMA DIBERI MARGIN KIRI AGAR TIDAK TERTUTUP SIDEBAR */
+  /* KETIKA SIDEBAR DI-COLLAPSE (KECIL) */
+  .sidebar.collapsed {
+      width: 70px;
+  }
+  .sidebar.collapsed .sidebar-title,
+  .sidebar.collapsed .nav-text,
+  .sidebar.collapsed .submenu-title,
+  .sidebar.collapsed .submenu-items {
+      display: none;
+  }
+  .sidebar.collapsed + .main-content {
+      margin-left: 70px;
+  }
+  .sidebar.collapsed a {
+      padding: 12px;
+      justify-content: center;
+  }
+  .sidebar.collapsed a i {
+      margin-right: 0 !important;
+  }
+
+  /* KONTEN UTAMA */
   .main-content {
       margin-left: 250px;
       padding: 25px 30px;
+      transition: margin-left 0.3s ease;
   }
 
   .container {
@@ -409,27 +438,36 @@
 </head>
 <body>
 
-<!-- SIDEBAR NAVIGASI -->
-<div class="sidebar">
-    <h4 class="text-center fw-bold mb-4 text-white" style="text-align: center; margin-top: 15px;">Ekspedisi<span style="color: #3b82f6;">Pro</span></h4>
-    <a href="index.html"><i class="fa-solid fa-chart-pie me-2"></i> Beranda</a>
-    <a href="input-po.html" class="active"><i class="fa-solid fa-file-invoice me-2"></i> Input PO</a>
-    <a href="input-tagihan.html"><i class="fa-solid fa-file-pen me-2"></i> Input Tagihan</a>
+<!-- SIDEBAR NAVIGASI DENGAN TOMBOL TOGGLE -->
+<div class="sidebar" id="sidebarNav">
+    <div class="d-flex justify-content-between align-items-center px-3 mb-3">
+        <h4 class="text-white fw-bold mb-0 sidebar-title" style="font-size: 18px;">Ekspedisi<span style="color: #3b82f6;">Pro</span></h4>
+        <button class="btn btn-sm text-white" onclick="toggleSidebar()" style="background: #334155; border: none;">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <a href="index.html"><i class="fa-solid fa-chart-pie me-2"></i> <span class="nav-text">Beranda</span></a>
+    <a href="input-po.html" class="active"><i class="fa-solid fa-file-invoice me-2"></i> <span class="nav-text">Input PO</span></a>
+    <a href="input-tagihan.html"><i class="fa-solid fa-file-pen me-2"></i> <span class="nav-text">Input Tagihan</span></a>
     
     <!-- Sub-menu / Opsi Rincian Tagihan Per Area -->
-    <div class="px-3 py-2 text-white-50 small fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.5px; padding: 10px 20px; color: #94a3b8;">Rincian Tagihan</div>
-    <a href="tagihan-sl3.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> SL3</a>
-    <a href="tagihan-pemalang.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> Pemalang</a>
-    <a href="tagihan-sragen.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> Sragen</a>
-    <a href="tagihan-banyumas.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> Banyumas</a>
-    <a href="tagihan-kebumen.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> Kebumen</a>
-    <a href="tagihan-bisi.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> BISI SA</a>
+    <div class="px-3 py-2 text-white-50 small fw-bold text-uppercase submenu-title" style="font-size: 11px; letter-spacing: 0.5px; padding: 10px 20px; color: #94a3b8;">Rincian Tagihan</div>
+    
+    <div class="submenu-items">
+        <a href="tagihan-sl3.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> <span class="nav-text">SL3</span></a>
+        <a href="tagihan-pemalang.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> <span class="nav-text">Pemalang</span></a>
+        <a href="tagihan-sragen.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> <span class="nav-text">Sragen</span></a>
+        <a href="tagihan-banyumas.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> <span class="nav-text">Banyumas</span></a>
+        <a href="tagihan-kebumen.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> <span class="nav-text">Kebumen</span></a>
+        <a href="tagihan-bisi.html" style="padding-left: 30px;"><i class="fa-solid fa-angle-right me-2"></i> <span class="nav-text">BISI SA</span></a>
+    </div>
 
-    <a href="printPO.html" style="margin-top: 10px;"><i class="fa-solid fa-print me-2"></i> Print Ekspedisi</a>
-    <a href="searchAll.html"><i class="fa-solid fa-magnifying-glass me-2"></i> Pencarian PO</a>
+    <a href="printPO.html" style="margin-top: 10px;"><i class="fa-solid fa-print me-2"></i> <span class="nav-text">Print Ekspedisi</span></a>
+    <a href="searchAll.html"><i class="fa-solid fa-magnifying-glass me-2"></i> <span class="nav-text">Pencarian PO</span></a>
 </div>
 
-<!-- KONTEN UTAMA DI DALAM MAIN-CONTENT -->
+<!-- KONTEN UTAMA -->
 <div class="main-content">
   <div class="container">
     <div class="header-title">
@@ -564,6 +602,11 @@ window.onload = function() {
 
   muatChecklistPO();
 };
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebarNav');
+  sidebar.classList.toggle('collapsed');
+}
 
 function isiVendorList(vendors) {
   vendorList = vendors || [];
