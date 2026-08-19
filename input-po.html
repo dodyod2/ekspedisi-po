@@ -1,92 +1,100 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Input PO - EkspedisiPro</title>
-<!-- Bootstrap 5 -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Font Awesome untuk Ikon -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<style>
-    body { background-color: #f4f6f9; }
-    .sidebar {
-        width: 250px; background-color: #1e293b; height: 100vh;
-        position: fixed; color: white; padding-top: 20px; z-index: 1000;
-        overflow-y: auto;
-    }
-    .sidebar a {
-        color: #cbd5e1; text-decoration: none; padding: 12px 20px;
-        display: block; font-weight: 500; transition: 0.3s;
-    }
-    .sidebar a:hover, .sidebar a.active {
-        background-color: #334155; color: white; border-left: 4px solid #3b82f6;
-    }
-    .main-content { margin-left: 250px; padding: 25px 30px; }
-    .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); background: #ffffff; }
-    
-    /* Autocomplete custom styling */
-    .autocomplete-items {
-        position: absolute;
-        z-index: 9999;
-        top: calc(100% + 4px);
-        left: 0;
-        right: 0;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        background: white;
-        max-height: 200px;
-        overflow-y: auto;
-    }
-    .autocomplete-items div {
-        padding: 10px 14px;
-        cursor: pointer;
-        font-size: 14px;
-        border-bottom: 1px solid #f1f5f9;
-        transition: background 0.15s ease;
-    }
-    .autocomplete-items div:hover, .autocomplete-active {
-        background-color: #eff6ff !important;
-        color: #2563eb;
-        font-weight: 600;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input PO - EkspedisiPro</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { background-color: #f4f6f9; }
+        .sidebar {
+            width: 250px; background-color: #1e293b; height: 100vh;
+            position: fixed; color: white; padding-top: 20px; z-index: 1000;
+            overflow-y: auto;
+        }
+        .sidebar a {
+            color: #cbd5e1; text-decoration: none; padding: 12px 20px;
+            display: block; font-weight: 500; transition: 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #334155; color: white; border-left: 4px solid #3b82f6;
+        }
+        .main-content { margin-left: 250px; padding: 25px 30px; }
+        .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); background: #ffffff; }
+        
+        .badge-area {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 6px 8px;
+            text-align: center;
+            font-size: 13px;
+        }
 
-    .checklist-box {
-        max-height: 220px;
-        overflow-y: auto;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 12px;
-        background: #f8f9fa;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 8px;
-    }
+        /* Autocomplete custom styling */
+        .autocomplete-items {
+            position: absolute;
+            z-index: 9999;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            background: white;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .autocomplete-items div {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.15s ease;
+        }
+        .autocomplete-items div:hover, .autocomplete-active {
+            background-color: #eff6ff !important;
+            color: #2563eb;
+            font-weight: 600;
+        }
 
-    .checkbox-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-weight: 500;
-        cursor: pointer;
-        font-size: 13px;
-        background: #ffffff;
-        padding: 8px 12px;
-        border-radius: 6px;
-        border: 1px solid #e2e8f0;
-        transition: background 0.15s ease;
-    }
-    .checkbox-item:hover {
-        background: #f1f5f9;
-    }
-</style>
+        .checklist-box {
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px;
+            background: #f8f9fa;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 13px;
+            background: #ffffff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            transition: background 0.15s ease;
+        }
+        .checkbox-item:hover {
+            background: #f1f5f9;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- SIDEBAR NAVIGASI (Sinkron dengan Beranda) -->
+    <!-- SIDEBAR NAVIGASI -->
     <div class="sidebar">
         <h4 class="text-center fw-bold mb-4 text-white">Ekspedisi<span class="text-primary">Pro</span></h4>
         <a href="index.html"><i class="fa-solid fa-chart-pie me-2"></i> Beranda</a>
@@ -110,43 +118,62 @@
         
         <!-- HEADER -->
         <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 card-custom">
-            <h5 class="mb-0 fw-bold text-secondary"><i class="fa-solid fa-file-invoice me-2"></i> Form Input Purchase Order (Assign Vendor)</h5>
+            <h5 class="mb-0 fw-bold text-secondary">Form Input Purchase Order (Assign Vendor)</h5>
             <div class="text-end">
                 <span class="fw-bold text-dark">Halo, Admin</span>
                 <i class="fa-solid fa-circle-user fs-4 ms-2 text-primary align-middle"></i>
             </div>
         </div>
 
-        <!-- STATISTIK INFO PO TANPA VENDOR -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-4">
-                <div class="card card-custom p-3 border-start border-primary border-4">
-                    <span class="text-muted small fw-bold text-uppercase">Tanpa Vendor (KM8)</span>
-                    <h3 class="fw-bold text-primary mb-0 mt-1" id="unassignedKM8">0</h3>
-                    <small class="text-muted">Baris ≥ 5061</small>
+        <!-- 3 KARTU KPI / RINGKASAN STATUS PO -->
+        <div class="row mb-4">
+            <!-- 1. KM8 Tanpa Vendor -->
+            <div class="col-md-4 mb-4">
+                <div class="card card-custom bg-danger text-white p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">🔴 Tanpa Vendor (KM8)</h5>
+                        <h2 class="fw-bold mb-0" id="unassignedKM8">0</h2>
+                    </div>
+                    <div class="mt-auto pt-3 border-top border-light text-white-50">
+                        <p class="mb-0 fs-6">Kriteria Baris: &ge; 5061</p>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card card-custom p-3 border-start border-info border-4">
-                    <span class="text-muted small fw-bold text-uppercase">Tanpa Vendor (KM9)</span>
-                    <h3 class="fw-bold text-info mb-0 mt-1" id="unassignedKM9">0</h3>
-                    <small class="text-muted">Baris > 6716</small>
+
+            <!-- 2. KM9 Tanpa Vendor -->
+            <div class="col-md-4 mb-4">
+                <div class="card card-custom bg-warning text-dark p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0 fw-bold">🟡 Tanpa Vendor (KM9)</h5>
+                        <h2 class="fw-bold mb-0" id="unassignedKM9">0</h2>
+                    </div>
+                    <div class="mt-auto pt-3 border-top border-dark text-dark-50">
+                        <p class="mb-0 fs-6">Kriteria Baris: &gt; 6716</p>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card card-custom p-3 border-start border-success border-4">
-                    <span class="text-muted small fw-bold text-uppercase">PO Terpilih (Dicentang)</span>
-                    <h3 class="fw-bold text-success mb-0 mt-1" id="totalSelectedText">0</h3>
-                    <small class="text-muted">Siap diproses</small>
+
+            <!-- 3. PO Terpilih -->
+            <div class="col-md-4 mb-4">
+                <div class="card card-custom bg-success text-white p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">🟢 PO Terpilih</h5>
+                        <h2 class="fw-bold mb-0" id="totalSelectedText">0</h2>
+                    </div>
+                    <div class="mt-auto pt-3 border-top border-light text-white-50">
+                        <p class="mb-0 fs-6">Akumulasi PO dicentang siap diproses.</p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- CARD FORM UTAMA -->
         <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-3 text-secondary"><i class="fa-solid fa-list-check me-2"></i> Pilih PO Belum Ada Vendor</h5>
+            
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-                    <label class="fw-bold text-dark">Pilih PO Belum Ada Vendor:</label>
+                    <label class="fw-bold text-dark small">Daftar Checklist PO:</label>
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleSelectAll(true)">Pilih Semua</button>
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleSelectAll(false)">Reset Centang</button>
@@ -167,7 +194,7 @@
 
             <!-- Input Vendor dengan Autocomplete -->
             <div class="mb-3 position-relative">
-                <label for="vendorInput" class="form-label fw-bold">Nama Vendor</label>
+                <label for="vendorInput" class="form-label fw-bold small">Nama Vendor</label>
                 <input type="text" id="vendorInput" class="form-control" placeholder="Ketik & pilih nama vendor...">
                 <div id="vendorSuggestions" class="autocomplete-items"></div>
             </div>
@@ -200,7 +227,7 @@
         <!-- TABEL HASIL SIMPAN -->
         <div class="row g-4">
             <div class="col-md-6">
-                <div class="card card-custom p-3">
+                <div class="card card-custom p-4">
                     <h5 class="fw-bold text-secondary mb-3">Feedmill KM8</h5>
                     <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
                         <table class="table table-hover align-middle mb-0" id="tabelKM8" style="display:none;">
@@ -220,7 +247,7 @@
             </div>
 
             <div class="col-md-6">
-                <div class="card card-custom p-3">
+                <div class="card card-custom p-4">
                     <h5 class="fw-bold text-secondary mb-3">Feedmill KM9</h5>
                     <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
                         <table class="table table-hover align-middle mb-0" id="tabelKM9" style="display:none;">
