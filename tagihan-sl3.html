@@ -113,7 +113,7 @@
               <input type="text" class="form-control" id="noPo" placeholder="Masukkan nomor PO" required>
             </div>
 
-            <!-- Vendor / Expedisi (Menggunakan Datalist Autocomplete) -->
+            <!-- Vendor / Expedisi -->
             <div class="mb-3">
               <label for="vendor" class="form-label text-secondary small fw-semibold">Vendor / Expedisi</label>
               <input type="text" class="form-control" id="vendor" list="vendorDatalist" placeholder="Pilih / ketik vendor..." autocomplete="off" required>
@@ -156,7 +156,7 @@
             </div>
 
             <!-- Tombol Simpan -->
-            <button type="button" class="btn w-100 fw-bold text-white py-2" style="background-color: #0d9488;" onclick="simpanData()">
+            <button type="button" id="btnSimpan" class="btn w-100 fw-bold text-white py-2" style="background-color: #0d9488;" onclick="simpanData()">
               Simpan Data
             </button>
           </form>
@@ -166,13 +166,12 @@
     </div>
   </div>
 
-  <!-- WADAH DATALIST NATIVE AUTOCOMPLETE -->
+  <!-- WADAH DATALIST AUTOCOMPLETE -->
   <datalist id="vendorDatalist"></datalist>
 
   <!-- BOOTSTRAP JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- JAVASCRIPT LOGIC -->
   <!-- JAVASCRIPT LOGIC -->
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLTsMPFiCDZUJ8SXN21ak6UvSgHh3MOWE3awz5Lek57yYaygjmGSftwff_UL7Vgcgt/exec";
@@ -183,7 +182,7 @@
       setupNominalFormat();
     });
 
-    // 1. Memuat daftar vendor dari server ke <datalist>
+    // 1. Memuat daftar vendor ke datalist
     function loadVendorList() {
       fetch(`${SCRIPT_URL}?action=getVendorList`)
         .then(res => res.json())
@@ -201,7 +200,7 @@
         .catch(err => console.error("Gagal memuat vendor:", err));
     }
 
-    // 2. NAVIGASI ENTER PINDAH KE BAWAH SECARA BERURUTAN
+    // 2. NAVIGASI ENTER PINDAH KE INPUT BAWAHNYA
     function setupEnterNavigation() {
       const inputs = [
         document.getElementById("noPo"),
@@ -214,30 +213,28 @@
       inputs.forEach((input, index) => {
         if (!input) return;
 
-        // Pindah fokus saat menekan Enter
         input.addEventListener("keydown", function (event) {
           if (event.key === "Enter") {
-            event.preventDefault(); // Mencegah form submit/default enter
+            event.preventDefault(); // Matikan submit default
 
-            // Tutup dropdown datalist jika di kolom vendor
-            if (input.id === "vendor") {
-              input.blur();
-            }
-
+            // Pindah ke elemen berikutnya
             const nextInput = inputs[index + 1];
             if (nextInput) {
+              if (input.id === "vendor") {
+                input.blur(); // Tutup dropdown datalist vendor
+              }
               setTimeout(() => {
                 nextInput.focus();
                 if (nextInput.select) nextInput.select();
               }, 50);
             } else {
-              // Jika di input terakhir (docLainnya), simpan data
+              // Jika sudah di input terakhir, jalankan simpan data
               simpanData();
             }
           }
         });
 
-        // Khusus Vendor: Pindah ke Nominal saat opsi dipilih lewat klik/Enter dropdown
+        // Khusus Vendor: Pindah ke Nominal saat opsi datalist diklik
         if (input.id === "vendor") {
           input.addEventListener("change", function () {
             if (this.value.trim() !== "") {
@@ -250,12 +247,12 @@
       });
     }
 
-    // 3. Format input nominal menjadi mata uang Rupiah
+    // 3. Format Rupiah pada Input Nominal
     function setupNominalFormat() {
       const nominalInput = document.getElementById("nominal");
       if (!nominalInput) return;
 
-      nominalInput.addEventListener("input", function (e) {
+      nominalInput.addEventListener("input", function () {
         let value = this.value.replace(/[^,\d]/g, "");
         if (value) {
           let numberValue = parseInt(value, 10);
@@ -274,7 +271,6 @@
       const noInvoice = document.getElementById("noInvoice").value.trim();
       const docLainnya = document.getElementById("docLainnya").value.trim();
 
-      // Mengambil dokumen yang dicentang
       const docCheckboxes = document.querySelectorAll(".doc-checkbox:checked");
       let docs = Array.from(docCheckboxes).map(cb => cb.value);
       if (docLainnya) docs.push(docLainnya);
@@ -308,7 +304,7 @@
         if (res.status === 'success') {
           Swal.fire('Berhasil!', 'Data tagihan berhasil disimpan.', 'success');
           document.getElementById("formTagihan").reset();
-          document.getElementById("noPo").focus(); // Kembalikan kursor ke No PO
+          document.getElementById("noPo").focus();
         } else {
           Swal.fire('Gagal', res.message || 'Gagal menyimpan data.', 'error');
         }
