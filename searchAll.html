@@ -67,7 +67,7 @@
   </button>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQNIK1b3Spy-uvWY8bg0i6Bje-pWvVh4IlULKcIdOL4aQrwmWfyKlWvKgcde5dpz2s/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzkoy78ERrgVhqAr_uuLuVW_ffIEiGFd3QV-ayumZPKq024NTB_dsyBXx2z6UlDsNwP/exec";
 
     async function doSearch() {
       const keywordInput = document.getElementById("keyword");
@@ -130,13 +130,13 @@
         <tbody>`;
 
       results.forEach(item => {
-        html += `<tr>
-          <td><b>${escapeHtml(item.sheet)}</b></td>
-          <td>${item.rowNum}</td>
-          <td>${escapeHtml(item.po)}</td>
-          <td>${escapeHtml(item.vendor)}</td>
-        </tr>`;
-      });
+  html += `<tr>
+    <td><b>${escapeHtml(item.sheet)}</b></td>
+    <td>${item.row || item.rowNum || '-'}</td>
+    <td>${escapeHtml(item.po)}</td>
+    <td>${escapeHtml(item.vendor)}</td>
+  </tr>`;
+});
 
       html += '</tbody></table>';
       container.innerHTML = html;
