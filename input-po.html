@@ -261,40 +261,41 @@
         });
     }
 
-    // 3. RENDER TABEL DENGAN INPUT MANUAL & AUTOCOMPLETE
-    function renderTables(list) {
-      const listKM8 = list.filter(item => item.feedmill === 'KM8');
-      const listKM9 = list.filter(item => item.feedmill === 'KM9');
+    // RENDER TABEL DENGAN ATRIBUT list="vendorDatalist"
+function renderTables(list) {
+    const listKM8 = list.filter(item => item.feedmill === 'KM8');
+    const listKM9 = list.filter(item => item.feedmill === 'KM9');
 
-      const renderRows = (dataList) => {
+    const renderRows = (dataList) => {
         if (dataList.length === 0) {
-          return `<tr><td colspan="5" class="text-center text-muted py-4">Semua PO sudah diisi tanggal naik.</td></tr>`;
+            return `<tr><td colspan="5" class="text-center text-muted py-4">Semua PO sudah diisi tanggal naik.</td></tr>`;
         }
         return dataList.map((item) => `
-          <tr>
-            <td>
-              <input type="checkbox" class="check-po" data-po="${item.po}">
-            </td>
-            <td><small class="text-muted">${item.tglInput}</small></td>
-            <td class="fw-bold">${item.po}</td>
-            <td><span class="badge bg-light text-dark border">${item.pic}</span></td>
-            <td>
-              <input 
-                type="text" 
-                class="form-control form-control-sm input-vendor" 
-                list="vendorDatalist" 
-                data-po="${item.po}" 
-                placeholder="Pilih / ketik vendor..."
-                autocomplete="off"
-              >
-            </td>
-          </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" class="check-po" data-po="${item.po}">
+                </td>
+                <td><small class="text-muted">${item.tglInput || '-'}</small></td>
+                <td class="fw-bold">${item.po || '-'}</td>
+                <td><span class="badge bg-light text-dark border">${item.pic || '-'}</span></td>
+                <td>
+                    <!-- Tambahkan list="vendorDatalist" dan autocomplete="off" -->
+                    <input 
+                        type="text" 
+                        class="form-control form-control-sm input-vendor" 
+                        list="vendorDatalist" 
+                        data-po="${item.po}" 
+                        placeholder="Pilih / ketik vendor..."
+                        autocomplete="off"
+                    >
+                </td>
+            </tr>
         `).join('');
-      };
+    };
 
-      document.getElementById('tbodyKM8').innerHTML = renderRows(listKM8);
-      document.getElementById('tbodyKM9').innerHTML = renderRows(listKM9);
-    }
+    document.getElementById('tbodyKM8').innerHTML = renderRows(listKM8);
+    document.getElementById('tbodyKM9').innerHTML = renderRows(listKM9);
+}
 
     // 4. CHECK ALL
     function toggleSelectAll(feedmill, masterCheckbox) {
