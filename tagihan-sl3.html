@@ -288,13 +288,21 @@
                 <input type="text" id="po" placeholder="Masukkan nomor PO" required>
             </div>
 
-            <div class="mb-3">
-                <label>Vendor</label>
-                <div style="position: relative;">
-                    <input type="text" id="vendor" placeholder="Ketik nama vendor..." autocomplete="off">
-                    <div id="vendorList" style="display:none;"></div>
-                </div>
-            </div>
+            <!-- Input Vendor diberi atribut list="vendorDatalist" -->
+<div class="mb-3">
+  <label for="vendor" class="form-label">Vendor / Expedisi</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    id="vendor" 
+    list="vendorDatalist" 
+    placeholder="Ketik/pilih vendor..." 
+    autocomplete="off"
+  >
+</div>
+
+<!-- Tambahkan wadah datalist ini di bagian bawah HTML (sebelum tag </body>) -->
+<datalist id="vendorDatalist"></datalist>
 
             <div class="mb-3">
                 <label>Nominal</label>
@@ -345,23 +353,32 @@
 const PREFIX_PO = "18870";
 
 // Ganti URL di bawah ini dengan URL Web App Apps Script Anda yang berakhiran /exec
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwUr5aa3_tWuixL-PiEm4_DbQi3hW1OXM_wVkBpv76acTzh6WMF5ObyKxQ7fH0Ts2Hs/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLTsMPFiCDZUJ8SXN21ak6UvSgHh3MOWE3awz5Lek57yYaygjmGSftwff_UL7Vgcgt/exec";
 
-let vendors = [];
-let currentFocus = -1;
+// 1. Jalankan fungsi saat halaman dimuat
+document.addEventListener("DOMContentLoaded", function () {
+  loadVendorList();
+});
 
-// Ambil daftar vendor dari Web App Apps Script
-fetch(SCRIPT_URL, {
-  method: "POST",
-  body: JSON.stringify({ action: "getVendorList" })
-})
-.then(res => res.json())
-.then(result => {
-  if (result.status === "success") {
-    vendors = result.data;
-  }
-})
-.catch(err => console.error("Gagal memuat vendor:", err));
+// 2. Fungsi memuat daftar vendor dari Apps Script ke Datalist
+function loadVendorList() {
+  fetch(`${SCRIPT_URL}?action=getVendorList`)
+    .then(res => res.json())
+    .then(res => {
+      if (res.status === 'success' && Array.isArray(res.data)) {
+        const datalist = document.getElementById('vendorDatalist');
+        datalist.innerHTML = '';
+        
+        // Memasukkan setiap vendor ke elemen option
+        res.data.forEach(v => {
+          const option = document.createElement('option');
+          option.value = v;
+          datalist.appendChild(option);
+        });
+      }
+    })
+    .catch(err => console.error("Gagal memuat vendor:", err));
+}
 
 // Format rupiah (tetap sama)
 function formatNominal(el) {
