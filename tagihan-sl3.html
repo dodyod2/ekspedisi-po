@@ -173,12 +173,14 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- JAVASCRIPT LOGIC -->
+  <!-- JAVASCRIPT LOGIC -->
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLTsMPFiCDZUJ8SXN21ak6UvSgHh3MOWE3awz5Lek57yYaygjmGSftwff_UL7Vgcgt/exec";
 
     document.addEventListener("DOMContentLoaded", function () {
       loadVendorList();
       setupEnterNavigation();
+      setupNominalFormat();
     });
 
     // 1. Memuat daftar vendor dari server ke <datalist>
@@ -199,67 +201,70 @@
         .catch(err => console.error("Gagal memuat vendor:", err));
     }
 
-    // 2. Navigasi kursor saat tombol ENTER ditekan di kolom Vendor
+    // 2. NAVIGASI ENTER PINDAH KE BAWAH SECARA BERURUTAN
     function setupEnterNavigation() {
-  const vendorInput = document.getElementById("vendor");
-  const nominalInput = document.getElementById("nominal");
+      const inputs = [
+        document.getElementById("noPo"),
+        document.getElementById("vendor"),
+        document.getElementById("nominal"),
+        document.getElementById("noInvoice"),
+        document.getElementById("docLainnya")
+      ];
 
-  if (!vendorInput || !nominalInput) return;
+      inputs.forEach((input, index) => {
+        if (!input) return;
 
-  // 1. Eksekusi pindah fokus
-  function moveToNominal() {
-    setTimeout(() => {
-      vendorInput.blur(); // Memaksa popup datalist langsung menutup
-      nominalInput.focus();
-      nominalInput.select(); // Opsional: langsung menyorot teks jika ada
-    }, 50);
-  }
+        // Pindah fokus saat menekan Enter
+        input.addEventListener("keydown", function (event) {
+          if (event.key === "Enter") {
+            event.preventDefault(); // Mencegah form submit/default enter
 
-  // 2. Event saat user memilih dari daftar datalist (baik klik mouse atau tekan Enter pada opsi)
-  vendorInput.addEventListener("change", function () {
-    if (this.value.trim() !== "") {
-      moveToNominal();
+            // Tutup dropdown datalist jika di kolom vendor
+            if (input.id === "vendor") {
+              input.blur();
+            }
+
+            const nextInput = inputs[index + 1];
+            if (nextInput) {
+              setTimeout(() => {
+                nextInput.focus();
+                if (nextInput.select) nextInput.select();
+              }, 50);
+            } else {
+              // Jika di input terakhir (docLainnya), simpan data
+              simpanData();
+            }
+          }
+        });
+
+        // Khusus Vendor: Pindah ke Nominal saat opsi dipilih lewat klik/Enter dropdown
+        if (input.id === "vendor") {
+          input.addEventListener("change", function () {
+            if (this.value.trim() !== "") {
+              setTimeout(() => {
+                document.getElementById("nominal").focus();
+              }, 50);
+            }
+          });
+        }
+      });
     }
-  });
 
-  // 3. Event cadangan saat user mengetik manual lalu menekan ENTER
-  vendorInput.addEventListener("keyup", function (event) {
-    if (event.key === "Enter" && this.value.trim() !== "") {
-      moveToNominal();
-    }
-  });
-}
-
-    // 2. Jika pengguna memilih item datalist dengan KLIK MOUSE, langsung pindah ke Nominal
-    vendorInput.addEventListener("input", function (event) {
-      // event.inputType null/undefined menandakan nilai dipilih dari datalist
-      if (!event.inputType || event.inputType === "insertReplacementText") {
-        setTimeout(() => {
-          nominalInput.focus();
-        }, 50);
-      }
-    });
-  }
-}
-    // 2. Pindah kursor saat vendor dipilih menggunakan KLIK MOUSE dari dropdown
-    vendorInput.addEventListener("change", function () {
-      setTimeout(() => {
-        nominalInput.focus();
-      }, 50);
-    });
-  }
-}
     // 3. Format input nominal menjadi mata uang Rupiah
-    const nominalInput = document.getElementById("nominal");
-    nominalInput.addEventListener("input", function (e) {
-      let value = this.value.replace(/[^,\d]/g, "");
-      if (value) {
-        let numberValue = parseInt(value, 10);
-        this.value = "Rp. " + numberValue.toLocaleString("id-ID");
-      } else {
-        this.value = "";
-      }
-    });
+    function setupNominalFormat() {
+      const nominalInput = document.getElementById("nominal");
+      if (!nominalInput) return;
+
+      nominalInput.addEventListener("input", function (e) {
+        let value = this.value.replace(/[^,\d]/g, "");
+        if (value) {
+          let numberValue = parseInt(value, 10);
+          this.value = "Rp. " + numberValue.toLocaleString("id-ID");
+        } else {
+          this.value = "";
+        }
+      });
+    }
 
     // 4. Simpan Data Tagihan
     function simpanData() {
@@ -303,6 +308,7 @@
         if (res.status === 'success') {
           Swal.fire('Berhasil!', 'Data tagihan berhasil disimpan.', 'success');
           document.getElementById("formTagihan").reset();
+          document.getElementById("noPo").focus(); // Kembalikan kursor ke No PO
         } else {
           Swal.fire('Gagal', res.message || 'Gagal menyimpan data.', 'error');
         }
