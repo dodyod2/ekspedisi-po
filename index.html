@@ -228,7 +228,7 @@
 
     <!-- SCRIPT FETCH DATA DARI GOOGLE APPS SCRIPT -->
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyAYgBt5mhopVTrOmsevNZKNheWuOfqCm0iPYtA1ogMwITzdmHkwSKQXhLEN3tn1j5o/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEH6pHK-LNXY74vGGqbShUPUxFOKYThUV7xmkvoTntDQ8JbF49DSDCF8JNbStBjjla/exec";
 
         document.addEventListener("DOMContentLoaded", function() {
             fetchDashboardData();
@@ -288,11 +288,13 @@
                                 data.listUnassigned.forEach((item, index) => {
                                     rowsHTML += `
                                         <tr>
-                                            <td>${index + 1}</td>
-                                            <td>${item.po}</td>
-                                            <td>${item.feedmill}</td>
-                                            <td><a href="input-po.html" class="btn btn-sm btn-primary">Assign Vendor</a></td>
-                                        </tr>
+      <td>${index + 1}</td>
+      <td>${item.tglInput}</td>  <!-- Kolom 2: Tanggal dd/mm/yy -->
+      <td>${item.po}</td>        <!-- Kolom 3: No PO -->
+      <td>${item.pic}</td>       <!-- Kolom 4: PIC PO -->
+      <td>${item.feedmill}</td>  <!-- Kolom 5: Feedmill / Area -->
+      <td><button class="btn btn-sm btn-primary">Assign Vendor</button></td>
+    </tr>
                                     `;
                                 });
                             }
