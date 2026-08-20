@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background-color: #f4f6f9; }
-        /* Transisi halus untuk sidebar dan konten utama */
         .sidebar {
             width: 250px; 
             background-color: #1e293b; 
@@ -20,17 +19,17 @@
             padding-top: 20px; 
             z-index: 1000;
             overflow-y: auto;
-            transition: width 0.3s ease; /* Transisi lebar sidebar */
+            transition: width 0.3s ease;
         }
         .sidebar a {
             color: #cbd5e1; 
             text-decoration: none; 
             padding: 12px 20px;
-            display: flex; /* Diubah ke flex agar ikon & teks rapi saat minimize */
+            display: flex;
             align-items: center;
             font-weight: 500; 
             transition: 0.3s;
-            white-space: nowrap; /* Mencegah teks turun baris saat menyusut */
+            white-space: nowrap;
         }
         .sidebar a span.menu-text {
             transition: opacity 0.2s ease;
@@ -38,17 +37,16 @@
         .main-content { 
             margin-left: 250px; 
             padding: 25px 30px; 
-            transition: margin-left 0.3s ease; /* Transisi penyesuaian margin konten */
+            transition: margin-left 0.3s ease;
         }
 
-        /* State ketika Sidebar dalam posisi Minimize */
         .sidebar.minimized {
             width: 70px;
         }
         .sidebar.minimized .sidebar-title,
         .sidebar.minimized span.menu-text,
         .sidebar.minimized .fa-chevron-down {
-            display: none !important; /* Sembunyikan teks & panah dropdown */
+            display: none !important;
         }
         .sidebar.minimized a {
             justify-content: center;
@@ -58,17 +56,20 @@
             margin-right: 0 !important;
             font-size: 1.2rem;
         }
-        /* Sesuaikan margin konten utama saat sidebar minimized */
         .main-content.expanded {
             margin-left: 70px;
         }
 
-        /* Animasi putar ikon panah dropdown */
         [data-bs-toggle="collapse"] .fa-chevron-down {
             transition: transform 0.3s ease;
         }
         [data-bs-toggle="collapse"][aria-expanded="true"] .fa-chevron-down {
             transform: rotate(180deg);
+        }
+
+        /* Utility style untuk area badge kpi */
+        .badge-area {
+            font-size: 0.85rem;
         }
     </style>
 </head>
@@ -98,21 +99,17 @@
             </div>
         </div>
 
-        <!-- Menu Lainnya (Hanya ditulis sekali di luar dropdown) -->
         <a href="printPO.html" class="mt-2"><i class="fa-solid fa-print me-2"></i> Print Ekspedisi</a>
         <a href="searchAll.html"><i class="fa-solid fa-magnifying-glass me-2"></i> Pencarian PO</a>
-        <!-- Menu Baru: Ekspedisi PO & Tagihan -->
         <a href="ekspedisi-po-tagihan.html"><i class="fa-solid fa-truck-fast me-2"></i> Ekspedisi PO & Tagihan</a>
-        <!-- Menu Baru: Tanda Terima Tagihan -->
         <a href="tanda-terima-tagihan.html"><i class="fa-solid fa-receipt me-2"></i> Tanda Terima Tagihan</a>
-        
     </div>
 
     <!-- KONTEN UTAMA -->
     <div class="main-content">
         
         <!-- HEADER -->
-        <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 card-custom">
+        <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm">
             <h5 class="mb-0 fw-bold text-secondary">Dashboard Kondisi Hari Ini</h5>
             <div class="text-end">
                 <span class="fw-bold text-dark">Halo, Admin</span>
@@ -125,7 +122,7 @@
             
             <!-- 1. PO Belum Naik Akunting (KM8 & KM9) -->
             <div class="col-md-6 mb-4">
-                <div class="card card-custom bg-danger text-white p-4 h-100">
+                <div class="card bg-danger text-white p-4 h-100 shadow-sm border-0">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0">🔴 PO Belum Naik Akunting</h5>
                         <h2 class="fw-bold mb-0">0</h2>
@@ -149,7 +146,7 @@
 
             <!-- 2. PO Sudah Naik Akunting Bulan Ini -->
             <div class="col-md-6 mb-4">
-                <div class="card card-custom bg-success text-white p-4 h-100">
+                <div class="card bg-success text-white p-4 h-100 shadow-sm border-0">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0">🟢 PO Sudah Naik (Bulan Ini)</h5>
                         <h2 class="fw-bold mb-0">0</h2>
@@ -160,38 +157,44 @@
                 </div>
             </div>
 
-            <!-- 3. Tagihan Belum Dikirim (Rincian Area Besar) -->
+            <!-- 3. Tagihan Belum Dikirim -->
             <div class="col-md-6 mb-4">
-                <div class="card card-custom bg-warning text-dark p-4 h-100">
+                <div class="card bg-warning text-dark p-4 h-100 shadow-sm border-0">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0 fw-bold">🟡 Tagihan Belum Dikirim</h5>
                         <h2 class="fw-bold mb-0">0</h2>
                     </div>
                     <div class="row g-2 mt-auto pt-3 border-top border-dark text-dark">
-                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50">SL3: <b class="fs-5">0</b></div></div>
-                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50">Pemalang: <b class="fs-5">0</b></div></div>
-                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50">Sragen: <b class="fs-5">0</b></div></div>
-                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50">Banyumas: <b class="fs-5">0</b></div></div>
-                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50">Kebumen: <b class="fs-5">0</b></div></div>
-                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50">BISI SA: <b class="fs-5">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">SL3: <b class="fs-6">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Pemalang: <b class="fs-6">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Sragen: <b class="fs-6">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Banyumas: <b class="fs-6">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Kebumen: <b class="fs-6">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">BISI SA: <b class="fs-6">0</b></div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- 4. PO Belum Dikirim (Rincian Area Besar) -->
+            <!-- 4. PO Belum Dikirim (Rincian Semua Sheet PO) -->
             <div class="col-md-6 mb-4">
-                <div class="card card-custom bg-info text-white p-4 h-100">
+                <div class="card bg-info text-white p-4 h-100 shadow-sm border-0">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0">🔵 PO Belum Dikirim</h5>
                         <h2 class="fw-bold mb-0">0</h2>
                     </div>
                     <div class="row g-2 mt-auto pt-3 border-top border-light">
-                        <div class="col-4"><div class="badge-area">SL3: <b class="fs-5">0</b></div></div>
-                        <div class="col-4"><div class="badge-area">Pemalang: <b class="fs-5">0</b></div></div>
-                        <div class="col-4"><div class="badge-area">Sragen: <b class="fs-5">0</b></div></div>
-                        <div class="col-4"><div class="badge-area">Banyumas: <b class="fs-5">0</b></div></div>
-                        <div class="col-4"><div class="badge-area">Kebumen: <b class="fs-5">0</b></div></div>
-                        <div class="col-4"><div class="badge-area">BISI SA: <b class="fs-5">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">SL3: <b class="fs-6" id="po-sl3">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">Pemalang: <b class="fs-6" id="po-pml">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">Sragen: <b class="fs-6" id="po-srg">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">Banyumas: <b class="fs-6" id="po-bys">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">Kebumen: <b class="fs-6" id="po-kbmn">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">PSP: <b class="fs-6" id="po-psp">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">IMA: <b class="fs-6" id="po-ima">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">CUL SMG: <b class="fs-6" id="po-cul">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">BISI SMG: <b class="fs-6" id="po-bisi">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">MSI: <b class="fs-6" id="po-msi">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">TANINDO: <b class="fs-6" id="po-tanindo">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">BISI SA: <b class="fs-6" id="po-bisisa">0</b></div></div>
                     </div>
                 </div>
             </div>
@@ -199,24 +202,22 @@
         </div>
 
         <!-- TABEL UTAMA UNTUK AKSI / TINDAK LANJUT -->
-        <div class="card card-custom p-4">
+        <div class="card p-4 shadow-sm border-0">
             <h5 class="fw-bold mb-3 text-secondary"><i class="fa-solid fa-list-check me-2"></i> Daftar PO Belum Naik Akunting (Butuh Vendor)</h5>
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
-                   <thead class="table-light">
-  <tr>
-    <th>No</th>
-    <th>Tgl Input</th>
-    <th>No PO</th>
-    <th>PIC PO</th>
-    <th>Feedmill / Area</th>
-  </tr>
-</thead>
+                    <thead class="table-light">
+                        <tr>
+                            <th>No</th>
+                            <th>Tgl Input</th>
+                            <th>No PO</th>
+                            <th>PIC PO</th>
+                            <th>Feedmill / Area</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="4" class="text-center text-muted">Memuat data...</td>
+                            <td colspan="5" class="text-center text-muted">Memuat data...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -227,7 +228,7 @@
 
     <!-- SCRIPT FETCH DATA DARI GOOGLE APPS SCRIPT -->
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxwHfGDKWPIwLL5cqvNZZRf8DGKwyjrTWiMAE1aUUoYBnR3gzGhXWxJo-UDyqQ2NKIZ/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby8kAnN5UOzc4rO3wVIYrsNXqd0RhuLmLmoFfWMQBYurnCh2CS9sxrsi5Rpsh9cNa42/exec";
 
         document.addEventListener("DOMContentLoaded", function() {
             fetchDashboardData();
@@ -241,40 +242,53 @@
                         const data = result.data;
 
                         // 1. Update Kartu PO Belum Naik Akunting
-                        document.querySelector('.bg-danger h2').innerText = data.poBelumNaik.total;
+                        document.querySelector('.bg-danger h2').innerText = data.poBelumNaik ? data.poBelumNaik.total : 0;
                         const kmBadges = document.querySelectorAll('.bg-danger .badge-area b');
-                        if(kmBadges.length >= 2) {
-                            kmBadges[0].innerText = data.poBelumNaik.km8;
-                            kmBadges[1].innerText = data.poBelumNaik.km9;
+                        if (kmBadges.length >= 2 && data.poBelumNaik) {
+                            kmBadges[0].innerText = data.poBelumNaik.km8 || 0;
+                            kmBadges[1].innerText = data.poBelumNaik.km9 || 0;
                         }
 
                         // 2. Update PO Sudah Naik Bulan Ini
-                        document.querySelector('.bg-success h2').innerText = data.poSudahNaikBulanIni;
+                        document.querySelector('.bg-success h2').innerText = data.poSudahNaikBulanIni || 0;
 
                         // 3. Update Tagihan Belum Dikirim
-                        document.querySelector('.bg-warning h2').innerText = data.tagihanBelumDikirim.total;
-                        const tagihanRincian = data.tagihanBelumDikirim.rincian;
-                        const tagihanBadges = document.querySelectorAll('.bg-warning .badge-area b');
-                        if(tagihanBadges.length >= 6) {
-                            tagihanBadges[0].innerText = tagihanRincian.sl3;
-                            tagihanBadges[1].innerText = tagihanRincian.pemalang;
-                            tagihanBadges[2].innerText = tagihanRincian.sragen;
-                            tagihanBadges[3].innerText = tagihanRincian.banyumas;
-                            tagihanBadges[4].innerText = tagihanRincian.kebumen;
-                            tagihanBadges[5].innerText = tagihanRincian.bisisa;
+                        document.querySelector('.bg-warning h2').innerText = data.tagihanBelumDikirim ? data.tagihanBelumDikirim.total : 0;
+                        if (data.tagihanBelumDikirim && data.tagihanBelumDikirim.rincian) {
+                            const tagihanRincian = data.tagihanBelumDikirim.rincian;
+                            const tagihanBadges = document.querySelectorAll('.bg-warning .badge-area b');
+                            if (tagihanBadges.length >= 6) {
+                                tagihanBadges[0].innerText = tagihanRincian.sl3 || 0;
+                                tagihanBadges[1].innerText = tagihanRincian.pemalang || 0;
+                                tagihanBadges[2].innerText = tagihanRincian.sragen || 0;
+                                tagihanBadges[3].innerText = tagihanRincian.banyumas || 0;
+                                tagihanBadges[4].innerText = tagihanRincian.kebumen || 0;
+                                tagihanBadges[5].innerText = tagihanRincian.bisisa || 0;
+                            }
                         }
 
-                        // 4. Update PO Belum Dikirim
-                        document.querySelector('.bg-info h2').innerText = data.poBelumDikirim.total;
-                        const poRincian = data.poBelumDikirim.rincian;
-                        const poBadges = document.querySelectorAll('.bg-info .badge-area b');
-                        if(poBadges.length >= 6) {
-                            poBadges[0].innerText = poRincian.sl3;
-                            poBadges[1].innerText = poRincian.pemalang;
-                            poBadges[2].innerText = poRincian.sragen;
-                            poBadges[3].innerText = poRincian.banyumas;
-                            poBadges[4].innerText = poRincian.kebumen;
-                            poBadges[5].innerText = poRincian.bisisa;
+                        // 4. Update PO Belum Dikirim (Secara Spesifik dengan ID Element)
+                        document.querySelector('.bg-info h2').innerText = data.poBelumDikirim ? data.poBelumDikirim.total : 0;
+                        if (data.poBelumDikirim && data.poBelumDikirim.rincian) {
+                            const poRincian = data.poBelumDikirim.rincian;
+                            
+                            const setElText = (id, val) => {
+                                const el = document.getElementById(id);
+                                if (el) el.innerText = val || 0;
+                            };
+
+                            setElText('po-sl3', poRincian.sl3);
+                            setElText('po-pml', poRincian.pemalang);
+                            setElText('po-srg', poRincian.sragen);
+                            setElText('po-bys', poRincian.banyumas);
+                            setElText('po-kbmn', poRincian.kebumen);
+                            setElText('po-psp', poRincian.psp);
+                            setElText('po-ima', poRincian.ima);
+                            setElText('po-cul', poRincian.culSmg);
+                            setElText('po-bisi', poRincian.bisiSmg);
+                            setElText('po-msi', poRincian.msi);
+                            setElText('po-tanindo', poRincian.tanindo);
+                            setElText('po-bisisa', poRincian.bisiSa);
                         }
 
                         // 5. Update Tabel List Unassigned PO
@@ -282,17 +296,17 @@
                         if (tableBody && data.listUnassigned) {
                             let rowsHTML = '';
                             if (data.listUnassigned.length === 0) {
-                                rowsHTML = `<tr><td colspan="4" class="text-center text-muted">Tidak ada PO yang belum memiliki vendor.</td></tr>`;
+                                rowsHTML = `<tr><td colspan="5" class="text-center text-muted">Tidak ada PO yang belum memiliki vendor.</td></tr>`;
                             } else {
                                 data.listUnassigned.forEach((item, index) => {
                                     rowsHTML += `
                                         <tr>
-      <td>${index + 1}</td>
-      <td>${item.tglInput}</td>  <!-- Kolom 2: Tanggal dd/mm/yy -->
-      <td>${item.po}</td>        <!-- Kolom 3: No PO -->
-      <td>${item.pic}</td>       <!-- Kolom 4: PIC PO -->
-      <td>${item.feedmill}</td>  <!-- Kolom 5: Feedmill / Area -->
-    </tr>
+                                            <td>${index + 1}</td>
+                                            <td>${item.tglInput || '-'}</td>
+                                            <td>${item.po || '-'}</td>
+                                            <td>${item.pic || '-'}</td>
+                                            <td>${item.feedmill || '-'}</td>
+                                        </tr>
                                     `;
                                 });
                             }
@@ -303,18 +317,14 @@
                 .catch(error => {
                     console.error('Gagal mengambil data KPI:', error);
                     const tableBody = document.querySelector('.table tbody');
-                    if(tableBody) {
-                        tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Gagal memuat data dari server. Periksa kembali URL Web App Anda.</td></tr>`;
+                    if (tableBody) {
+                        tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Gagal memuat data dari server. Periksa kembali URL Web App Anda.</td></tr>`;
                     }
                 });
         }
     </script>
 
-    <!-- TAMBAHKAN SCRIPT BOOTSTRAP DI SINI AGAR DROPDOWN BERFUNGSI -->
+    <!-- SCRIPT BOOTSTRAP -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-        
-    </script>
 </body>
 </html>
