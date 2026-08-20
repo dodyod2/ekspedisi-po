@@ -117,7 +117,13 @@
         
         <!-- HEADER -->
         <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm">
-            <h5 class="mb-0 fw-bold text-secondary">Dashboard Kondisi Hari Ini</h5>
+            <div class="d-flex align-items-center gap-3">
+                <h5 class="mb-0 fw-bold text-secondary">Dashboard Kondisi Hari Ini</h5>
+                <!-- TOMBOL REFRESH KPI -->
+                <button id="btn-refresh-kpi" class="btn btn-outline-primary btn-sm rounded-pill" onclick="refreshKPIData()">
+                    <i class="fa-solid fa-rotate me-1" id="icon-refresh"></i> Refresh Data
+                </button>
+            </div>
             <div class="text-end">
                 <span class="fw-bold text-dark">Halo, Admin</span>
                 <i class="fa-solid fa-circle-user fs-4 ms-2 text-primary align-middle"></i>
@@ -241,6 +247,22 @@
             fetchDashboardData();
         });
 
+        // Helper untuk memicu refresh KPI lewat tombol
+        function refreshKPIData() {
+            const btn = document.getElementById("btn-refresh-kpi");
+            const icon = document.getElementById("icon-refresh");
+
+            // Animasi tombol loading
+            btn.disabled = true;
+            icon.classList.add("fa-spin");
+
+            fetchDashboardData(() => {
+                // Hentikan animasi setelah data selesai dimuat
+                btn.disabled = false;
+                icon.classList.remove("fa-spin");
+            });
+        }
+
         // Helper untuk memperbarui teks & menambahkan warna merah jika nilai != 0
         function setElText(id, val) {
             const el = document.getElementById(id);
@@ -256,7 +278,7 @@
             }
         }
 
-        function fetchDashboardData() {
+        function fetchDashboardData(callback) {
             fetch(`${WEB_APP_URL}?action=getDashboardKPI`)
                 .then(response => response.json())
                 .then(result => {
@@ -339,6 +361,9 @@
                     if (tableBody) {
                         tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Gagal memuat data dari server. Periksa kembali URL Web App Anda.</td></tr>`;
                     }
+                })
+                .finally(() => {
+                    if (typeof callback === 'function') callback();
                 });
         }
     </script>
