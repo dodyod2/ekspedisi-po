@@ -94,7 +94,7 @@
 </head>
 <body>
 
-     <!-- SIDEBAR NAVIGASI -->
+    <!-- SIDEBAR NAVIGASI -->
     <div class="sidebar">
         <h4 class="text-center fw-bold mb-4 text-white">Ekspedisi<span class="text-primary">Pro</span></h4>
         <a href="index.html"><i class="fa-solid fa-chart-pie me-2"></i> Beranda</a>
@@ -118,15 +118,13 @@
             </div>
         </div>
 
-        <!-- Menu Lainnya (Hanya ditulis sekali di luar dropdown) -->
+        <!-- Menu Lainnya -->
         <a href="printPO.html" class="mt-2"><i class="fa-solid fa-print me-2"></i> Print Ekspedisi</a>
         <a href="searchAll.html"><i class="fa-solid fa-magnifying-glass me-2"></i> Pencarian PO</a>
-        <!-- Menu Baru: Ekspedisi PO & Tagihan -->
         <a href="ekspedisi-po-tagihan.html"><i class="fa-solid fa-truck-fast me-2"></i> Ekspedisi PO & Tagihan</a>
-        <!-- Menu Baru: Tanda Terima Tagihan -->
         <a href="tanda-terima-tagihan.html"><i class="fa-solid fa-receipt me-2"></i> Tanda Terima Tagihan</a>
-        
     </div>
+
     <!-- KONTEN UTAMA -->
     <div class="main-content">
         
@@ -139,43 +137,24 @@
             </div>
         </div>
 
-        <!-- 3 KARTU KPI / RINGKASAN STATUS PO -->
+        <!-- 2 KARTU STATUS PO (KM8 & KM9) - DIUBAH RINGKAS -->
         <div class="row mb-4">
             <!-- 1. KM8 Tanpa Vendor -->
-            <div class="col-md-4 mb-4">
-                <div class="card card-custom bg-danger text-white p-4 h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="mb-0">🔴 PO (KM8)</h5>
-                        <h2 class="fw-bold mb-0" id="unassignedKM8">0</h2>
-                    </div>
-                    <div class="mt-auto pt-3 border-top border-light text-white-50">
-                        <p class="mb-0 fs-6">BELUM NAIK AKUNTING</p>
+            <div class="col-md-6 mb-2">
+                <div class="card card-custom bg-danger text-white px-3 py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold small">🔴 PO (KM8) BELUM NAIK AKUNTING</span>
+                        <h4 class="fw-bold mb-0" id="unassignedKM8">0</h4>
                     </div>
                 </div>
             </div>
 
             <!-- 2. KM9 Tanpa Vendor -->
-            <div class="col-md-4 mb-4">
-                <div class="card card-custom bg-warning text-dark p-4 h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="mb-0 fw-bold">🟡 PO (KM9)</h5>
-                        <h2 class="fw-bold mb-0" id="unassignedKM9">0</h2>
-                    </div>
-                    <div class="mt-auto pt-3 border-top border-dark text-dark-50">
-                        <p class="mb-0 fs-6">BELUM NAIK AKUNTING</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. PO Terpilih -->
-            <div class="col-md-4 mb-4">
-                <div class="card card-custom bg-success text-white p-4 h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="mb-0">🟢 PO Terpilih</h5>
-                        <h2 class="fw-bold mb-0" id="totalSelectedText">0</h2>
-                    </div>
-                    <div class="mt-auto pt-3 border-top border-light text-white-50">
-                        <p class="mb-0 fs-6">Akumulasi PO dicentang siap diproses.</p>
+            <div class="col-md-6 mb-2">
+                <div class="card card-custom bg-warning text-dark px-3 py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold small">🟡 PO (KM9) BELUM NAIK AKUNTING</span>
+                        <h4 class="fw-bold mb-0" id="unassignedKM9">0</h4>
                     </div>
                 </div>
             </div>
@@ -187,7 +166,7 @@
             
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-                    <label class="fw-bold text-dark small">Daftar Checklist PO:</label>
+                    <label class="fw-bold text-dark small">Daftar Checklist PO (<span id="totalSelectedText">0</span> terpilih):</label>
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleSelectAll(true)">Pilih Semua</button>
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleSelectAll(false)">Reset Centang</button>
@@ -216,26 +195,9 @@
             <div class="d-flex gap-2 flex-wrap mt-3">
                 <button class="btn btn-primary fw-semibold" onclick="simpanData()"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Data Terpilih</button>
                 <button class="btn btn-success fw-semibold" onclick="bukaPrintPO()"><i class="fa-solid fa-print me-1"></i> PRINT PO</button>
-                <button class="btn btn-outline-danger fw-semibold" onclick="resetTabel()"><i class="fa-solid fa-trash me-1"></i> Reset Tabel Bawah</button>
             </div>
 
             <div id="status" class="mt-3 text-center fw-semibold"></div>
-        </div>
-
-        <!-- STATISTIK HASIL PROSES -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-6">
-                <div class="card card-custom p-3 d-flex flex-row justify-content-between align-items-center">
-                    <span class="text-secondary fw-semibold">Total Diproses KM8 (Tabel Bawah)</span>
-                    <span class="fs-4 fw-bold text-primary" id="countKM8">0</span>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card card-custom p-3 d-flex flex-row justify-content-between align-items-center">
-                    <span class="text-secondary fw-semibold">Total Diproses KM9 (Tabel Bawah)</span>
-                    <span class="fs-4 fw-bold text-info" id="countKM9">0</span>
-                </div>
-            </div>
         </div>
 
         <!-- TABEL HASIL SIMPAN -->
@@ -284,7 +246,7 @@
 
 <!-- SCRIPT LOGIKA FETCH -->
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwTCgGyG3HZyEj5dE-3oa0CgaOUSlrCRgsv1USBerhM6z5_OlpCAVQeE565zBGyDkqz/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwUr5aa3_tWuixL-PiEm4_DbQi3hW1OXM_wVkBpv76acTzh6WMF5ObyKxQ7fH0Ts2Hs/exec";
 
     let dataTabelExport = [];
     let vendorList = [];
@@ -300,14 +262,9 @@
         fetch(`${WEB_APP_URL}?action=getVendorList`)
             .then(res => res.json())
             .then(res => {
-                // Mengambil data vendor secara aman baik berupa array langsung atau di dalam properti .data
                 vendorList = Array.isArray(res) ? res : (res.data || []);
-                
-                // Inisialisasi autocomplete pada input vendor
                 const inputVendor = document.getElementById("vendorInput");
                 initAutocomplete(inputVendor, vendorList);
-                
-                console.log("Jumlah vendor dimuat:", vendorList.length);
             })
             .catch(err => console.error("Gagal memuat daftar vendor:", err));
     }
@@ -415,8 +372,6 @@
     function updateCounters() {
         const countKM8 = dataTabelExport.filter(i => i.feedmill === 'KM8').length;
         const countKM9 = dataTabelExport.filter(i => i.feedmill === 'KM9').length;
-        document.getElementById('countKM8').textContent = countKM8;
-        document.getElementById('countKM9').textContent = countKM9;
 
         document.getElementById('emptyKM8').style.display = countKM8 > 0 ? 'none' : 'block';
         document.getElementById('emptyKM9').style.display = countKM9 > 0 ? 'none' : 'block';
@@ -455,13 +410,13 @@
                 selectedPOs.clear();
                 updateSelectedCount();
 
-                document.getElementById('searchPOInput').value = '';
+                const searchInput = document.getElementById('searchPOInput');
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchInput.focus(); // Kursor otomatis kembali fokus ke kolom cari
+                }
                 renderChecklistPO(rawPOList);
                 document.getElementById('vendorInput').value = '';
-                const searchInput = document.getElementById('searchPOInput');
-        if (searchInput) {
-            searchInput.focus(); // Kursor langsung kembali aktif di kolom cari PO
-        }
             } else {
                 document.getElementById('status').innerHTML = '<span class="text-danger">❌ ' + (result.message || 'Gagal menyimpan') + '</span>';
             }
@@ -545,16 +500,6 @@
         window.open(targetUrl, '_blank');
     }
 
-    function resetTabel() {
-        ['tabelKM8','tabelKM9'].forEach(id => {
-            document.querySelector(`#${id} tbody`).innerHTML = '';
-            document.getElementById(id).style.display = 'none';
-        });
-        dataTabelExport.length = 0;
-        updateCounters();
-        document.getElementById('status').innerHTML = '<span class="text-muted">🗑️ Tabel bawah dikosongkan.</span>';
-    }
-
     function initAutocomplete(inp, arr) {
         const suggestionBox = document.getElementById("vendorSuggestions");
         let currentFocus = -1;
@@ -614,18 +559,20 @@
             if (e.target !== inp) suggestionBox.innerHTML = "";
         });
     }
+
     // Simpan otomatis saat tekan Enter di input Vendor
-const vendorInput = document.getElementById('vendorInput');
-if (vendorInput) {
-  vendorInput.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      simpanData(); // Menjalankan fungsi simpanData() yang sudah ada di kode Anda
+    const vendorInput = document.getElementById('vendorInput');
+    if (vendorInput) {
+        vendorInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                simpanData();
+            }
+        });
     }
-  });
-}
 </script>
-    <!-- TAMBAHKAN SCRIPT BOOTSTRAP DI SINI AGAR DROPDOWN BERFUNGSI -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SCRIPT BOOTSTRAP -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
