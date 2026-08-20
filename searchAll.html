@@ -154,35 +154,46 @@
   </button>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyddPs2D8tWU7RtmOdAyA-8i7UOiR95roS1J6LjyGj667uEZZKrBlIfvA7WjmMGSITM/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBzULHDcfcofINbvSDDLNvU66S_e1Wt9DVdbwQSYOCyW6brOWycLVgEn6CqidoNM5n/exec";
 
-    async function doSearch() {
-      const keywordInput = document.getElementById("keyword");
-      const keyword = keywordInput.value.trim();
+async function doSearch() {
+  const keywordInput = document.getElementById("keyword");
+  const keyword = keywordInput.value.trim();
 
-      if (!keyword) {
-        alert("Masukkan kata kunci pencarian!");
-        keywordInput.focus();
-        return;
-      }
+  if (!keyword) {
+    alert("Masukkan kata kunci pencarian!");
+    keywordInput.focus();
+    return;
+  }
 
-      document.getElementById("loading").style.display = "block";
-      document.getElementById("result").innerHTML = "";
-      document.getElementById("btnSearch").disabled = true;
+  document.getElementById("loading").style.display = "block";
+  document.getElementById("result").innerHTML = "";
+  document.getElementById("btnSearch").disabled = true;
 
-      try {
-        const response = await fetch(`${SCRIPT_URL}?action=searchAllSheets&keyword=${encodeURIComponent(keyword)}`);
-        const result = await response.json();
+  try {
+    // Menggunakan POST dengan text/plain menghindarkan dari error preflight CORS browser
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8",
+      },
+      body: JSON.stringify({
+        action: "searchAllSheets",
+        keyword: keyword
+      })
+    });
 
-        if (result.status === 'success') {
-          showResults(result.data);
-        } else {
-          handleError(result.message || "Gagal mengambil data");
-        }
-      } catch (err) {
-        handleError(err);
-      }
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      showResults(result.data);
+    } else {
+      handleError(result.message || "Gagal mengambil data");
     }
+  } catch (err) {
+    handleError(err);
+  }
+}
 
     function showResults(results) {
       document.getElementById("loading").style.display = "none";
