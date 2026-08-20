@@ -202,20 +202,28 @@
     // 2. Navigasi kursor saat tombol ENTER ditekan di kolom Vendor
     function setupEnterNavigation() {
   const vendorInput = document.getElementById("vendor");
-  
+  const nominalInput = document.getElementById("nominal");
+
   if (vendorInput) {
-    // Gunakan event 'keyup' agar mendeteksi saat tombol Enter dilepas
-    vendorInput.addEventListener("keyup", function (event) {
+    // 1. Pindah kursor saat menekan tombol ENTER
+    vendorInput.addEventListener("keydown", function (event) {
       if (event.key === "Enter") {
-        event.preventDefault();
+        event.preventDefault(); // Hentikan efek default browser
         
-        // Pindahkan kursor langsung ke field nominal
-        const nominalInput = document.getElementById("nominal");
-        if (nominalInput) {
+        // Paksa tutup dropdown datalist dengan trik hilangkan atribut list sekejap
+        vendorInput.blur(); 
+        
+        setTimeout(() => {
           nominalInput.focus();
-          nominalInput.select(); // Opsional: langsung sorot teks nominal jika ada
-        }
+        }, 50); // Bawa kursor ke Nominal setelah 50ms
       }
+    });
+
+    // 2. Pindah kursor saat vendor dipilih menggunakan KLIK MOUSE dari dropdown
+    vendorInput.addEventListener("change", function () {
+      setTimeout(() => {
+        nominalInput.focus();
+      }, 50);
     });
   }
 }
