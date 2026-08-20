@@ -201,17 +201,24 @@
 
     // 2. Navigasi kursor saat tombol ENTER ditekan di kolom Vendor
     function setupEnterNavigation() {
-      const vendorInput = document.getElementById("vendor");
-      if (vendorInput) {
-        vendorInput.addEventListener("keydown", function (event) {
-          if (event.key === "Enter") {
-            event.preventDefault(); // Mencegah submit otomatis
-            document.getElementById("nominal").focus(); // Pindah kursor ke input Nominal
-          }
-        });
+  const vendorInput = document.getElementById("vendor");
+  
+  if (vendorInput) {
+    // Gunakan event 'keyup' agar mendeteksi saat tombol Enter dilepas
+    vendorInput.addEventListener("keyup", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        
+        // Pindahkan kursor langsung ke field nominal
+        const nominalInput = document.getElementById("nominal");
+        if (nominalInput) {
+          nominalInput.focus();
+          nominalInput.select(); // Opsional: langsung sorot teks nominal jika ada
+        }
       }
-    }
-
+    });
+  }
+}
     // 3. Format input nominal menjadi mata uang Rupiah
     const nominalInput = document.getElementById("nominal");
     nominalInput.addEventListener("input", function (e) {
