@@ -8,13 +8,19 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
     body { 
-      background-color: #f4f6f9; 
+      background-color: #f1f5f9;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #334155;
     }
+    
+    /* SIDEBAR STYLES (TETAP) */
     .sidebar {
       width: 250px; 
       background-color: #1e293b; 
@@ -39,39 +45,132 @@
       background-color: #334155;
       color: #fff;
     }
+
+    /* MAIN CONTENT MODERN STYLES */
     .main-content { 
       margin-left: 250px; 
-      padding: 25px 30px; 
+      padding: 40px 30px; 
     }
-    .card-custom {
-      background: white;
-      border-radius: 12px;
-      border: none;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    .form-card-modern {
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
+      padding: 40px;
+      transition: all 0.3s ease;
     }
+
+    .form-header {
+      border-bottom: 2px dashed #f1f5f9;
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+    }
+
+    .form-header h4 {
+      color: #0d9488;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .input-group-modern {
+      position: relative;
+    }
+
+    .input-group-modern .input-group-text {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+      border-right: none;
+      color: #64748b;
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+      padding-left: 16px;
+    }
+
+    .input-group-modern .form-control {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+      border-left: none;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+      padding: 11px 16px;
+      font-weight: 500;
+      color: #1e293b;
+      transition: all 0.2s ease;
+    }
+
+    .input-group-modern .form-control:focus {
+      background-color: #ffffff;
+      border-color: #0d9488;
+      box-shadow: none;
+    }
+
+    .input-group-modern:focus-within .input-group-text {
+      background-color: #ffffff;
+      border-color: #0d9488;
+      color: #0d9488;
+    }
+
+    /* MODERN CHECKBOX BADGES */
     .doc-checkbox {
       display: none;
     }
+
     .doc-label {
       cursor: pointer;
-      border: 1px solid #ced4da;
-      border-radius: 8px;
-      padding: 8px 16px;
-      transition: all 0.2s;
-      background-color: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #64748b;
+      background-color: #f8fafc;
+      transition: all 0.2s ease;
       user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
+
+    .doc-label:hover {
+      background-color: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #334155;
+    }
+
     .doc-checkbox:checked + .doc-label {
-      background-color: #e0f2fe;
-      border-color: #0284c7;
-      color: #0369a1;
-      font-weight: bold;
+      background-color: #ccfbf1;
+      border-color: #0d9488;
+      color: #0f766e;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.15);
+    }
+
+    /* SUBMIT BUTTON MODERN */
+    .btn-submit-modern {
+      background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      box-shadow: 0 10px 20px -5px rgba(13, 148, 136, 0.4);
+      transition: all 0.25s ease;
+    }
+
+    .btn-submit-modern:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -3px rgba(13, 148, 136, 0.5);
+      background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+    }
+
+    .btn-submit-modern:active {
+      transform: translateY(0);
     }
   </style>
 </head>
 <body>
 
-  <!-- SIDEBAR NAVIGASI -->
+  <!-- SIDEBAR NAVIGASI (TETAP) -->
   <div class="sidebar">
     <h4 class="text-center fw-bold mb-4 text-white">Ekspedisi<span class="text-primary">Pro</span></h4>
     <a href="index.html"><i class="fa-solid fa-chart-pie me-2"></i> Beranda</a>
@@ -99,65 +198,87 @@
     <a href="tanda-terima-tagihan.html"><i class="fa-solid fa-receipt me-2"></i> Tanda Terima Tagihan</a>
   </div>
 
-  <!-- MAIN CONTENT -->
+  <!-- MAIN CONTENT (DIUPDATE LEBIH MODERN) -->
   <div class="main-content">
     <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="card card-custom p-4">
-          <h4 class="fw-bold text-center text-teal mb-4" style="color: #0d9488;">EXPEDISI TAGIHAN CPI SALATIGA</h4>
+      <div class="col-lg-7 col-md-10">
+        <div class="form-card-modern">
+          
+          <div class="form-header text-center">
+            <div class="d-inline-flex align-items-center justify-content-center bg-teal-subtle text-teal rounded-circle mb-2" style="width: 48px; height: 48px; background-color: #ccfbf1; color: #0d9488;">
+              <i class="fa-solid fa-file-invoice-dollar fs-4"></i>
+            </div>
+            <h4 class="mb-1">EXPEDISI TAGIHAN CPI SALATIGA</h4>
+            <p class="text-muted small mb-0">Kelola dan catat formulir penagihan ekpedisi secara presisi</p>
+          </div>
           
           <form id="formTagihan">
             <!-- No PO -->
             <div class="mb-3">
-              <label for="noPo" class="form-label text-secondary small fw-semibold">No PO</label>
-              <input type="text" class="form-control" id="noPo" placeholder="Masukkan nomor PO" required>
+              <label for="noPo" class="form-label text-dark small fw-bold mb-1">No PO</label>
+              <div class="input-group input-group-modern">
+                <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                <input type="text" class="form-control" id="noPo" placeholder="Masukkan nomor PO" required>
+              </div>
             </div>
 
             <!-- Vendor / Expedisi -->
             <div class="mb-3">
-              <label for="vendor" class="form-label text-secondary small fw-semibold">Vendor / Expedisi</label>
-              <input type="text" class="form-control" id="vendor" list="vendorDatalist" placeholder="Pilih / ketik vendor..." autocomplete="off" required>
+              <label for="vendor" class="form-label text-dark small fw-bold mb-1">Vendor / Expedisi</label>
+              <div class="input-group input-group-modern">
+                <span class="input-group-text"><i class="fa-solid fa-truck-field"></i></span>
+                <input type="text" class="form-control" id="vendor" list="vendorDatalist" placeholder="Pilih / ketik vendor..." autocomplete="off" required>
+              </div>
             </div>
 
             <!-- Nominal -->
             <div class="mb-3">
-              <label for="nominal" class="form-label text-secondary small fw-semibold">Nominal</label>
-              <input type="text" class="form-control" id="nominal" placeholder="Rp. 0" required>
+              <label for="nominal" class="form-label text-dark small fw-bold mb-1">Nominal</label>
+              <div class="input-group input-group-modern">
+                <span class="input-group-text"><i class="fa-solid fa-money-bill-wave"></i></span>
+                <input type="text" class="form-control" id="nominal" placeholder="Rp. 0" required>
+              </div>
             </div>
 
             <!-- No Invoice -->
             <div class="mb-3">
-              <label for="noInvoice" class="form-label text-secondary small fw-semibold">No Invoice</label>
-              <input type="text" class="form-control" id="noInvoice" placeholder="Masukkan nomor invoice">
+              <label for="noInvoice" class="form-label text-dark small fw-bold mb-1">No Invoice</label>
+              <div class="input-group input-group-modern">
+                <span class="input-group-text"><i class="fa-solid fa-receipt"></i></span>
+                <input type="text" class="form-control" id="noInvoice" placeholder="Masukkan nomor invoice">
+              </div>
             </div>
 
             <!-- Dokumen yang disertakan -->
             <div class="mb-3">
-              <label class="form-label text-secondary small fw-semibold d-block"><i class="fa-regular fa-folder-open me-1"></i> Dokumen yang disertakan</label>
+              <label class="form-label text-dark small fw-bold d-block mb-2"><i class="fa-regular fa-folder-open me-1 text-teal" style="color: #0d9488;"></i> Dokumen yang disertakan</label>
               <div class="d-flex flex-wrap gap-2">
                 <input type="checkbox" class="doc-checkbox" id="docInv" value="INV">
-                <label class="doc-label" for="docInv"><i class="fa-solid fa-file-invoice me-1"></i> INV</label>
+                <label class="doc-label" for="docInv"><i class="fa-solid fa-file-invoice"></i> INV</label>
 
                 <input type="checkbox" class="doc-checkbox" id="docSj" value="SJ">
-                <label class="doc-label" for="docSj"><i class="fa-solid fa-truck-ramp-box me-1"></i> SJ</label>
+                <label class="doc-label" for="docSj"><i class="fa-solid fa-truck-ramp-box"></i> SJ</label>
 
                 <input type="checkbox" class="doc-checkbox" id="docPo" value="COPY PO">
-                <label class="doc-label" for="docPo"><i class="fa-solid fa-file-lines me-1"></i> COPY PO</label>
+                <label class="doc-label" for="docPo"><i class="fa-solid fa-file-lines"></i> COPY PO</label>
 
                 <input type="checkbox" class="doc-checkbox" id="docFktr" value="FKTR">
-                <label class="doc-label" for="docFktr"><i class="fa-solid fa-receipt me-1"></i> FKTR</label>
+                <label class="doc-label" for="docFktr"><i class="fa-solid fa-receipt"></i> FKTR</label>
               </div>
             </div>
 
             <!-- Dokumen lainnya -->
             <div class="mb-4">
-              <label for="docLainnya" class="form-label text-secondary small fw-semibold">Dokumen lainnya</label>
-              <input type="text" class="form-control" id="docLainnya" placeholder="Contoh : KWITANSI, BAST, COA, dll">
+              <label for="docLainnya" class="form-label text-dark small fw-bold mb-1">Dokumen lainnya</label>
+              <div class="input-group input-group-modern">
+                <span class="input-group-text"><i class="fa-solid fa-paperclip"></i></span>
+                <input type="text" class="form-control" id="docLainnya" placeholder="Contoh: KWITANSI, BAST, COA, dll">
+              </div>
             </div>
 
             <!-- Tombol Simpan -->
-            <button type="button" id="btnSimpan" class="btn w-100 fw-bold text-white py-2" style="background-color: #0d9488;" onclick="simpanData()">
-              Simpan Data
+            <button type="button" id="btnSimpan" class="btn btn-submit-modern w-100 text-white mt-2" onclick="simpanData()">
+              <i class="fa-solid fa-floppy-disk me-2"></i> Simpan Data Tagihan
             </button>
           </form>
 
@@ -166,13 +287,13 @@
     </div>
   </div>
 
-  <!-- WADAH DATALIST AUTOCOMPLETE -->
+  <!-- WADAH DATALIST AUTOCOMPLETE (TETAP) -->
   <datalist id="vendorDatalist"></datalist>
 
-  <!-- BOOTSTRAP JS -->
+  <!-- BOOTSTRAP JS (TETAP) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- JAVASCRIPT LOGIC -->
+  <!-- JAVASCRIPT LOGIC (TETAP) -->
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLTsMPFiCDZUJ8SXN21ak6UvSgHh3MOWE3awz5Lek57yYaygjmGSftwff_UL7Vgcgt/exec";
 
