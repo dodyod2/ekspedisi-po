@@ -1,87 +1,127 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="id">
 <head>
-  <base target="_top">
-
-  <!-- Menggunakan fungsi include() bawaan Kode.gs -->
-  <?!= include("styleTTPO"); ?>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tanda Terima Dokumen PO</title>
+  
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Masukkan Styling Langsung di Sini -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+      margin: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .title h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    table.header {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    table.header td {
+      padding: 6px;
+    }
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    table#tblPO {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table#tblPO th, table#tblPO td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    table#tblPO th {
+      background-color: #f2f2f2;
+    }
+    .toolbar {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    .btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-add { background-color: #28a745; color: white; }
+    .btn-save { background-color: #007bff; color: white; }
+    .btn-print { background-color: #17a2b8; color: white; }
+    .btn-reset { background-color: #6c757d; color: white; }
+  </style>
 </head>
 
 <body>
 
-<datalist id="listPO"></datalist>
+  <datalist id="listPO"></datalist>
 
-<div class="container">
-
+  <div class="container">
     <div class="title">
-        <h2>TANDA TERIMA DOKUMEN PO</h2>
+      <h2>TANDA TERIMA DOKUMEN PO</h2>
     </div>
 
-    <!-- ========================= -->
-    <!-- HEADER -->
-    <!-- ========================= -->
     <table class="header">
       <tr>
-          <td width="140">Tujuan</td>
-          <td width="330">
-              <select id="tujuan" onchange="pilihTujuan()">
-                  <option value="">-- Pilih Tujuan --</option>
-              </select>
-          </td>
-          <td width="140">Nomor TT</td>
-          <td>
-              <input type="text" id="nomorTT">
-          </td>
+        <td width="140">Tujuan</td>
+        <td width="330">
+          <select id="tujuan" onchange="pilihTujuan()">
+            <option value="">-- Pilih Tujuan --</option>
+          </select>
+        </td>
+        <td width="140">Nomor TT</td>
+        <td>
+          <input type="text" id="nomorTT">
+        </td>
       </tr>
-
       <tr>
-          <td>Kepada</td>
-          <td>
-              <input type="text" id="kepada">
-          </td>
-          <td>Tanggal</td>
-          <td>
-              <input type="text" id="tanggal" readonly>
-          </td>
+        <td>Kepada</td>
+        <td><input type="text" id="kepada"></td>
+        <td>Tanggal</td>
+        <td><input type="text" id="tanggal" readonly></td>
       </tr>
-
       <tr>
-          <td>Perusahaan</td>
-          <td>
-              <input type="text" id="perusahaan">
-          </td>
-          <td>Nomor Resi</td>
-          <td>
-              <input type="text" id="resi">
-          </td>
+        <td>Perusahaan</td>
+        <td><input type="text" id="perusahaan"></td>
+        <td>Nomor Resi</td>
+        <td><input type="text" id="resi"></td>
       </tr>
-
       <tr>
-          <td>Dari</td>
-          <td>
-              <input type="text" id="pengirim" readonly>
-          </td>
-          <td></td>
-          <td></td>
+        <td>Dari</td>
+        <td><input type="text" id="pengirim" readonly></td>
+        <td></td>
+        <td></td>
       </tr>
-
       <tr>
-          <td>Alamat</td>
-          <td colspan="3">
-              <textarea id="alamat" rows="4" readonly></textarea>
-          </td>
+        <td>Alamat</td>
+        <td colspan="3">
+          <textarea id="alamat" rows="4" readonly></textarea>
+        </td>
       </tr>
     </table>
 
-    <br>
-
-    <div class="section-title"></div>
-
     <table id="tblPO">
-      <datalist id="listPO"></datalist>
       <thead>
         <tr>
           <th width="40">No</th>
@@ -91,38 +131,55 @@
           <th width="80">Aksi</th>
         </tr>
       </thead>
-      <tbody>
-      </tbody>
+      <tbody></tbody>
     </table>
 
-    <br>
-
-    <!-- ========================= -->
-    <!-- BUTTON -->
-    <!-- ========================= -->
     <div class="toolbar">
-        <button class="btn btn-add" onclick="addRow()">
-            ➕ Tambah PO
-        </button>
-
-        <button class="btn btn-save" onclick="saveData()">
-            💾 Simpan
-        </button>
-
-        <button class="btn btn-print" onclick="printData()">
-            🖨 Print
-        </button>
-
-        <button class="btn btn-reset" onclick="baru()">
-            🔄 Baru
-        </button>
+      <button class="btn btn-add" onclick="addRow()">➕ Tambah PO</button>
+      <button class="btn btn-save" onclick="saveData()">💾 Simpan</button>
+      <button class="btn btn-print" onclick="printData()">🖨 Print</button>
+      <button class="btn btn-reset" onclick="baru()">🔄 Baru</button>
     </div>
+  </div>
 
-</div>
+  <!-- Masukkan Logika JavaScript dan Fetch API di Sini -->
+  <script>
+    // GANTI DENGAN URL DEPLOYMENT WEB APP APPS SCRIPT ANDA
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzl7mUBEv5LBPtZvsDkQ8UQjK7_w4AG_WTIYZk9QiTIm_KnHd_4tRgs8t0NTlNC3MBlqQ/exec";
 
-<!-- Menggunakan fungsi include() bawaan Kode.gs -->
-<?!= include("scriptTTPO"); ?>
+    function loadMasterTujuan() {
+      fetch(SCRIPT_URL + "?action=getMasterTujuan")
+        .then(res => res.json())
+        .then(data => {
+          let select = document.getElementById("tujuan");
+          data.forEach(item => {
+            let opt = document.createElement("option");
+            opt.value = item.nama;
+            opt.textContent = item.nama;
+            select.appendChild(opt);
+          });
+        })
+        .catch(err => console.error("Gagal mengambil data tujuan:", err));
+    }
+
+    function addRow() {
+      let tbody = document.querySelector("#tblPO tbody");
+      let rowCount = tbody.rows.length + 1;
+      let tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${rowCount}</td>
+        <td><input type="text" class="po-input"></td>
+        <td><input type="text" class="inv-input"></td>
+        <td><input type="text" class="note-input"></td>
+        <td><button onclick="this.closest('tr').remove()">❌</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    window.onload = function() {
+      loadMasterTujuan();
+    };
+  </script>
 
 </body>
-
 </html>
