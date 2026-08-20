@@ -8,7 +8,6 @@
       box-sizing: border-box;
     }
 
-    /* Memastikan body memenuhi jendela dialog */
     html, body {
       margin: 0;
       padding: 0;
@@ -19,10 +18,9 @@
       overflow-x: hidden;
     }
 
-    /* Area konten utama agar tidak tertutup tombol melayang */
     .content-area {
       padding: 15px;
-      padding-bottom: 80px; /* Jarak bawah agar tabel tidak tertutup tombol */
+      padding-bottom: 80px;
     }
 
     .search-card {
@@ -56,7 +54,6 @@
       cursor: pointer;
     }
 
-    /* INDIKATOR LOADING */
     .loading-container {
       display: none;
       text-align: center;
@@ -91,7 +88,6 @@
       100% { opacity: 0.3; }
     }
 
-    /* TABEL HASIL */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -110,9 +106,6 @@
       color: white;
     }
 
-    /* =====================================================
-       TOMBOL MELAYANG (POSITIF MUNCUL DI POJOK KANAN BAWAH)
-    ===================================================== */
     .btn-floating {
       position: fixed;
       bottom: 20px;
@@ -126,7 +119,7 @@
       font-size: 22px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       cursor: pointer;
-      z-index: 999999; /* Memastikan paling atas */
+      z-index: 999999;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -156,13 +149,14 @@
     <div id="result"></div>
   </div>
 
-  <!-- Tombol Melayang -->
   <button class="btn-floating" onclick="doSearch()" title="Cari Data">
     🔍
   </button>
 
   <script>
-    function doSearch() {
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQNIK1b3Spy-uvWY8bg0i6Bje-pWvVh4IlULKcIdOL4aQrwmWfyKlWvKgcde5dpz2s/exec";
+
+    async function doSearch() {
       const keywordInput = document.getElementById("keyword");
       const keyword = keywordInput.value.trim();
 
@@ -176,10 +170,18 @@
       document.getElementById("result").innerHTML = "";
       document.getElementById("btnSearch").disabled = true;
 
-      google.script.run
-        .withSuccessHandler(showResults)
-        .withFailureHandler(handleError)
-        .searchAllSheets(keyword);
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=searchAllSheets&keyword=${encodeURIComponent(keyword)}`);
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          showResults(result.data);
+        } else {
+          handleError(result.message || "Gagal mengambil data");
+        }
+      } catch (err) {
+        handleError(err);
+      }
     }
 
     function showResults(results) {
