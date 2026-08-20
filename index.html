@@ -56,6 +56,11 @@
             margin-right: 0 !important;
             font-size: 1.2rem;
         }
+        /* Kelas untuk membuat teks berwarna merah */
+.text-danger-custom {
+    color: #dc3545 !important; /* Warna merah */
+    font-weight: bold;
+}
         .main-content.expanded {
             margin-left: 70px;
         }
@@ -322,6 +327,21 @@
                     }
                 });
         }
+
+        // Contoh fungsi untuk memperbarui elemen angka
+function updateAngka(elementId, nilai) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
+    el.innerText = nilai;
+
+    // Jika nilai tidak sama dengan 0, ubah warna jadi merah
+    if (nilai !== 0 && nilai !== "0") {
+        el.classList.add("text-danger-custom");
+    } else {
+        el.classList.remove("text-danger-custom");
+    }
+}
     </script>
 
     <!-- SCRIPT BOOTSTRAP -->
