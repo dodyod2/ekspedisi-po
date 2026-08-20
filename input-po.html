@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome untuk Ikon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 (Diperlukan untuk notifikasi simpan & error) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { background-color: #f4f6f9; }
         .sidebar {
@@ -57,7 +59,6 @@
             font-size: 1.2rem;
         }
 
-        /* Kelas khusus angka tidak nol (berwarna merah terang) */
         .text-danger-custom {
             color: #ff3344 !important;
             font-weight: bold;
@@ -74,7 +75,6 @@
             transform: rotate(180deg);
         }
 
-        /* Utility style untuk area badge kpi */
         .badge-area {
             font-size: 0.85rem;
         }
@@ -131,10 +131,10 @@
         <div class="card card-custom p-3">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold text-primary mb-0"><i class="fa-solid fa-building me-2"></i>CPI KM8</h5>
-            <span class="badge badge-km8 px-3 py-2 rounded-pill" id="badgeCountKM8">0 PO Belum Naik</span>
+            <span class="badge bg-primary px-3 py-2 rounded-pill" id="badgeCountKM8">0 PO Belum Naik</span>
           </div>
 
-          <div class="table-container">
+          <div class="table-responsive">
             <table class="table table-hover align-middle" id="tableKM8">
               <thead>
                 <tr>
@@ -158,10 +158,10 @@
         <div class="card card-custom p-3">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold text-danger mb-0"><i class="fa-solid fa-building me-2"></i>CPI KM9</h5>
-            <span class="badge badge-km9 px-3 py-2 rounded-pill" id="badgeCountKM9">0 PO Belum Naik</span>
+            <span class="badge bg-danger px-3 py-2 rounded-pill" id="badgeCountKM9">0 PO Belum Naik</span>
           </div>
 
-          <div class="table-container">
+          <div class="table-responsive">
             <table class="table table-hover align-middle" id="tableKM9">
               <thead>
                 <tr>
@@ -191,35 +191,19 @@
     </div>
   </div>
 
+  <!-- WADAH DATALIST KHUSUS AUTOCOMPLETE VENDOR (SANGAT PENTING) -->
+  <datalist id="vendorDatalist"></datalist>
+
+  <!-- BOOTSTRAP JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLdbZmeJrvqJAzTao11cF3euNghTpzBRiVhkKL7P78dRT-_LS5oy5v3RVzfVDyzZzB/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQNIK1b3Spy-uvWY8bg0i6Bje-pWvVh4IlULKcIdOL4aQrwmWfyKlWvKgcde5dpz2s/exec";
 
     document.addEventListener("DOMContentLoaded", function () {
       loadVendorList();
       loadData();
     });
-
-    // NAVIGASI LAMA APPS SCRIPT
-    function openPage(pageName) {
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        google.script.run.withSuccessHandler(url => {
-          window.top.location.href = url + '?page=' + pageName;
-        }).getScriptUrl();
-      } else {
-        window.location.href = pageName + '.html';
-      }
-    }
-
-    function showDialog(dialogName) {
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        if (dialogName === 'index1') google.script.run.showExpedisiSL3();
-        else if (dialogName === 'index2') google.script.run.showExpedisiSRG();
-        else if (dialogName === 'index3') google.script.run.showExpedisiPML();
-        else if (dialogName === 'index4') google.script.run.showExpedisiBYS();
-        else if (dialogName === 'index5') google.script.run.showExpedisiKBMN();
-        else if (dialogName === 'index6') google.script.run.showExpedisiBISISA();
-      }
-    }
 
     // 1. MEMUAT DAFTAR VENDOR UNTUK DATALIST (AUTOCOMPLETE)
     function loadVendorList() {
@@ -261,41 +245,40 @@
         });
     }
 
-    // RENDER TABEL DENGAN ATRIBUT list="vendorDatalist"
-function renderTables(list) {
-    const listKM8 = list.filter(item => item.feedmill === 'KM8');
-    const listKM9 = list.filter(item => item.feedmill === 'KM9');
+    // 3. RENDER TABEL DENGAN ATRIBUT list="vendorDatalist"
+    function renderTables(list) {
+        const listKM8 = list.filter(item => item.feedmill === 'KM8');
+        const listKM9 = list.filter(item => item.feedmill === 'KM9');
 
-    const renderRows = (dataList) => {
-        if (dataList.length === 0) {
-            return `<tr><td colspan="5" class="text-center text-muted py-4">Semua PO sudah diisi tanggal naik.</td></tr>`;
-        }
-        return dataList.map((item) => `
-            <tr>
-                <td>
-                    <input type="checkbox" class="check-po" data-po="${item.po}">
-                </td>
-                <td><small class="text-muted">${item.tglInput || '-'}</small></td>
-                <td class="fw-bold">${item.po || '-'}</td>
-                <td><span class="badge bg-light text-dark border">${item.pic || '-'}</span></td>
-                <td>
-                    <!-- Tambahkan list="vendorDatalist" dan autocomplete="off" -->
-                    <input 
-                        type="text" 
-                        class="form-control form-control-sm input-vendor" 
-                        list="vendorDatalist" 
-                        data-po="${item.po}" 
-                        placeholder="Pilih / ketik vendor..."
-                        autocomplete="off"
-                    >
-                </td>
-            </tr>
-        `).join('');
-    };
+        const renderRows = (dataList) => {
+            if (dataList.length === 0) {
+                return `<tr><td colspan="5" class="text-center text-muted py-4">Semua PO sudah diisi tanggal naik.</td></tr>`;
+            }
+            return dataList.map((item) => `
+                <tr>
+                    <td>
+                        <input type="checkbox" class="check-po" data-po="${item.po}">
+                    </td>
+                    <td><small class="text-muted">${item.tglInput || '-'}</small></td>
+                    <td class="fw-bold">${item.po || '-'}</td>
+                    <td><span class="badge bg-light text-dark border">${item.pic || '-'}</span></td>
+                    <td>
+                        <input 
+                            type="text" 
+                            class="form-control form-control-sm input-vendor" 
+                            list="vendorDatalist" 
+                            data-po="${item.po}" 
+                            placeholder="Pilih / ketik vendor..."
+                            autocomplete="off"
+                        >
+                    </td>
+                </tr>
+            `).join('');
+        };
 
-    document.getElementById('tbodyKM8').innerHTML = renderRows(listKM8);
-    document.getElementById('tbodyKM9').innerHTML = renderRows(listKM9);
-}
+        document.getElementById('tbodyKM8').innerHTML = renderRows(listKM8);
+        document.getElementById('tbodyKM9').innerHTML = renderRows(listKM9);
+    }
 
     // 4. CHECK ALL
     function toggleSelectAll(feedmill, masterCheckbox) {
