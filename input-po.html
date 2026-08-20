@@ -1,66 +1,128 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Input PO - EkspedisiPro</title>
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    body { background-color: #f4f6f9; }
-    .sidebar {
-      width: 250px; background-color: #1e293b; height: 100vh;
-      position: fixed; color: white; padding-top: 20px; z-index: 1000;
-      overflow-y: auto;
-    }
-    .sidebar a {
-      color: #cbd5e1; text-decoration: none; padding: 12px 20px;
-      display: block; font-weight: 500; transition: 0.3s; cursor: pointer;
-    }
-    .sidebar a:hover, .sidebar a.active {
-      background-color: #334155; color: white; border-left: 4px solid #3b82f6;
-    }
-    .main-content { margin-left: 250px; padding: 25px 30px; }
-    .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); background: #ffffff; }
-    .table-container { max-height: 480px; overflow-y: auto; }
-    .table thead th { position: sticky; top: 0; background-color: #f8fafc; z-index: 2; }
-    .badge-km8 { background-color: #dbeafe; color: #1e40af; }
-    .badge-km9 { background-color: #fce7f3; color: #9d174d; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Ekspedisi & PO</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f4f6f9; }
+        .sidebar {
+            width: 250px; 
+            background-color: #1e293b; 
+            height: 100vh;
+            position: fixed; 
+            color: white; 
+            padding-top: 20px; 
+            z-index: 1000;
+            overflow-y: auto;
+            transition: width 0.3s ease;
+        }
+        .sidebar a {
+            color: #cbd5e1; 
+            text-decoration: none; 
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            font-weight: 500; 
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .sidebar a span.menu-text {
+            transition: opacity 0.2s ease;
+        }
+        .main-content { 
+            margin-left: 250px; 
+            padding: 25px 30px; 
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.minimized {
+            width: 70px;
+        }
+        .sidebar.minimized .sidebar-title,
+        .sidebar.minimized span.menu-text,
+        .sidebar.minimized .fa-chevron-down {
+            display: none !important;
+        }
+        .sidebar.minimized a {
+            justify-content: center;
+            padding: 12px 10px;
+        }
+        .sidebar.minimized a i {
+            margin-right: 0 !important;
+            font-size: 1.2rem;
+        }
+
+        /* Kelas khusus angka tidak nol (berwarna merah terang) */
+        .text-danger-custom {
+            color: #ff3344 !important;
+            font-weight: bold;
+        }
+
+        .main-content.expanded {
+            margin-left: 70px;
+        }
+
+        [data-bs-toggle="collapse"] .fa-chevron-down {
+            transition: transform 0.3s ease;
+        }
+        [data-bs-toggle="collapse"][aria-expanded="true"] .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        /* Utility style untuk area badge kpi */
+        .badge-area {
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- DATALIST UNTUK AUTOCOMPLETE VENDOR -->
-  <datalist id="vendorDatalist"></datalist>
+    <!-- SIDEBAR NAVIGASI -->
+    <div class="sidebar">
+        <h4 class="text-center fw-bold mb-4 text-white">Ekspedisi<span class="text-primary">Pro</span></h4>
+        <a href="index.html"><i class="fa-solid fa-chart-pie me-2"></i> Beranda</a>
+        <a href="input-po.html"><i class="fa-solid fa-file-invoice me-2"></i> Input PO</a>
+        
+        <!-- Menu Utama Input Tagihan dengan Trigger Dropdown -->
+        <a class="d-flex justify-content-between align-items-center text-decoration-none" data-bs-toggle="collapse" href="#subTagihanMenu" role="button" aria-expanded="false" aria-controls="subTagihanMenu">
+            <span><i class="fa-solid fa-file-pen me-2"></i> Input Tagihan</span>
+            <i class="fa-solid fa-chevron-down small"></i>
+        </a>
 
-  <!-- SIDEBAR (NAVIGASI LAMA) -->
-  <div class="sidebar">
-    <h4 class="text-center fw-bold mb-4 text-white"><i class="fa-solid fa-truck-fast me-2"></i>EkspedisiPro</h4>
-    <a onclick="openPage('index')" class="active"><i class="fa-solid fa-file-pen me-2"></i> Input PO</a>
-    <a onclick="openPage('printPO')"><i class="fa-solid fa-print me-2"></i> Print Ekspedisi PO</a>
-    <a onclick="openPage('searchAll')"><i class="fa-solid fa-magnifying-glass me-2"></i> Cari Semua PO</a>
-    <div class="mt-3 px-3 text-uppercase text-muted"><small>Tagihan Ekspedisi</small></div>
-    <a onclick="showDialog('index1')"><i class="fa-solid fa-receipt me-2"></i> Tagihan SL3</a>
-    <a onclick="showDialog('index2')"><i class="fa-solid fa-receipt me-2"></i> Tagihan Sragen</a>
-    <a onclick="showDialog('index3')"><i class="fa-solid fa-receipt me-2"></i> Tagihan Pemalang</a>
-    <a onclick="showDialog('index4')"><i class="fa-solid fa-receipt me-2"></i> Tagihan Banyumas</a>
-    <a onclick="showDialog('index5')"><i class="fa-solid fa-receipt me-2"></i> Tagihan Kebumen</a>
-    <a onclick="showDialog('index6')"><i class="fa-solid fa-receipt me-2"></i> Tagihan BISI SA</a>
-  </div>
+        <!-- Kontainer Dropdown Rincian Tagihan -->
+        <div class="collapse" id="subTagihanMenu">
+            <div class="ps-2 py-1 bg-dark bg-opacity-25">
+                <a href="tagihan-sl3.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Salatiga</a>
+                <a href="tagihan-pemalang.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Pemalang</a>
+                <a href="tagihan-sragen.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Sragen</a>
+                <a href="tagihan-banyumas.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Banyumas</a>
+                <a href="tagihan-kebumen.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Kebumen</a>
+                <a href="tagihan-bisi.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> BISI SA</a>
+            </div>
+        </div>
+
+        <a href="printPO.html" class="mt-2"><i class="fa-solid fa-print me-2"></i> Print Ekspedisi</a>
+        <a href="searchAll.html"><i class="fa-solid fa-magnifying-glass me-2"></i> Pencarian PO</a>
+        <a href="ekspedisi-po-tagihan.html"><i class="fa-solid fa-truck-fast me-2"></i> Ekspedisi PO & Tagihan</a>
+        <a href="tanda-terima-tagihan.html"><i class="fa-solid fa-receipt me-2"></i> Tanda Terima Tagihan</a>
+    </div>
+
 
   <!-- MAIN CONTENT -->
   <div class="main-content">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <h3 class="fw-bold mb-1">Input Vendor PO (CPI KM8 & KM9)</h3>
-        <p class="text-muted mb-0">Ketik/pilih vendor untuk masing-masing baris PO yang belum memiliki tanggal naik.</p>
+        <p class="text-muted mb-0">Pilih vendor untuk masing-masing baris PO yang belum memiliki tanggal naik.</p>
       </div>
       <div>
-        <button class="btn btn-outline-secondary" onclick="loadData()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+        <button class="btn btn-outline-secondary me-2" onclick="loadData()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+        <button class="btn btn-primary fw-bold" onclick="simpanPO()"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Pilihan</button>
       </div>
     </div>
 
@@ -82,7 +144,7 @@
                   <th>Tanggal</th>
                   <th>No PO</th>
                   <th>PIC</th>
-                  <th width="200">Vendor / Expedisi</th>
+                  <th width="180">Vendor / Expedisi</th>
                 </tr>
               </thead>
               <tbody id="tbodyKM8">
@@ -109,7 +171,7 @@
                   <th>Tanggal</th>
                   <th>No PO</th>
                   <th>PIC</th>
-                  <th width="200">Vendor / Expedisi</th>
+                  <th width="180">Vendor / Expedisi</th>
                 </tr>
               </thead>
               <tbody id="tbodyKM9">
@@ -120,59 +182,26 @@
         </div>
       </div>
     </div>
-
-    <!-- TOMBOL SIMPAN DI BAGIAN BAWAH -->
-    <div class="card card-custom p-3 mt-4 text-end">
-      <div>
-        <button class="btn btn-primary btn-lg fw-bold px-4" onclick="simpanPO()">
-          <i class="fa-solid fa-floppy-disk me-2"></i>Simpan Pilihan
-        </button>
-      </div>
-    </div>
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQNIK1b3Spy-uvWY8bg0i6Bje-pWvVh4IlULKcIdOL4aQrwmWfyKlWvKgcde5dpz2s/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdKbYFmBO5eyPQKyQK0CEg2-1fAwKvxlJWcHSZZLcnFI-ybTklc9OM_V8IgB-lhYAv/exec";
+    let vendorOptionsHTML = `<option value="">-- Pilih Vendor --</option>`;
 
     document.addEventListener("DOMContentLoaded", function () {
       loadVendorList();
       loadData();
     });
 
-    // NAVIGASI LAMA APPS SCRIPT
-    function openPage(pageName) {
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        google.script.run.withSuccessHandler(url => {
-          window.top.location.href = url + '?page=' + pageName;
-        }).getScriptUrl();
-      } else {
-        window.location.href = pageName + '.html';
-      }
-    }
-
-    function showDialog(dialogName) {
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        if (dialogName === 'index1') google.script.run.showExpedisiSL3();
-        else if (dialogName === 'index2') google.script.run.showExpedisiSRG();
-        else if (dialogName === 'index3') google.script.run.showExpedisiPML();
-        else if (dialogName === 'index4') google.script.run.showExpedisiBYS();
-        else if (dialogName === 'index5') google.script.run.showExpedisiKBMN();
-        else if (dialogName === 'index6') google.script.run.showExpedisiBISISA();
-      }
-    }
-
-    // 1. MEMUAT DAFTAR VENDOR UNTUK DATALIST (AUTOCOMPLETE)
+    // 1. MEMUAT DAFTAR VENDOR DARI APPS SCRIPT
     function loadVendorList() {
       fetch(`${SCRIPT_URL}?action=getVendorList`)
         .then(res => res.json())
         .then(res => {
           if (res.status === 'success' && Array.isArray(res.data)) {
-            const datalist = document.getElementById('vendorDatalist');
-            datalist.innerHTML = '';
+            vendorOptionsHTML = `<option value="">-- Pilih Vendor --</option>`;
             res.data.forEach(v => {
-              const option = document.createElement('option');
-              option.value = v;
-              datalist.appendChild(option);
+              vendorOptionsHTML += `<option value="${v}">${v}</option>`;
             });
           }
         })
@@ -201,7 +230,7 @@
         });
     }
 
-    // 3. RENDER DATA KE DUA TABEL (KM8 & KM9) DENGAN INPUT AUTOCOMPLETE/MANUAL
+    // 3. RENDER DATA KE DUA TABEL (KM8 & KM9)
     function renderTables(list) {
       const listKM8 = list.filter(item => item.feedmill === 'KM8');
       const listKM9 = list.filter(item => item.feedmill === 'KM9');
@@ -210,7 +239,7 @@
         if (dataList.length === 0) {
           return `<tr><td colspan="5" class="text-center text-muted py-4">Semua PO sudah diisi tanggal naik.</td></tr>`;
         }
-        return dataList.map((item) => `
+        return dataList.map((item, idx) => `
           <tr>
             <td>
               <input type="checkbox" class="check-po" data-po="${item.po}">
@@ -219,14 +248,9 @@
             <td class="fw-bold">${item.po}</td>
             <td><span class="badge bg-light text-dark border">${item.pic}</span></td>
             <td>
-              <input 
-                type="text" 
-                class="form-control form-control-sm input-vendor" 
-                list="vendorDatalist" 
-                data-po="${item.po}" 
-                placeholder="Pilih / ketik vendor..."
-                autocomplete="off"
-              >
+              <select class="form-select form-select-sm select-vendor" data-po="${item.po}">
+                ${vendorOptionsHTML}
+              </select>
             </td>
           </tr>
         `).join('');
@@ -236,14 +260,14 @@
       document.getElementById('tbodyKM9').innerHTML = renderRows(listKM9);
     }
 
-    // 4. CHECK ALL
+    // 4. CHECK ALL FUNCTIONALITY
     function toggleSelectAll(feedmill, masterCheckbox) {
       const tbodyId = feedmill === 'KM8' ? 'tbodyKM8' : 'tbodyKM9';
       const checkboxes = document.querySelectorAll(`#${tbodyId} .check-po`);
       checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
     }
 
-    // 5. SIMPAN DAFTAR PO BESERTA VENDOR PER BARIS
+    // 5. SIMPAN DAFTAR PO BESERTA VENDOR PADA MASING-MASING BARIS
     function simpanPO() {
       const selectedItems = [];
       const checkedBoxes = document.querySelectorAll('.check-po:checked');
@@ -257,8 +281,8 @@
 
       checkedBoxes.forEach(cb => {
         const po = cb.getAttribute('data-po');
-        const inputElem = document.querySelector(`.input-vendor[data-po="${po}"]`);
-        const vendorVal = inputElem ? inputElem.value.trim() : '';
+        const selectElem = document.querySelector(`.select-vendor[data-po="${po}"]`);
+        const vendorVal = selectElem ? selectElem.value.trim() : '';
 
         if (!vendorVal) {
           vendorKosong = true;
@@ -271,7 +295,7 @@
       });
 
       if (vendorKosong) {
-        Swal.fire('Peringatan', 'Terdapat PO dicentang yang belum diisi nama Vendor/Expedisi-nya.', 'warning');
+        Swal.fire('Peringatan', 'Terdapat PO centang yang belum dipilih Vendor/Expedisi-nya.', 'warning');
         return;
       }
 
@@ -297,7 +321,7 @@
           .then(res => {
             if (res.status === 'success') {
               Swal.fire('Berhasil!', 'Data PO dan Vendor berhasil disimpan.', 'success');
-              loadData();
+              loadData(); // Reload data tabel
             } else {
               Swal.fire('Gagal', res.message || 'Gagal menyimpan data.', 'error');
             }
