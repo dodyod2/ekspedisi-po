@@ -204,25 +204,31 @@
   const vendorInput = document.getElementById("vendor");
   const nominalInput = document.getElementById("nominal");
 
-  if (vendorInput) {
-    // 1. Trik melepaskan list saat Enter agar tidak tertahan oleh Datalist Browser
-    vendorInput.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        event.preventDefault(); // Matikan submit form/efek default enter
+  if (!vendorInput || !nominalInput) return;
 
-        // Lepas datalist sejenak
-        const currentList = vendorInput.getAttribute("list");
-        vendorInput.removeAttribute("list");
+  // 1. Eksekusi pindah fokus
+  function moveToNominal() {
+    setTimeout(() => {
+      vendorInput.blur(); // Memaksa popup datalist langsung menutup
+      nominalInput.focus();
+      nominalInput.select(); // Opsional: langsung menyorot teks jika ada
+    }, 50);
+  }
 
-        // Pindahkan fokus ke input Nominal
-        nominalInput.focus();
+  // 2. Event saat user memilih dari daftar datalist (baik klik mouse atau tekan Enter pada opsi)
+  vendorInput.addEventListener("change", function () {
+    if (this.value.trim() !== "") {
+      moveToNominal();
+    }
+  });
 
-        // Kembalikan atribut list setelah fokus berpindah
-        setTimeout(() => {
-          if (currentList) vendorInput.setAttribute("list", currentList);
-        }, 100);
-      }
-    });
+  // 3. Event cadangan saat user mengetik manual lalu menekan ENTER
+  vendorInput.addEventListener("keyup", function (event) {
+    if (event.key === "Enter" && this.value.trim() !== "") {
+      moveToNominal();
+    }
+  });
+}
 
     // 2. Jika pengguna memilih item datalist dengan KLIK MOUSE, langsung pindah ke Nominal
     vendorInput.addEventListener("input", function (event) {
