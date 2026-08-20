@@ -56,11 +56,13 @@
             margin-right: 0 !important;
             font-size: 1.2rem;
         }
-        /* Kelas untuk membuat teks berwarna merah */
-.text-danger-custom {
-    color: #dc3545 !important; /* Warna merah */
-    font-weight: bold;
-}
+
+        /* Kelas khusus angka tidak nol (berwarna merah terang) */
+        .text-danger-custom {
+            color: #ff3344 !important;
+            font-weight: bold;
+        }
+
         .main-content.expanded {
             margin-left: 70px;
         }
@@ -185,7 +187,7 @@
                 <div class="card bg-info text-white p-4 h-100 shadow-sm border-0">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0">🔵 PO Belum Dikirim</h5>
-                        <h2 class="fw-bold mb-0">0</h2>
+                        <h2 class="fw-bold mb-0" id="po-total">0</h2>
                     </div>
                     <div class="row g-2 mt-auto pt-3 border-top border-light">
                         <div class="col-4"><div class="badge-area bg-white bg-opacity-25 p-1 rounded">SL3: <b class="fs-6" id="po-sl3">0</b></div></div>
@@ -239,6 +241,21 @@
             fetchDashboardData();
         });
 
+        // Helper untuk memperbarui teks & menambahkan warna merah jika nilai != 0
+        function setElText(id, val) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            
+            const num = val || 0;
+            el.innerText = num;
+
+            if (num != 0 && num !== "0") {
+                el.classList.add("text-danger-custom");
+            } else {
+                el.classList.remove("text-danger-custom");
+            }
+        }
+
         function fetchDashboardData() {
             fetch(`${WEB_APP_URL}?action=getDashboardKPI`)
                 .then(response => response.json())
@@ -272,28 +289,25 @@
                             }
                         }
 
-                        // 4. Update PO Belum Dikirim (Secara Spesifik dengan ID Element)
-                        document.querySelector('.bg-info h2').innerText = data.poBelumDikirim ? data.poBelumDikirim.total : 0;
-                        if (data.poBelumDikirim && data.poBelumDikirim.rincian) {
-                            const poRincian = data.poBelumDikirim.rincian;
-                            
-                            const setElText = (id, val) => {
-                                const el = document.getElementById(id);
-                                if (el) el.innerText = val || 0;
-                            };
+                        // 4. Update PO Belum Dikirim (Otomatis Merah jika != 0)
+                        if (data.poBelumDikirim) {
+                            setElText('po-total', data.poBelumDikirim.total);
 
-                            setElText('po-sl3', poRincian.sl3);
-                            setElText('po-pml', poRincian.pemalang);
-                            setElText('po-srg', poRincian.sragen);
-                            setElText('po-bys', poRincian.banyumas);
-                            setElText('po-kbmn', poRincian.kebumen);
-                            setElText('po-psp', poRincian.psp);
-                            setElText('po-ima', poRincian.ima);
-                            setElText('po-cul', poRincian.culSmg);
-                            setElText('po-bisi', poRincian.bisiSmg);
-                            setElText('po-msi', poRincian.msi);
-                            setElText('po-tanindo', poRincian.tanindo);
-                            setElText('po-bisisa', poRincian.bisiSa);
+                            if (data.poBelumDikirim.rincian) {
+                                const poRincian = data.poBelumDikirim.rincian;
+                                setElText('po-sl3', poRincian.sl3);
+                                setElText('po-pml', poRincian.pemalang);
+                                setElText('po-srg', poRincian.sragen);
+                                setElText('po-bys', poRincian.banyumas);
+                                setElText('po-kbmn', poRincian.kebumen);
+                                setElText('po-psp', poRincian.psp);
+                                setElText('po-ima', poRincian.ima);
+                                setElText('po-cul', poRincian.culSmg);
+                                setElText('po-bisi', poRincian.bisiSmg);
+                                setElText('po-msi', poRincian.msi);
+                                setElText('po-tanindo', poRincian.tanindo);
+                                setElText('po-bisisa', poRincian.bisiSa);
+                            }
                         }
 
                         // 5. Update Tabel List Unassigned PO
@@ -327,21 +341,6 @@
                     }
                 });
         }
-
-        // Contoh fungsi untuk memperbarui elemen angka
-function updateAngka(elementId, nilai) {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-
-    el.innerText = nilai;
-
-    // Jika nilai tidak sama dengan 0, ubah warna jadi merah
-    if (nilai !== 0 && nilai !== "0") {
-        el.classList.add("text-danger-custom");
-    } else {
-        el.classList.remove("text-danger-custom");
-    }
-}
     </script>
 
     <!-- SCRIPT BOOTSTRAP -->
