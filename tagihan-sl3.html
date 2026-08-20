@@ -205,20 +205,36 @@
   const nominalInput = document.getElementById("nominal");
 
   if (vendorInput) {
-    // 1. Pindah kursor saat menekan tombol ENTER
+    // 1. Trik melepaskan list saat Enter agar tidak tertahan oleh Datalist Browser
     vendorInput.addEventListener("keydown", function (event) {
       if (event.key === "Enter") {
-        event.preventDefault(); // Hentikan efek default browser
-        
-        // Paksa tutup dropdown datalist dengan trik hilangkan atribut list sekejap
-        vendorInput.blur(); 
-        
+        event.preventDefault(); // Matikan submit form/efek default enter
+
+        // Lepas datalist sejenak
+        const currentList = vendorInput.getAttribute("list");
+        vendorInput.removeAttribute("list");
+
+        // Pindahkan fokus ke input Nominal
+        nominalInput.focus();
+
+        // Kembalikan atribut list setelah fokus berpindah
         setTimeout(() => {
-          nominalInput.focus();
-        }, 50); // Bawa kursor ke Nominal setelah 50ms
+          if (currentList) vendorInput.setAttribute("list", currentList);
+        }, 100);
       }
     });
 
+    // 2. Jika pengguna memilih item datalist dengan KLIK MOUSE, langsung pindah ke Nominal
+    vendorInput.addEventListener("input", function (event) {
+      // event.inputType null/undefined menandakan nilai dipilih dari datalist
+      if (!event.inputType || event.inputType === "insertReplacementText") {
+        setTimeout(() => {
+          nominalInput.focus();
+        }, 50);
+      }
+    });
+  }
+}
     // 2. Pindah kursor saat vendor dipilih menggunakan KLIK MOUSE dari dropdown
     vendorInput.addEventListener("change", function () {
       setTimeout(() => {
