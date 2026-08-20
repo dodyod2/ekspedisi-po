@@ -386,55 +386,58 @@
 
     // 4. Simpan Data Tagihan
     function simpanData() {
-      const noPo = document.getElementById("noPo").value.trim();
-      const vendor = document.getElementById("vendor").value.trim();
-      const nominal = document.getElementById("nominal").value.trim();
-      const noInvoice = document.getElementById("noInvoice").value.trim();
-      const docLainnya = document.getElementById("docLainnya").value.trim();
+  const noPo = document.getElementById("noPo").value.trim();
+  const vendor = document.getElementById("vendor").value.trim();
+  const nominal = document.getElementById("nominal").value.trim();
+  const noInvoice = document.getElementById("noInvoice").value.trim();
+  const docLainnya = document.getElementById("docLainnya").value.trim();
 
-      const docCheckboxes = document.querySelectorAll(".doc-checkbox:checked");
-      let docs = Array.from(docCheckboxes).map(cb => cb.value);
-      if (docLainnya) docs.push(docLainnya);
+  // Ambil semua dokumen yang dicentang
+  const docCheckboxes = document.querySelectorAll(".doc-checkbox:checked");
+  let docs = Array.from(docCheckboxes).map(cb => cb.value);
+  if (docLainnya) docs.push(docLainnya);
 
-      if (!noPo || !vendor || !nominal) {
-        Swal.fire('Peringatan', 'Harap isi No PO, Vendor, dan Nominal!', 'warning');
-        return;
-      }
+  // Validasi Input Wajib
+  if (!noPo || !vendor || !nominal) {
+    Swal.fire('Peringatan', 'Harap isi No PO, Vendor, dan Nominal!', 'warning');
+    return;
+  }
 
-      Swal.fire({
-        title: 'Menyimpan...',
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-      });
+  Swal.fire({
+    title: 'Menyimpan...',
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
+  });
 
-      const payload = {
-        action: "simpanTagihanSalatiga",
-        noPo: noPo,
-        vendor: vendor,
-        nominal: nominal,
-        noInvoice: noInvoice,
-        dokumen: docs.join(", ")
-      };
+  // Payload disesuaikan dengan fungsi addExpedisiSL3 di Code.gs
+  const payload = {
+    action: "addExpedisiSL3",      // Action sesuai backend
+    po: noPo,                      // Menggunakan 'po'
+    vendor: vendor,                // Menggunakan 'vendor'
+    nominal: nominal,              // Menggunakan 'nominal'
+    invoice: noInvoice,            // Menggunakan 'invoice'
+    note: docs.join(", ")          // Menggunakan 'note' untuk daftar dokumen
+  };
 
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(res => {
-        if (res.status === 'success') {
-          Swal.fire('Berhasil!', 'Data tagihan berhasil disimpan.', 'success');
-          document.getElementById("formTagihan").reset();
-          document.getElementById("noPo").focus();
-        } else {
-          Swal.fire('Gagal', res.message || 'Gagal menyimpan data.', 'error');
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        Swal.fire('Error', 'Terjadi kesalahan sistem saat menyimpan data.', 'error');
-      });
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.status === 'success') {
+      Swal.fire('Berhasil!', 'Data tagihan berhasil disimpan.', 'success');
+      document.getElementById("formTagihan").reset();
+      document.getElementById("noPo").focus();
+    } else {
+      Swal.fire('Gagal', res.message || 'Gagal menyimpan data.', 'error');
     }
+  })
+  .catch(err => {
+    console.error(err);
+    Swal.fire('Error', 'Terjadi kesalahan sistem saat menyimpan data.', 'error');
+  });
+}
   </script>
 </body>
 </html>
