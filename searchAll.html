@@ -171,7 +171,6 @@ async function doSearch() {
   document.getElementById("btnSearch").disabled = true;
 
   try {
-    // Menggunakan POST dengan text/plain menghindarkan dari error preflight CORS browser
     const response = await fetch(SCRIPT_URL, {
       method: "POST",
       headers: {
