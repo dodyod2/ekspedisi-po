@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+
+  <?!= HtmlService.createHtmlOutputFromFile("styleTTPO").getContent(); ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+<datalist id="listPO"></datalist>
+<div class="container">
+
+    <div class="title">
+
+        <h2>TANDA TERIMA DOKUMEN PO</h2>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- HEADER -->
+    <!-- ========================= -->
+
+
+<table class="header">
+
+<tr>
+
+    <td width="140">Tujuan</td>
+
+    <td width="330">
+
+        <select id="tujuan" onchange="pilihTujuan()">
+
+            <option value="">-- Pilih Tujuan --</option>
+
+        </select>
+
+    </td>
+
+    <td width="140">Nomor TT</td>
+
+    <td>
+
+        <input
+            type="text"
+            id="nomorTT">
+          
+
+    </td>
+
+</tr>
+
+<tr>
+
+    <td>Kepada</td>
+
+    <td>
+
+        <input
+            type="text"
+            id="kepada">
+
+    </td>
+
+    <td>Tanggal</td>
+
+    <td>
+
+        <input
+            type="text"
+            id="tanggal"
+            readonly>
+
+    </td>
+
+</tr>
+
+<tr>
+
+    <td>Perusahaan</td>
+
+    <td>
+
+        <input
+            type="text"
+            id="perusahaan">
+            
+
+    </td>
+
+    <td>Nomor Resi</td>
+
+    <td>
+
+        <input
+            type="text"
+            id="resi">
+
+    </td>
+
+</tr>
+
+<tr>
+
+    <td>Dari</td>
+
+    <td>
+
+        <input
+            type="text"
+            id="pengirim"
+            readonly>
+
+    </td>
+
+    <td></td>
+
+    <td></td>
+
+</tr>
+
+<tr>
+
+    <td>Alamat</td>
+
+    <td colspan="3">
+
+        <textarea
+            id="alamat"
+            rows="4"
+            readonly></textarea>
+
+    </td>
+
+</tr>
+
+</table>
+
+<br>
+
+<div class="section-title">
+
+
+</div>
+
+    <table id="tblPO">
+<datalist id="listPO"></datalist>
+        <thead>
+
+      <tr>
+    <th width="40">No</th>
+    <th width="250">Nomor PO</th>
+    <th width="250">Nomor Invoice</th>
+    <th>Note</th>
+    <th width="80">Aksi</th>
+      </tr>
+
+        </thead>
+
+        <tbody>
+
+        </tbody>
+
+    </table>
+
+    <br>
+
+    <!-- ========================= -->
+    <!-- BUTTON -->
+    <!-- ========================= -->
+
+    <div class="toolbar">
+
+        <button
+            class="btn btn-add"
+            onclick="addRow()">
+
+            ➕ Tambah PO
+
+        </button>
+
+        <button
+            class="btn btn-save"
+            onclick="saveData()">
+
+            💾 Simpan
+
+        </button>
+
+        <button
+            class="btn btn-print"
+            onclick="printData()">
+
+            🖨 Print
+
+        </button>
+
+        
+        <button
+            class="btn btn-reset"
+            onclick="baru()">
+
+            🔄 Baru
+
+        </button>
+
+    </div>
+
+</div>
+
+<?!= HtmlService.createHtmlOutputFromFile("scriptTTPO").getContent(); ?>
+
+</body>
+
+</html>
