@@ -303,28 +303,30 @@
         return;
       }
 
-      // Tambahkan header kolom baru di sini (misal: Tanggal & PIC)
       let html = `<table>
         <thead>
           <tr>
             <th>Sheet</th>
             <th>Baris</th>
-            <th>Tanggal</th> 
+            <th>Tgl Input</th>
             <th>PO</th>
             <th>PIC</th>
+            <th>Tgl Kirim</th>
+            <th>Penerima</th>
             <th>Vendor</th>
           </tr>
         </thead>
         <tbody>`;
 
       results.forEach(item => {
-        // Panggil item.tanggal dan item.pic (pastikan nama variabelnya sesuai dengan yang dikirim dari .gs)
         html += `<tr>
           <td><b>${escapeHtml(item.sheet)}</b></td>
-          <td>${item.row || item.rowNum || '-'}</td>
-          <td>${item.tanggal ? escapeHtml(item.tanggal) : '-'}</td>
+          <td>${item.rowNum || item.row || '-'}</td>
+          <td>${escapeHtml(item.tanggal)}</td>
           <td>${escapeHtml(item.po)}</td>
-          <td>${item.pic ? escapeHtml(item.pic) : '-'}</td>
+          <td>${escapeHtml(item.pic)}</td>
+          <td>${escapeHtml(item.tglKirim)}</td>
+          <td>${escapeHtml(item.penerima)}</td>
           <td>${escapeHtml(item.vendor)}</td>
         </tr>`;
       });
@@ -332,25 +334,6 @@
       html += '</tbody></table>';
       container.innerHTML = html;
     }
-
-    function handleError(err) {
-      document.getElementById("loading").style.display = "none";
-      document.getElementById("btnSearch").disabled = false;
-      alert("Error: " + (err.message || err));
-    }
-
-    function escapeHtml(value) {
-      if (!value) return "";
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-
-    document.getElementById("keyword").addEventListener("keydown", function(e) {
-      if (e.key === "Enter") doSearch();
-    });
   </script>
 </body>
 </html>
