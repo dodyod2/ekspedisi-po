@@ -1,40 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
- class="sidebar">
-        <h4 class="text-center fw-bold mb-4 text-white">Ekspedisi<span class="text-primary">Pro</span></h4>
-        <a href="index.html"><i class="fa-solid fa-chart-pie me-2"></i> Beranda</a>
-        <a href="input-po.html"><i class="fa-solid fa-file-invoice me-2"></i> Input PO</a>
-        
-        <!-- Menu Utama Input Tagihan dengan Trigger Dropdown -->
-        <a class="d-flex justify-content-between align-items-center text-decoration-none" data-bs-toggle="collapse" href="#subTagihanMenu" role="button" aria-expanded="false" aria-controls="subTagihanMenu">
-            <span><i class="fa-solid fa-file-pen me-2"></i> Input Tagihan</span>
-            <i class="fa-solid fa-chevron-down small"></i>
-        </a>
-
-        <!-- Kontainer Dropdown Rincian Tagihan -->
-        <div class="collapse" id="subTagihanMenu">
-            <div class="ps-2 py-1 bg-dark bg-opacity-25">
-                <a href="tagihan-sl3.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Salatiga</a>
-                <a href="tagihan-pemalang.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Pemalang</a>
-                <a href="tagihan-sragen.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Sragen</a>
-                <a href="tagihan-banyumas.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Banyumas</a>
-                <a href="tagihan-kebumen.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Kebumen</a>
-                <a href="tagihan-bisi.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> BISI SA</a>
-            </div>
-        </div>
-
-        <a href="printPO.html" class="mt-2"><i class="fa-solid fa-print me-2"></i> Print Ekspedisi</a>
-        <a href="searchAll.html"><i class="fa-solid fa-magnifying-glass me-2"></i> Pencarian PO</a>
-        <a href="ekspedisi-po-tagihan.html"><i class="fa-solid fa-truck-fast me-2"></i> Ekspedisi PO & Tagihan</a>
-        <a href="tanda-terima-tagihan.html"><i class="fa-solid fa-receipt me-2"></i> Tanda Terima Tagihan</a>
-    </div>
-
-  
   <base target="_top">
   <meta charset="UTF-8">
   <title>Daftar PO CPI</title>
-
+  <!-- Bootstrap CSS untuk Sidebar & Menu -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome untuk Icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
       box-sizing: border-box;
@@ -42,15 +15,51 @@
 
     body {
       margin: 0;
-      padding: 20px;
       font-family: Arial, Helvetica, sans-serif;
       background: #f3f5f7;
       color: #222;
+      display: flex;
     }
 
     /* =====================================================
-       FORM
+       SIDEBAR STYLING
     ===================================================== */
+    .sidebar { 
+      width: 260px; 
+      height: 100vh; 
+      background: #212529; 
+      color: white; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      padding: 20px 15px; 
+      overflow-y: auto; 
+      z-index: 1000;
+    }
+    .sidebar a { 
+      color: #cfd8dc; 
+      text-decoration: none; 
+      display: block; 
+      padding: 10px 15px; 
+      border-radius: 4px; 
+      margin-bottom: 5px; 
+      transition: 0.2s; 
+    }
+    .sidebar a:hover, .sidebar a.active { 
+      background: #343a40; 
+      color: #fff; 
+    }
+
+    /* =====================================================
+       KONTEN UTAMA & FORM
+    ===================================================== */
+    .main-wrapper {
+      margin-left: 260px;
+      padding: 25px;
+      width: calc(100% - 260px);
+      min-height: 100vh;
+    }
+
     .screen-area {
       width: 100%;
       max-width: 850px;
@@ -101,7 +110,7 @@
       background-color: #fff;
     }
 
-    button {
+    button.btn-action {
       border: none;
       border-radius: 8px;
       height: 42px;
@@ -129,7 +138,7 @@
       background: #444;
     }
 
-    button:disabled {
+    button.btn-action:disabled {
       opacity: 0.45;
       cursor: not-allowed;
     }
@@ -260,7 +269,7 @@
     }
 
     /* =====================================================
-       PRINT MEDIA STYLES
+       PRINT MEDIA STYLES (Agar Sidebar Hilang Saat Dicetak)
     ===================================================== */
     @page {
       size: A4 portrait;
@@ -268,15 +277,21 @@
     }
 
     @media print {
-      html, body {
+      body {
+        display: block !important;
         margin: 0 !important;
         padding: 0 !important;
-        width: 100%;
         background: white !important;
       }
 
-      .screen-area {
+      .sidebar, .screen-area {
         display: none !important;
+      }
+
+      .main-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
       }
 
       .print-area {
@@ -363,48 +378,84 @@
 
 <body>
 
-  <div class="screen-area">
-    <div class="screen-card">
-      <div class="screen-title" id="titleHeader">PRINT ekspedisi PO CPI</div>
+  <!-- SIDEBAR NAVIGASI -->
+  <div class="sidebar">
+      <h4 class="text-center fw-bold mb-4 text-white">Ekspedisi<span class="text-primary">Pro</span></h4>
+      <a href="index.html"><i class="fa-solid fa-chart-pie me-2"></i> Beranda</a>
+      <a href="input-po.html"><i class="fa-solid fa-file-invoice me-2"></i> Input PO</a>
+      
+      <!-- Menu Utama Input Tagihan dengan Trigger Dropdown -->
+      <a class="d-flex justify-content-between align-items-center text-decoration-none" data-bs-toggle="collapse" href="#subTagihanMenu" role="button" aria-expanded="false" aria-controls="subTagihanMenu">
+          <span><i class="fa-solid fa-file-pen me-2"></i> Input Tagihan</span>
+          <i class="fa-solid fa-chevron-down small"></i>
+      </a>
 
-      <div class="filter">
-        <!-- Pilihan Lokasi KM8 / KM9 -->
-        <div class="field">
-          <label for="pilihanKM">Lokasi / Sheet</label>
-          <select id="pilihanKM" onchange="updateTitle()">
-            <option value="CPI KM8">CPI KM8</option>
-            <option value="CPI KM9">CPI KM9</option>
-          </select>
-        </div>
-
-        <!-- Tanggal Naik -->
-        <div class="field">
-          <label for="tanggal">Tanggal Naik</label>
-          <input type="date" id="tanggal">
-        </div>
-
-        <button class="btn-load" id="btnLoad" onclick="loadData()">Tampilkan</button>
-        <button class="btn-print" id="btnPrint" onclick="printData()" disabled>🖨️ PRINT</button>
+      <!-- Kontainer Dropdown Rincian Tagihan -->
+      <div class="collapse" id="subTagihanMenu">
+          <div class="ps-2 py-1 bg-dark bg-opacity-25 rounded">
+              <a href="tagihan-sl3.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Salatiga</a>
+              <a href="tagihan-pemalang.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Pemalang</a>
+              <a href="tagihan-sragen.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Sragen</a>
+              <a href="tagihan-banyumas.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Banyumas</a>
+              <a href="tagihan-kebumen.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Kebumen</a>
+              <a href="tagihan-bisi.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> BISI SA</a>
+          </div>
       </div>
 
-      <div id="loading">
-        <div class="spinner"></div>
-        <div>Sedang menampilkan data PO...</div>
+      <a href="printPO.html" class="active mt-2"><i class="fa-solid fa-print me-2"></i> Print Ekspedisi</a>
+      <a href="searchAll.html"><i class="fa-solid fa-magnifying-glass me-2"></i> Pencarian PO</a>
+      <a href="ekspedisi-po-tagihan.html"><i class="fa-solid fa-truck-fast me-2"></i> Ekspedisi PO & Tagihan</a>
+      <a href="tanda-terima-tagihan.html"><i class="fa-solid fa-receipt me-2"></i> Tanda Terima Tagihan</a>
+  </div>
+
+  <!-- BUNGKUS KONTEN UTAMA AGAR TIDAK TERTUTUP SIDEBAR -->
+  <div class="main-wrapper">
+    <div class="screen-area">
+      <div class="screen-card">
+        <div class="screen-title" id="titleHeader">PRINT ekspedisi PO CPI</div>
+
+        <div class="filter">
+          <!-- Pilihan Lokasi KM8 / KM9 -->
+          <div class="field">
+            <label for="pilihanKM">Lokasi / Sheet</label>
+            <select id="pilihanKM" onchange="updateTitle()">
+              <option value="CPI KM8">CPI KM8</option>
+              <option value="CPI KM9">CPI KM9</option>
+            </select>
+          </div>
+
+          <!-- Tanggal Naik -->
+          <div class="field">
+            <label for="tanggal">Tanggal Naik</label>
+            <input type="date" id="tanggal">
+          </div>
+
+          <button class="btn-action btn-load" id="btnLoad" onclick="loadData()">Tampilkan</button>
+          <button class="btn-action btn-print" id="btnPrint" onclick="printData()" disabled>🖨️ PRINT</button>
+        </div>
+
+        <div id="loading">
+          <div class="spinner"></div>
+          <div>Sedang menampilkan data PO...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="print-area" id="printArea">
+      <h2 class="daftar-title" id="printTitle">DAFTAR PO CPI KM8</h2>
+
+      <div class="print-date">
+        Tanggal Naik: <span id="printTanggal"></span>
+      </div>
+
+      <div id="printContainer">
+        <!-- Tabel akan dirender dinamis di sini -->
       </div>
     </div>
   </div>
 
-  <div class="print-area" id="printArea">
-    <h2 class="daftar-title" id="printTitle">DAFTAR PO CPI KM8</h2>
-
-    <div class="print-date">
-      Tanggal Naik: <span id="printTanggal"></span>
-    </div>
-
-    <div id="printContainer">
-      <!-- Tabel akan dirender dinamis di sini -->
-    </div>
-  </div>
+  <!-- Bootstrap JS Bundle (Dibutuhkan untuk dropdown sidebar) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     function updateTitle() {
@@ -439,7 +490,6 @@
         return;
       }
 
-      // Update Judul Sesuai Pilihan
       updateTitle();
 
       document.getElementById("loading").style.display = "block";
@@ -528,20 +578,20 @@
           document.getElementById("btnPrint").disabled = true;
           alert("Gagal mengambil data: " + (error.message || error));
         })
-        .getDataPrintPO(sheetName, tanggal); // Dinamis mengirimkan pilihan CPI KM8 / CPI KM9
+        .getDataPrintPO(sheetName, tanggal);
     }
 
     window.addEventListener("DOMContentLoaded", function() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const sheet = urlParams.get("sheet");
-  const tanggal = urlParams.get("tanggal");
+      const urlParams = new URLSearchParams(window.location.search);
+      const sheet = urlParams.get("sheet");
+      const tanggal = urlParams.get("tanggal");
 
-  if (sheet && tanggal) {
-    document.getElementById("pilihanKM").value = sheet;
-    document.getElementById("tanggal").value = tanggal;
-    loadData(); // Otomatis muat data PO begitu halaman terbuka
-  }
-});
+      if (sheet && tanggal) {
+        document.getElementById("pilihanKM").value = sheet;
+        document.getElementById("tanggal").value = tanggal;
+        loadData();
+      }
+    });
 
     function printData() {
       const container = document.getElementById("printContainer");
