@@ -138,19 +138,19 @@
                 <div class="card bg-danger text-white p-4 h-100 shadow-sm border-0">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0">🔴 PO Belum Naik Akunting</h5>
-                        <h2 class="fw-bold mb-0">0</h2>
+                        <h2 class="fw-bold mb-0" id="kpi-po-belum-naik">0</h2>
                     </div>
                     <div class="row g-2 mt-auto pt-3 border-top border-light">
                         <div class="col-6">
                             <div class="badge-area">
                                 <span class="d-block text-white-50">KM8</span>
-                                <b class="fs-4">0</b>
+                                <b class="fs-4" id="kpi-km8">0</b>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="badge-area">
                                 <span class="d-block text-white-50">KM9</span>
-                                <b class="fs-4">0</b>
+                                <b class="fs-4" id="kpi-km9">0</b>
                             </div>
                         </div>
                     </div>
@@ -162,7 +162,7 @@
                 <div class="card bg-success text-white p-4 h-100 shadow-sm border-0">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0">🟢 PO Sudah Naik (Bulan Ini)</h5>
-                        <h2 class="fw-bold mb-0">0</h2>
+                        <h2 class="fw-bold mb-0" id="kpi-po-sudah-naik">0</h2>
                     </div>
                     <div class="mt-auto pt-3 border-top border-light text-white-50">
                         <p class="mb-0 fs-6">Akumulasi total PO yang berhasil diproses ke akunting bulan ini.</p>
@@ -175,15 +175,15 @@
                 <div class="card bg-warning text-dark p-4 h-100 shadow-sm border-0">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0 fw-bold">🟡 Tagihan Belum Dikirim</h5>
-                        <h2 class="fw-bold mb-0">0</h2>
+                        <h2 class="fw-bold mb-0" id="kpi-tagihan-belum-kirim">0</h2>
                     </div>
                     <div class="row g-2 mt-auto pt-3 border-top border-dark text-dark">
-                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Salatiga: <b class="fs-6">0</b></div></div>
-                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Pemalang: <b class="fs-6">0</b></div></div>
-                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Sragen: <b class="fs-6">0</b></div></div>
-                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Banyumas: <b class="fs-6">0</b></div></div>
-                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Kebumen: <b class="fs-6">0</b></div></div>
-                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">BISI SA: <b class="fs-6">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Salatiga: <b class="fs-6" id="tagihan-sl3">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Pemalang: <b class="fs-6" id="tagihan-pml">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Sragen: <b class="fs-6" id="tagihan-srg">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Banyumas: <b class="fs-6" id="tagihan-bys">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">Kebumen: <b class="fs-6" id="tagihan-kbmn">0</b></div></div>
+                        <div class="col-4"><div class="badge-area bg-white bg-opacity-50 p-1 rounded">BISI SA: <b class="fs-6" id="tagihan-bisisa">0</b></div></div>
                     </div>
                 </div>
             </div>
@@ -280,112 +280,132 @@
             }
         }
 
-       function fetchDashboardData(callback) {
-    // 1. Tampilkan indikator loading (spinner) di tabel SEBELUM proses fetch dimulai
-    const tableBody = document.querySelector('.table tbody');
-    if (tableBody) {
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="5" class="text-center py-4 text-muted">
-                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
-                    Memuat data dari server...
-                </td>
-            </tr>`;
-    }
+        // Helper untuk menampilkan spinner loading pada seluruh elemen KPI
+        function showKPILoadingState() {
+            const spinnerLg = '<div class="spinner-border spinner-border-sm" role="status"></div>';
+            const spinnerSm = '<div class="spinner-border spinner-border-sm" style="width: 0.9rem; height: 0.9rem;" role="status"></div>';
 
-    fetch(`${WEB_APP_URL}?action=getDashboardKPI`)
-        .then(response => response.json())
-        .then(result => {
-            if (result.status === 'success') {
-                const data = result.data;
+            // KPI 1: PO Belum Naik Akunting
+            const el1 = document.getElementById('kpi-po-belum-naik'); if (el1) el1.innerHTML = spinnerLg;
+            const el2 = document.getElementById('kpi-km8'); if (el2) el2.innerHTML = spinnerSm;
+            const el3 = document.getElementById('kpi-km9'); if (el3) el3.innerHTML = spinnerSm;
 
-                // 1. Update Kartu PO Belum Naik Akunting
-                const dangerH2 = document.querySelector('.bg-danger h2');
-                if (dangerH2) dangerH2.innerText = data.poBelumNaik ? data.poBelumNaik.total : 0;
-                
-                const kmBadges = document.querySelectorAll('.bg-danger .badge-area b');
-                if (kmBadges.length >= 2 && data.poBelumNaik) {
-                    kmBadges[0].innerText = data.poBelumNaik.km8 || 0;
-                    kmBadges[1].innerText = data.poBelumNaik.km9 || 0;
-                }
+            // KPI 2: PO Sudah Naik
+            const el4 = document.getElementById('kpi-po-sudah-naik'); if (el4) el4.innerHTML = spinnerLg;
 
-                // 2. Update PO Sudah Naik Bulan Ini
-                const successH2 = document.querySelector('.bg-success h2');
-                if (successH2) successH2.innerText = data.poSudahNaikBulanIni || 0;
+            // KPI 3: Tagihan Belum Dikirim
+            const el5 = document.getElementById('kpi-tagihan-belum-kirim'); if (el5) el5.innerHTML = spinnerLg;
+            ['tagihan-sl3', 'tagihan-pml', 'tagihan-srg', 'tagihan-bys', 'tagihan-kbmn', 'tagihan-bisisa'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.innerHTML = spinnerSm;
+            });
 
-                // 3. Update Tagihan Belum Dikirim
-                const warningH2 = document.querySelector('.bg-warning h2');
-                if (warningH2) warningH2.innerText = data.tagihanBelumDikirim ? data.tagihanBelumDikirim.total : 0;
-                
-                if (data.tagihanBelumDikirim && data.tagihanBelumDikirim.rincian) {
-                    const tagihanRincian = data.tagihanBelumDikirim.rincian;
-                    const tagihanBadges = document.querySelectorAll('.bg-warning .badge-area b');
-                    if (tagihanBadges.length >= 6) {
-                        tagihanBadges[0].innerText = tagihanRincian.sl3 || 0;
-                        tagihanBadges[1].innerText = tagihanRincian.pemalang || 0;
-                        tagihanBadges[2].innerText = tagihanRincian.sragen || 0;
-                        tagihanBadges[3].innerText = tagihanRincian.banyumas || 0;
-                        tagihanBadges[4].innerText = tagihanRincian.kebumen || 0;
-                        tagihanBadges[5].innerText = tagihanRincian.bisisa || 0;
-                    }
-                }
+            // KPI 4: PO Belum Dikirim
+            const el6 = document.getElementById('po-total'); if (el6) el6.innerHTML = spinnerLg;
+            ['po-sl3', 'po-pml', 'po-srg', 'po-bys', 'po-kbmn', 'po-psp', 'po-ima', 'po-cul', 'po-bisi', 'po-msi', 'po-pfm', 'po-bisisa', 'po-tanindo', 'po-shs'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.innerHTML = spinnerSm;
+            });
+        }
 
-                // 4. Update PO Belum Dikirim
-                if (data.poBelumDikirim) {
-                    setElText('po-total', data.poBelumDikirim.total);
+        function fetchDashboardData(callback) {
+            // 1. Tampilkan animasi loading pada indikator KPI
+            showKPILoadingState();
 
-                    if (data.poBelumDikirim.rincian) {
-                        const poRincian = data.poBelumDikirim.rincian;
-                        setElText('po-sl3', poRincian.sl3);
-                        setElText('po-pml', poRincian.pemalang);
-                        setElText('po-srg', poRincian.sragen);
-                        setElText('po-bys', poRincian.banyumas);
-                        setElText('po-kbmn', poRincian.kebumen);
-                        setElText('po-psp', poRincian.psp);
-                        setElText('po-ima', poRincian.ima);
-                        setElText('po-cul', poRincian.culSmg);
-                        setElText('po-bisi', poRincian.bisiSmg);
-                        setElText('po-msi', poRincian.msi);
-                        setElText('po-pfm', poRincian.pfm);
-                        setElText('po-bisisa', poRincian.bisiSa);
-                        setElText('po-tanindo', poRincian.tanindo);
-                        setElText('po-shs', poRincian.shs);
-                    }
-                }
-
-                // 5. Update Tabel List Unassigned PO setelah data berhasil dimuat
-                if (tableBody && data.listUnassigned) {
-                    let rowsHTML = '';
-                    if (data.listUnassigned.length === 0) {
-                        rowsHTML = `<tr><td colspan="5" class="text-center text-muted">Tidak ada PO yang belum memiliki vendor.</td></tr>`;
-                    } else {
-                        data.listUnassigned.forEach((item, index) => {
-                            rowsHTML += `
-                                <tr>
-                                    <td>${index + 1}</td>
-                                    <td>${item.tglInput || '-'}</td>
-                                    <td>${item.po || '-'}</td>
-                                    <td>${item.pic || '-'}</td>
-                                    <td>${item.feedmill || '-'}</td>
-                                </tr>
-                            `;
-                        });
-                    }
-                    tableBody.innerHTML = rowsHTML;
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Gagal mengambil data KPI:', error);
+            // 2. Tampilkan animasi loading pada tabel
+            const tableBody = document.querySelector('.table tbody');
             if (tableBody) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Gagal memuat data dari server. Periksa kembali URL Web App Anda.</td></tr>`;
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                            Memuat data dari server...
+                        </td>
+                    </tr>`;
             }
-        })
-        .finally(() => {
-            // Memastikan animasi refresh pada tombol berhenti
-            if (typeof callback === 'function') callback();
-        });
-}
+
+            fetch(`${WEB_APP_URL}?action=getDashboardKPI`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 'success') {
+                        const data = result.data;
+
+                        // 1. Update Kartu PO Belum Naik Akunting
+                        setElText('kpi-po-belum-naik', data.poBelumNaik ? data.poBelumNaik.total : 0);
+                        if (data.poBelumNaik) {
+                            setElText('kpi-km8', data.poBelumNaik.km8 || 0);
+                            setElText('kpi-km9', data.poBelumNaik.km9 || 0);
+                        }
+
+                        // 2. Update PO Sudah Naik Bulan Ini
+                        setElText('kpi-po-sudah-naik', data.poSudahNaikBulanIni || 0);
+
+                        // 3. Update Tagihan Belum Dikirim
+                        setElText('kpi-tagihan-belum-kirim', data.tagihanBelumDikirim ? data.tagihanBelumDikirim.total : 0);
+                        if (data.tagihanBelumDikirim && data.tagihanBelumDikirim.rincian) {
+                            const tagihanRincian = data.tagihanBelumDikirim.rincian;
+                            setElText('tagihan-sl3', tagihanRincian.sl3);
+                            setElText('tagihan-pml', tagihanRincian.pemalang);
+                            setElText('tagihan-srg', tagihanRincian.sragen);
+                            setElText('tagihan-bys', tagihanRincian.banyumas);
+                            setElText('tagihan-kbmn', tagihanRincian.kebumen);
+                            setElText('tagihan-bisisa', tagihanRincian.bisisa);
+                        }
+
+                        // 4. Update PO Belum Dikirim
+                        if (data.poBelumDikirim) {
+                            setElText('po-total', data.poBelumDikirim.total);
+
+                            if (data.poBelumDikirim.rincian) {
+                                const poRincian = data.poBelumDikirim.rincian;
+                                setElText('po-sl3', poRincian.sl3);
+                                setElText('po-pml', poRincian.pemalang);
+                                setElText('po-srg', poRincian.sragen);
+                                setElText('po-bys', poRincian.banyumas);
+                                setElText('po-kbmn', poRincian.kebumen);
+                                setElText('po-psp', poRincian.psp);
+                                setElText('po-ima', poRincian.ima);
+                                setElText('po-cul', poRincian.culSmg);
+                                setElText('po-bisi', poRincian.bisiSmg);
+                                setElText('po-msi', poRincian.msi);
+                                setElText('po-pfm', poRincian.pfm);
+                                setElText('po-bisisa', poRincian.bisiSa);
+                                setElText('po-tanindo', poRincian.tanindo);
+                                setElText('po-shs', poRincian.shs);
+                            }
+                        }
+
+                        // 5. Update Tabel List Unassigned PO
+                        if (tableBody && data.listUnassigned) {
+                            let rowsHTML = '';
+                            if (data.listUnassigned.length === 0) {
+                                rowsHTML = `<tr><td colspan="5" class="text-center text-muted">Tidak ada PO yang belum memiliki vendor.</td></tr>`;
+                            } else {
+                                data.listUnassigned.forEach((item, index) => {
+                                    rowsHTML += `
+                                        <tr>
+                                            <td>${index + 1}</td>
+                                            <td>${item.tglInput || '-'}</td>
+                                            <td>${item.po || '-'}</td>
+                                            <td>${item.pic || '-'}</td>
+                                            <td>${item.feedmill || '-'}</td>
+                                        </tr>
+                                    `;
+                                });
+                            }
+                            tableBody.innerHTML = rowsHTML;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Gagal mengambil data KPI:', error);
+                    if (tableBody) {
+                        tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Gagal memuat data dari server. Periksa kembali URL Web App Anda.</td></tr>`;
+                    }
+                })
+                .finally(() => {
+                    // Memastikan animasi refresh pada tombol berhenti
+                    if (typeof callback === 'function') callback();
+                });
+        }
     </script>
 
     <!-- SCRIPT BOOTSTRAP -->
