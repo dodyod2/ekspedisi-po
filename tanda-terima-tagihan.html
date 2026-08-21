@@ -49,14 +49,9 @@
 </div>
 
 <script>
+<script>
+// Gunakan link versi terbaru secara langsung (Tidak akan ditimpa lagi)
 let urlWebApp = "https://script.google.com/macros/s/AKfycbxK905uFZb6_3bF67aNpQLhMx9-72nvX1pWZ4F1fA5MFqtoiisuY3nbREbtVSKVEc81uQ/exec";
-
-// Ambil URL Web App saat halaman dimuat
-window.onload = function() {
-  google.script.run.withSuccessHandler(function(url) {
-    urlWebApp = url;
-  }).getScriptUrl();
-};
 
 function cariData() {
   const keyword = document.getElementById("keyword").value.trim();
