@@ -9,13 +9,53 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: Calibri, Arial; background: #f9f9f9; margin: 0; display: flex; }
-    
-    /* Styling Sidebar */
-    .sidebar { width: 260px; height: 100vh; background: #212529; color: white; position: fixed; top: 0; left: 0; padding: 20px 15px; overflow-y: auto; }
-    .sidebar a { color: #cfd8dc; text-decoration: none; display: block; padding: 10px 15px; border-radius: 4px; margin-bottom: 5px; transition: 0.2s; }
-    .sidebar a:hover, .sidebar a.active { background: #343a40; color: #fff; }
-    
+   body { background-color: #f4f6f9; }
+        .sidebar {
+            width: 250px; 
+            background-color: #1e293b; 
+            height: 100vh;
+            position: fixed; 
+            color: white; 
+            padding-top: 20px; 
+            z-index: 1000;
+            overflow-y: auto;
+            transition: width 0.3s ease;
+        }
+        .sidebar a {
+            color: #cbd5e1; 
+            text-decoration: none; 
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            font-weight: 500; 
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .sidebar a span.menu-text {
+            transition: opacity 0.2s ease;
+        }
+        .main-content { 
+            margin-left: 250px; 
+            padding: 25px 30px; 
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.minimized {
+            width: 70px;
+        }
+        .sidebar.minimized .sidebar-title,
+        .sidebar.minimized span.menu-text,
+        .sidebar.minimized .fa-chevron-down {
+            display: none !important;
+        }
+        .sidebar.minimized a {
+            justify-content: center;
+            padding: 12px 10px;
+        }
+        .sidebar.minimized a i {
+            margin-right: 0 !important;
+            font-size: 1.2rem;
+        }
     /* Styling Konten Utama */
     .main-content { margin-left: 260px; padding: 20px; width: calc(100% - 260px); }
     .iframe-container { width: 100%; height: calc(100vh - 80px); background: #fff; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden; }
