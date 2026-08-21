@@ -123,7 +123,7 @@
       <div class="d-flex gap-2 align-items-center">
         <div class="input-group">
           <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
-          <input type="text" id="searchPO" class="form-control border-start-0" placeholder="Cari No PO atau PIC..." onkeyup="filterPO()">
+          <input type="text" id="searchPO" class="form-control border-start-0" placeholder="Cari No PO atau PIC..." onkeyup="filterPO()" oninput="filterPO()">
         </div>
         <button class="btn btn-outline-secondary text-nowrap" onclick="loadData()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
       </div>
@@ -356,6 +356,37 @@
             Swal.fire('Error', 'Terjadi kesalahan saat menyimpan.', 'error');
           });
         }
+      });
+    }
+
+      // 6. FUNGSI PENCARIAN PO (Live Search)
+    function filterPO() {
+      const inputElement = document.getElementById('searchPO');
+      if (!inputElement) return; // Mencegah error jika input belum dimuat
+
+      const keyword = inputElement.value.toLowerCase();
+      const tables = ['tbodyKM8', 'tbodyKM9'];
+
+      tables.forEach(tbodyId => {
+        const tbody = document.getElementById(tbodyId);
+        if (!tbody) return;
+
+        const rows = tbody.querySelectorAll('tr');
+        
+        rows.forEach(row => {
+          // Lewati baris yang bukan data PO (seperti teks "Memuat data..." atau "Semua PO sudah diisi")
+          if (row.cells.length < 5) return; 
+
+          // Ambil SELURUH teks di dalam baris tersebut (lebih aman dan mencakup PO & PIC)
+          const rowText = row.textContent.toLowerCase();
+
+          // Tampilkan baris jika kata kunci ditemukan, sembunyikan jika tidak
+          if (rowText.includes(keyword)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
       });
     }
   </script>
