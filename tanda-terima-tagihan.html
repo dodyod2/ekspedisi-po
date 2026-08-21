@@ -1,218 +1,115 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <base target="_top">
-
-  <?!= HtmlService.createHtmlOutputFromFile("styleTTPO").getContent(); ?>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body { font-family: Calibri, Arial; font-size: 13px; margin: 15px; background: #f9f9f9; }
+    .container { background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .title { text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #333; }
+    .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+    .search-box input { flex: 1; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; }
+    .search-box button { padding: 8px 16px; background: #1976D2; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .search-box button:hover { background: #115293; }
+    table.result-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    table.result-table th, table.result-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    table.result-table th { background: #d9e8fb; color: #333; }
+    .btn-print { background: #2e7d32; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-print:hover { background: #1b5e20; }
+  </style>
 </head>
-
 <body>
 
-<datalist id="listPO"></datalist>
 <div class="container">
+    <div class="title">PENCARIAN TANDA TERIMA & TAGIHAN (PO / INVOICE)</div>
 
-    <div class="title">
-
-        <h2>TANDA TERIMA DOKUMEN PO</h2>
-
+    <div class="search-box">
+        <input type="text" id="keyword" placeholder="Masukkan Nomor TT, Nomor PO, atau Nomor Invoice..." onkeydown="if(event.key==='Enter') cariData()">
+        <button onclick="cariData()">🔍 Cari</button>
     </div>
 
-    <!-- ========================= -->
-    <!-- HEADER -->
-    <!-- ========================= -->
-
-
-<table class="header">
-
-<tr>
-
-    <td width="140">Tujuan</td>
-
-    <td width="330">
-
-        <select id="tujuan" onchange="pilihTujuan()">
-
-            <option value="">-- Pilih Tujuan --</option>
-
-        </select>
-
-    </td>
-
-    <td width="140">Nomor TT</td>
-
-    <td>
-
-        <input
-            type="text"
-            id="nomorTT">
-          
-
-    </td>
-
-</tr>
-
-<tr>
-
-    <td>Kepada</td>
-
-    <td>
-
-        <input
-            type="text"
-            id="kepada">
-
-    </td>
-
-    <td>Tanggal</td>
-
-    <td>
-
-        <input
-            type="text"
-            id="tanggal"
-            readonly>
-
-    </td>
-
-</tr>
-
-<tr>
-
-    <td>Perusahaan</td>
-
-    <td>
-
-        <input
-            type="text"
-            id="perusahaan">
-            
-
-    </td>
-
-    <td>Nomor Resi</td>
-
-    <td>
-
-        <input
-            type="text"
-            id="resi">
-
-    </td>
-
-</tr>
-
-<tr>
-
-    <td>Dari</td>
-
-    <td>
-
-        <input
-            type="text"
-            id="pengirim"
-            readonly>
-
-    </td>
-
-    <td></td>
-
-    <td></td>
-
-</tr>
-
-<tr>
-
-    <td>Alamat</td>
-
-    <td colspan="3">
-
-        <textarea
-            id="alamat"
-            rows="4"
-            readonly></textarea>
-
-    </td>
-
-</tr>
-
-</table>
-
-<br>
-
-<div class="section-title">
-
-
-</div>
-
-    <table id="tblPO">
-<datalist id="listPO"></datalist>
-        <thead>
-
-      <tr>
-    <th width="40">No</th>
-    <th width="250">Nomor PO</th>
-    <th width="250">Nomor Invoice</th>
-    <th>Note</th>
-    <th width="80">Aksi</th>
-      </tr>
-
-        </thead>
-
-        <tbody>
-
-        </tbody>
-
-    </table>
-
-    <br>
-
-    <!-- ========================= -->
-    <!-- BUTTON -->
-    <!-- ========================= -->
-
-    <div class="toolbar">
-
-        <button
-            class="btn btn-add"
-            onclick="addRow()">
-
-            ➕ Tambah PO
-
-        </button>
-
-        <button
-            class="btn btn-save"
-            onclick="saveData()">
-
-            💾 Simpan
-
-        </button>
-
-        <button
-            class="btn btn-print"
-            onclick="printData()">
-
-            🖨 Print
-
-        </button>
-
-        
-        <button
-            class="btn btn-reset"
-            onclick="baru()">
-
-            🔄 Baru
-
-        </button>
-
+    <div id="hasilPencarian">
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th width="140">Nomor TT</th>
+                    <th width="90">Tanggal</th>
+                    <th>Kepada / Perusahaan</th>
+                    <th width="120">Nomor Resi</th>
+                    <th width="80" style="text-align: center;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabelBody">
+                <tr>
+                    <td colspan="5" align="center" style="color: #777;">Silakan masukkan kata kunci pencarian di atas.</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-
 </div>
 
-<?!= HtmlService.createHtmlOutputFromFile("scriptTTPO").getContent(); ?>
+<script>
+let urlWebApp = "https://script.google.com/macros/s/AKfycbxK905uFZb6_3bF67aNpQLhMx9-72nvX1pWZ4F1fA5MFqtoiisuY3nbREbtVSKVEc81uQ/exec";
+
+// Ambil URL Web App saat halaman dimuat
+window.onload = function() {
+  google.script.run.withSuccessHandler(function(url) {
+    urlWebApp = url;
+  }).getScriptUrl();
+};
+
+function cariData() {
+  const keyword = document.getElementById("keyword").value.trim();
+  if (keyword === "") {
+    Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Masukkan kata kunci pencarian terlebih dahulu!' });
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(data) {
+      const tbody = document.getElementById("tabelBody");
+      tbody.innerHTML = "";
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" align="center" style="color: red;">Data tidak ditemukan.</td></tr>`;
+        return;
+      }
+
+      data.forEach(function(item) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><b>${item.nomorTT}</b></td>
+          <td>${item.tanggal}</td>
+          <td><b>${item.kepada}</b><br><small>${item.perusahaan}</small></td>
+          <td>${item.resi || '-'}</td>
+          <td align="center">
+            <button class="btn-print" onclick="printTT('${item.nomorTT}')">🖨 Print</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })
+    .withFailureHandler(function(err) {
+      Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+    })
+    .searchTTPO(keyword);
+}
+
+function printTT(noTT) {
+  if (!urlWebApp) {
+    Swal.fire({ icon: 'info', title: 'Memuat...', text: 'Sistem sedang menyiapkan link, coba klik cetak sekali lagi.' });
+    return;
+  }
+  
+  const linkCetak = urlWebApp + "?page=printTTPO&noTT=" + noTT;
+  const a = document.createElement('a');
+  a.href = linkCetak;
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+</script>
 
 </body>
-
 </html>
