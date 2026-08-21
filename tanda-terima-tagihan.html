@@ -13,10 +13,19 @@
     body { font-family: Calibri, Arial; font-size: 13px; background: #f9f9f9; margin: 0; display: flex; }
     
     /* Styling Sidebar */
-    .sidebar { width: 260px; height: 100vh; background: #212529; color: white; position: fixed; top: 0; left: 0; padding: 20px 15px; overflow-y: auto; }
-    .sidebar a { color: #cfd8dc; text-decoration: none; display: block; padding: 10px 15px; border-radius: 4px; margin-bottom: 5px; transition: 0.2s; }
-    .sidebar a:hover, .sidebar a.active { background: #343a40; color: #fff; }
-    
+     .sidebar a {
+            color: #cbd5e1; 
+            text-decoration: none; 
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            font-weight: 500; 
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .sidebar a span.menu-text {
+            transition: opacity 0.2s ease;
+        }
     /* Styling Konten Utama agar tidak tertutup sidebar */
     .main-content { margin-left: 260px; padding: 25px; width: calc(100% - 260px); }
     
