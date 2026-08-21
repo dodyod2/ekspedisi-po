@@ -280,7 +280,19 @@
             }
         }
 
-        function fetchDashboardData(callback) {
+       function fetchDashboardData(callback) {
+    // 1. Tampilkan indikator loading (spinner) di tabel SEBELUM proses fetch dimulai
+    const tableBody = document.querySelector('.table tbody');
+    if (tableBody) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center py-4 text-muted">
+                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                    Memuat data dari server...
+                </td>
+            </tr>`;
+    }
+
     fetch(`${WEB_APP_URL}?action=getDashboardKPI`)
         .then(response => response.json())
         .then(result => {
@@ -341,8 +353,7 @@
                     }
                 }
 
-                // 5. Update Tabel List Unassigned PO
-                const tableBody = document.querySelector('.table tbody');
+                // 5. Update Tabel List Unassigned PO setelah data berhasil dimuat
                 if (tableBody && data.listUnassigned) {
                     let rowsHTML = '';
                     if (data.listUnassigned.length === 0) {
@@ -366,13 +377,12 @@
         })
         .catch(error => {
             console.error('Gagal mengambil data KPI:', error);
-            const tableBody = document.querySelector('.table tbody');
             if (tableBody) {
                 tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Gagal memuat data dari server. Periksa kembali URL Web App Anda.</td></tr>`;
             }
         })
         .finally(() => {
-            // Memastikan animasi refresh berhenti
+            // Memastikan animasi refresh pada tombol berhenti
             if (typeof callback === 'function') callback();
         });
 }
