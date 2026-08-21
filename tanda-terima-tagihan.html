@@ -62,14 +62,14 @@ function cariData() {
   const tbody = document.getElementById("tabelBody");
   tbody.innerHTML = `<tr><td colspan="5" align="center" style="color: #777;">Sedang mencari data...</td></tr>`;
 
-  // Menggunakan fetch ke Google Apps Script (action=search)
   fetch(`${urlWebApp}?action=search&keyword=${encodeURIComponent(keyword)}`)
     .then(response => response.json())
     .then(data => {
       tbody.innerHTML = "";
 
-      if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" align="center" style="color: red;">Data tidak ditemukan.</td></tr>`;
+      // 🔥 PENGAMAN: Cek apakah data benar-benar berupa Array (List)
+      if (!Array.isArray(data) || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" align="center" style="color: red;">Data tidak ditemukan atau terjadi kesalahan server.</td></tr>`;
         return;
       }
 
