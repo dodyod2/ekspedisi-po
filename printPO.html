@@ -493,116 +493,112 @@
     }
 
     function loadData() {
-      const sheetName = document.getElementById("pilihanKM").value;
-      const tanggal = document.getElementById("tanggal").value;
+  const sheetName = document.getElementById("pilihanKM").value;
+  const tanggal = document.getElementById("tanggal").value;
 
-      if (!tanggal) {
-        alert("Silakan pilih tanggal naik.");
+  if (!tanggal) {
+    alert("Silakan pilih tanggal naik.");
+    return;
+  }
+
+  updateTitle();
+
+  document.getElementById("loading").style.display = "block";
+  document.getElementById("btnLoad").disabled = true;
+  document.getElementById("btnPrint").disabled = true;
+  document.getElementById("printContainer").innerHTML = "";
+  document.getElementById("printTanggal").textContent = "";
+
+  // Ganti URL di bawah ini dengan URL Web App Apps Script Anda yang berakhiran /exec
+  const SCRIPT_URL = "URL_WEB_APP_APPS_SCRIPT_ANDA_DISINI"; 
+
+  const url = `${SCRIPT_URL}?action=getDataPrintPO&sheetName=${encodeURIComponent(sheetName)}&tanggal=${encodeURIComponent(tanggal)}`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(res => {
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("btnLoad").disabled = false;
+
+      // Ambil data dari format buildJsonResponse
+      const data = res.data || res; // sesuaikan struktur respon
+
+      const container = document.getElementById("printContainer");
+      container.innerHTML = "";
+
+      if (!data || data.length === 0) {
+        container.innerHTML = `<div class="no-data">Tidak ada PO pada tanggal tersebut.</div>`;
+        document.getElementById("btnPrint").disabled = true;
+        document.getElementById("printTanggal").textContent = formatTanggal(tanggal);
         return;
       }
 
-      updateTitle();
+      data.sort(function(a, b) {
+        const vendorA = String(a.vendor || "").trim().toUpperCase();
+        const vendorB = String(b.vendor || "").trim().toUpperCase();
+        return vendorA.localeCompare(vendorB, "id", { sensitivity: "base" });
+      });
 
-      document.getElementById("loading").style.display = "block";
-      document.getElementById("btnLoad").disabled = true;
-      document.getElementById("btnPrint").disabled = true;
-      document.getElementById("printContainer").innerHTML = "";
-      document.getElementById("printTanggal").textContent = "";
+      document.getElementById("printTanggal").textContent = formatTanggal(tanggal);
 
-      google.script.run
-        .withSuccessHandler(function(data) {
-          document.getElementById("loading").style.display = "none";
-          document.getElementById("btnLoad").disabled = false;
+      const MAX_PER_BLOCK = 40;
+      for (let i = 0; i < data.length; i += MAX_PER_BLOCK) {
+        const chunk = data.slice(i, i + MAX_PER_BLOCK);
+        const blockIndex = Math.floor(i / MAX_PER_BLOCK);
 
-          const container = document.getElementById("printContainer");
-          container.innerHTML = "";
+        if (blockIndex % 2 === 0) {
+          const page = document.createElement("div");
+          page.className = "print-page";
+          page.id = "print-page-" + blockIndex;
+          container.appendChild(page);
+        }
 
-          if (!data || data.length === 0) {
-            container.innerHTML = `<div class="no-data">Tidak ada PO pada tanggal tersebut.</div>`;
-            document.getElementById("btnPrint").disabled = true;
-            document.getElementById("printTanggal").textContent = formatTanggal(tanggal);
-            return;
-          }
+        const pages = container.querySelectorAll(".print-page");
+        const currentPage = pages[pages.length - 1];
 
-          data.sort(function(a, b) {
-            const vendorA = String(a.vendor || "").trim().toUpperCase();
-            const vendorB = String(b.vendor || "").trim().toUpperCase();
-            return vendorA.localeCompare(vendorB, "id", { sensitivity: "base" });
-          });
+        const block = document.createElement("div");
+        block.className = "po-block";
 
-          document.getElementById("printTanggal").textContent = formatTanggal(tanggal);
+        let html = `
+          <table class="table-print">
+            <thead>
+              <tr>
+                <th>PO</th>
+                <th>Nama Vendor</th>
+                <th>Penerima</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
 
-          const MAX_PER_BLOCK = 40;
-          for (let i = 0; i < data.length; i += MAX_PER_BLOCK) {
-            const chunk = data.slice(i, i + MAX_PER_BLOCK);
-            const blockIndex = Math.floor(i / MAX_PER_BLOCK);
+        chunk.forEach(function(item) {
+          html += `
+            <tr>
+              <td>${escapeHtml(item.po)}</td>
+              <td>${escapeHtml(item.vendor)}</td>
+              <td></td>
+            </tr>
+          `;
+        });
 
-            if (blockIndex % 2 === 0) {
-              const page = document.createElement("div");
-              page.className = "print-page";
-              page.id = "print-page-" + blockIndex;
-              container.appendChild(page);
-            }
+        html += `
+            </tbody>
+          </table>
+        `;
 
-            const pages = container.querySelectorAll(".print-page");
-            const currentPage = pages[pages.length - 1];
-
-            const block = document.createElement("div");
-            block.className = "po-block";
-
-            let html = `
-              <table>
-                <thead>
-                  <tr>
-                    <th>PO</th>
-                    <th>Nama Vendor</th>
-                    <th>Penerima</th>
-                  </tr>
-                </thead>
-                <tbody>
-            `;
-
-            chunk.forEach(function(item) {
-              html += `
-                <tr>
-                  <td>${escapeHtml(item.po)}</td>
-                  <td>${escapeHtml(item.vendor)}</td>
-                  <td></td>
-                </tr>
-              `;
-            });
-
-            html += `
-                </tbody>
-              </table>
-            `;
-
-            block.innerHTML = html;
-            currentPage.appendChild(block);
-          }
-
-          document.getElementById("btnPrint").disabled = false;
-        })
-        .withFailureHandler(function(error) {
-          document.getElementById("loading").style.display = "none";
-          document.getElementById("btnLoad").disabled = false;
-          document.getElementById("btnPrint").disabled = true;
-          alert("Gagal mengambil data: " + (error.message || error));
-        })
-        .getDataPrintPO(sheetName, tanggal);
-    }
-
-    window.addEventListener("DOMContentLoaded", function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const sheet = urlParams.get("sheet");
-      const tanggal = urlParams.get("tanggal");
-
-      if (sheet && tanggal) {
-        document.getElementById("pilihanKM").value = sheet;
-        document.getElementById("tanggal").value = tanggal;
-        loadData();
+        block.innerHTML = html;
+        currentPage.appendChild(block);
       }
+
+      document.getElementById("btnPrint").disabled = false;
+    })
+    .catch(error => {
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("btnLoad").disabled = false;
+      document.getElementById("btnPrint").disabled = true;
+      alert("Gagal mengambil data: " + error);
     });
+}
 
     function printData() {
       const container = document.getElementById("printContainer");
