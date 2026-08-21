@@ -119,8 +119,13 @@
         <h3 class="fw-bold mb-1">Input Vendor PO (CPI KM8 & KM9)</h3>
         <p class="text-muted mb-0">Ketik/pilih vendor untuk masing-masing baris PO yang belum memiliki tanggal naik.</p>
       </div>
-      <div>
-        <button class="btn btn-outline-secondary" onclick="loadData()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+      <!-- Modifikasi di bagian d-flex gap-2 ini -->
+      <div class="d-flex gap-2 align-items-center">
+        <div class="input-group">
+          <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" id="searchPO" class="form-control border-start-0" placeholder="Cari No PO atau PIC..." onkeyup="filterPO()">
+        </div>
+        <button class="btn btn-outline-secondary text-nowrap" onclick="loadData()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
       </div>
     </div>
 
