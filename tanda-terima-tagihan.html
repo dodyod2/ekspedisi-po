@@ -49,8 +49,7 @@
 </div>
 
 <script>
-<script>
-// Gunakan link versi terbaru secara langsung (Tidak akan ditimpa lagi)
+// Link Web App Google Apps Script Anda
 let urlWebApp = "https://script.google.com/macros/s/AKfycbxK905uFZb6_3bF67aNpQLhMx9-72nvX1pWZ4F1fA5MFqtoiisuY3nbREbtVSKVEc81uQ/exec";
 
 function cariData() {
@@ -60,12 +59,16 @@ function cariData() {
     return;
   }
 
-  google.script.run
-    .withSuccessHandler(function(data) {
-      const tbody = document.getElementById("tabelBody");
+  const tbody = document.getElementById("tabelBody");
+  tbody.innerHTML = `<tr><td colspan="5" align="center" style="color: #777;">Sedang mencari data...</td></tr>`;
+
+  // Menggunakan fetch ke Google Apps Script (action=search)
+  fetch(`${urlWebApp}?action=search&keyword=${encodeURIComponent(keyword)}`)
+    .then(response => response.json())
+    .then(data => {
       tbody.innerHTML = "";
 
-      if (data.length === 0) {
+      if (!data || data.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" align="center" style="color: red;">Data tidak ditemukan.</td></tr>`;
         return;
       }
@@ -84,18 +87,13 @@ function cariData() {
         tbody.appendChild(tr);
       });
     })
-    .withFailureHandler(function(err) {
-      Swal.fire({ icon: 'error', title: 'Error', text: err.message });
-    })
-    .searchTTPO(keyword);
+    .catch(err => {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal terhubung ke server: ' + err.message });
+      tbody.innerHTML = `<tr><td colspan="5" align="center" style="color: red;">Terjadi kesalahan koneksi.</td></tr>`;
+    });
 }
 
 function printTT(noTT) {
-  if (!urlWebApp) {
-    Swal.fire({ icon: 'info', title: 'Memuat...', text: 'Sistem sedang menyiapkan link, coba klik cetak sekali lagi.' });
-    return;
-  }
-  
   const linkCetak = urlWebApp + "?page=printTTPO&noTT=" + noTT;
   const a = document.createElement('a');
   a.href = linkCetak;
