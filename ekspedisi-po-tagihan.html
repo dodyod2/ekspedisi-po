@@ -1,7 +1,31 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  class="sidebar">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ekspedisi PO & Tagihan</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: Calibri, Arial; background: #f9f9f9; margin: 0; display: flex; }
+    
+    /* Styling Sidebar */
+    .sidebar { width: 260px; height: 100vh; background: #212529; color: white; position: fixed; top: 0; left: 0; padding: 20px 15px; overflow-y: auto; }
+    .sidebar a { color: #cfd8dc; text-decoration: none; display: block; padding: 10px 15px; border-radius: 4px; margin-bottom: 5px; transition: 0.2s; }
+    .sidebar a:hover, .sidebar a.active { background: #343a40; color: #fff; }
+    
+    /* Styling Konten Utama */
+    .main-content { margin-left: 260px; padding: 20px; width: calc(100% - 260px); }
+    .iframe-container { width: 100%; height: calc(100vh - 80px); background: #fff; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden; }
+    .iframe-container iframe { width: 100%; height: 100%; border: none; }
+  </style>
+</head>
+<body>
+
+    <!-- SIDEBAR NAVIGASI -->
+    <div class="sidebar">
         <h4 class="text-center fw-bold mb-4 text-white">Ekspedisi<span class="text-primary">Pro</span></h4>
         <a href="index.html"><i class="fa-solid fa-chart-pie me-2"></i> Beranda</a>
         <a href="input-po.html"><i class="fa-solid fa-file-invoice me-2"></i> Input PO</a>
@@ -14,7 +38,7 @@
 
         <!-- Kontainer Dropdown Rincian Tagihan -->
         <div class="collapse" id="subTagihanMenu">
-            <div class="ps-2 py-1 bg-dark bg-opacity-25">
+            <div class="ps-2 py-1 bg-dark bg-opacity-25 rounded">
                 <a href="tagihan-sl3.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Salatiga</a>
                 <a href="tagihan-pemalang.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Pemalang</a>
                 <a href="tagihan-sragen.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Sragen</a>
@@ -26,41 +50,29 @@
 
         <a href="printPO.html" class="mt-2"><i class="fa-solid fa-print me-2"></i> Print Ekspedisi</a>
         <a href="searchAll.html"><i class="fa-solid fa-magnifying-glass me-2"></i> Pencarian PO</a>
-        <a href="ekspedisi-po-tagihan.html"><i class="fa-solid fa-truck-fast me-2"></i> Ekspedisi PO & Tagihan</a>
+        <a href="ekspedisi-po-tagihan.html" class="active"><i class="fa-solid fa-truck-fast me-2"></i> Ekspedisi PO & Tagihan</a>
         <a href="tanda-terima-tagihan.html"><i class="fa-solid fa-receipt me-2"></i> Tanda Terima Tagihan</a>
     </div>
 
-</head>
-<body>
+    <!-- KONTEN UTAMA -->
+    <div class="main-content">
+        <!-- NAVIGATION BAR ATAS -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3 px-3 rounded">
+          <div class="container-fluid">
+            <span class="navbar-brand fw-bold">Sistem Ekspedisi & Tagihan</span>
+            <span class="navbar-text text-light">
+              Charoen Pokphand Indonesia
+            </span>
+          </div>
+        </nav>
 
-<!-- NAVIGATION BAR -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="index.html">Sistem Ekspedisi</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="index.html">Beranda</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="ekspedisi-po-tagihan.html">Form TT PO & Tagihan</a>
-        </li>
-      </ul>
-      <span class="navbar-text text-light">
-        Charoen Pokphand Indonesia
-      </span>
+        <!-- EMBED APPS SCRIPT -->
+        <div class="iframe-container">
+          <iframe src="https://script.google.com/macros/s/AKfycbxK905uFZb6_3bF67aNpQLhMx9-72nvX1pWZ4F1fA5MFqtoiisuY3nbREbtVSKVEc81uQ/exec"></iframe>
+        </div>
     </div>
-  </div>
-</nav>
 
-<!-- EMBED APPS SCRIPT -->
-<div class="iframe-container">
-  <iframe src="https://script.google.com/macros/s/AKfycbxK905uFZb6_3bF67aNpQLhMx9-72nvX1pWZ4F1fA5MFqtoiisuY3nbREbtVSKVEc81uQ/exec"></iframe>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
