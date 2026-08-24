@@ -265,20 +265,24 @@
             });
         }
 
-        // Helper untuk memperbarui teks & menambahkan warna merah jika nilai != 0
-        function setElText(id, val) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            
-            const num = val || 0;
-            el.innerText = num;
+       // Helper untuk memperbarui teks & menambahkan warna merah jika nilai != 0
+function setElText(id, val) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    
+    const num = val || 0;
+    el.innerText = num;
 
-            if (num != 0 && num !== "0") {
-                el.classList.add("text-danger-custom");
-            } else {
-                el.classList.remove("text-danger-custom");
-            }
-        }
+    // Daftar ID elemen di kartu "PO Belum Naik Akunting"
+    const isRedCardElement = ['kpi-po-belum-naik', 'kpi-km8', 'kpi-km9'].includes(id);
+
+    // Tambahkan class warna merah HANYA jika nilainya tidak nol DAN bukan bagian dari kartu PO Belum Naik
+    if (num != 0 && num !== "0" && !isRedCardElement) {
+        el.classList.add("text-danger-custom");
+    } else {
+        el.classList.remove("text-danger-custom");
+    }
+}
 
         // Helper untuk menampilkan spinner loading pada seluruh elemen KPI
         function showKPILoadingState() {
