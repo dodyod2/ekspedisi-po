@@ -389,6 +389,55 @@
         });
       });
     }
+
+      // --- FITUR SHORTCUT ENTER ---
+
+// 1. Dari Search -> Enter -> Fokus ke Input Vendor pertama yang terlihat
+document.getElementById('searchPO').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault(); // Mencegah reload halaman jika ada form
+        
+        // Ambil semua elemen input vendor
+        const vendorInputs = document.querySelectorAll('.input-vendor');
+        
+        // Cari input vendor pertama yang barisnya (tr) tidak disembunyikan oleh pencarian
+        for (let input of vendorInputs) {
+            if (input.closest('tr').style.display !== 'none') {
+                input.focus();
+                
+                // Opsional: Langsung blok teks di dalamnya jika ingin menimpa teks lama
+                input.select(); 
+                break;
+            }
+        }
+    }
+});
+
+// 2. Dari Input Vendor -> Enter -> Kosongkan Search, Reset Filter, Kembali ke Search
+document.addEventListener('keydown', function(e) {
+    // Pastikan yang ditekan adalah Enter dan elemen yang sedang aktif adalah input-vendor
+    if (e.target && e.target.classList.contains('input-vendor') && e.key === 'Enter') {
+        e.preventDefault();
+
+        // BONUS UX: Otomatis centang checkbox pada baris ini agar siap di-simpan
+        const poNumber = e.target.getAttribute('data-po');
+        const checkbox = document.querySelector(`.check-po[data-po="${poNumber}"]`);
+        if (checkbox) {
+            checkbox.checked = true;
+        }
+
+        const searchBox = document.getElementById('searchPO');
+        
+        // Kosongkan kotak pencarian
+        searchBox.value = '';
+        
+        // Jalankan ulang fungsi filter agar semua tabel kembali tampil (reset)
+        filterPO();
+        
+        // Kembalikan fokus ke kotak pencarian
+        searchBox.focus();
+    }
+});
   </script>
 </body>
 </html>
