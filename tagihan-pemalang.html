@@ -1,254 +1,176 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Ekspedisi & PO</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome untuk Ikon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { 
-            background-color: #f8fafc; 
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-        
-        /* Transisi halus untuk sidebar dan konten utama */
-        .sidebar {
-            width: 250px; 
-            background-color: #1e293b; 
-            height: 100vh;
-            position: fixed; 
-            color: white; 
-            padding-top: 20px; 
-            z-index: 1000;
-            overflow-y: auto;
-            transition: width 0.3s ease;
-        }
-        .sidebar a {
-            color: #cbd5e1; 
-            text-decoration: none; 
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            font-weight: 500; 
-            transition: 0.3s;
-            white-space: nowrap;
-        }
-        .sidebar a span.menu-text {
-            transition: opacity 0.2s ease;
-        }
-        .main-content { 
-            margin-left: 250px; 
-            padding: 30px; 
-            transition: margin-left 0.3s ease;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expedisi Tagihan CPI Pemalang</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <style>
+    body { 
+      background-color: #f1f5f9;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #334155;
+    }
+    
+    /* SIDEBAR STYLES (TETAP) */
+    .sidebar {
+      width: 250px; 
+      background-color: #1e293b; 
+      height: 100vh;
+      position: fixed; 
+      color: white; 
+      padding-top: 20px; 
+      z-index: 1000;
+      overflow-y: auto;
+    }
+    .sidebar a {
+      color: #cbd5e1; 
+      text-decoration: none; 
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      font-weight: 500; 
+      transition: 0.3s;
+      white-space: nowrap;
+    }
+    .sidebar a:hover, .sidebar a.active {
+      background-color: #334155;
+      color: #fff;
+    }
 
-        /* State ketika Sidebar dalam posisi Minimize */
-        .sidebar.minimized {
-            width: 70px;
-        }
-        .sidebar.minimized .sidebar-title,
-        .sidebar.minimized span.menu-text,
-        .sidebar.minimized .fa-chevron-down {
-            display: none !important;
-        }
-        .sidebar.minimized a {
-            justify-content: center;
-            padding: 12px 10px;
-        }
-        .sidebar.minimized a i {
-            margin-right: 0 !important;
-            font-size: 1.2rem;
-        }
-        .main-content.expanded {
-            margin-left: 70px;
-        }
+    /* MAIN CONTENT MODERN STYLES */
+    .main-content { 
+      margin-left: 250px; 
+      padding: 40px 30px; 
+    }
 
-        /* Animasi putar ikon panah dropdown */
-        [data-bs-toggle="collapse"] .fa-chevron-down {
-            transition: transform 0.3s ease;
-        }
-        [data-bs-toggle="collapse"][aria-expanded="true"] .fa-chevron-down {
-            transform: rotate(180deg);
-        }
+    .form-card-modern {
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
+      padding: 40px;
+      transition: all 0.3s ease;
+    }
 
-        /*=============================
-         CONTAINER & CARD MODERN
-        ==============================*/
-        .form-card {
-            max-width: 650px;
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 35px;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
-            transition: box-shadow 0.2s ease;
-        }
-        .form-card:hover {
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-        }
+    .form-header {
+      border-bottom: 2px dashed #f1f5f9;
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+    }
 
-        h3.form-title {
-            text-align: center;
-            color: #0b6b4b;
-            font-weight: 700;
-            margin-bottom: 25px;
-            letter-spacing: .5px;
-            font-size: 1.4rem;
-        }
+    .form-header h4 {
+      color: #0d9488;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
 
-        /*=============================
-         INPUT & FORM CONTROLS
-        ==============================*/
-        label {
-            font-weight: 600;
-            color: #334155;
-            font-size: 0.9rem;
-            margin-bottom: 6px;
-        }
+    .input-group-modern {
+      position: relative;
+    }
 
-        input[type=text] {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 11px 14px;
-            border-radius: 10px;
-            border: 1px solid #cbd5e1;
-            transition: all 0.2s ease;
-            background: #f8fafc;
-            font-size: 0.95rem;
-        }
+    .input-group-modern .input-group-text {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+      border-right: none;
+      color: #64748b;
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+      padding-left: 16px;
+    }
 
-        input[type=text]:focus {
-            border-color: #0aa36c;
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(10,163,108,.12);
-            outline: none;
-        }
+    .input-group-modern .form-control {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+      border-left: none;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+      padding: 11px 16px;
+      font-weight: 500;
+      color: #1e293b;
+      transition: all 0.2s ease;
+    }
 
-        /*=============================
-         BUTTON MODERN
-        ==============================*/
-        .btn-submit-custom {
-            width: 100%;
-            margin-top: 25px;
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            background: linear-gradient(135deg, #00b894, #00cec9);
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 184, 148, 0.2);
-        }
+    .input-group-modern .form-control:focus {
+      background-color: #ffffff;
+      border-color: #0d9488;
+      box-shadow: none;
+    }
 
-        .btn-submit-custom:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(0,184,148,.3);
-        }
+    .input-group-modern:focus-within .input-group-text {
+      background-color: #ffffff;
+      border-color: #0d9488;
+      color: #0d9488;
+    }
 
-        .btn-submit-custom:disabled {
-            background: #cbd5e1;
-            box-shadow: none;
-            transform: none;
-        }
+    /* MODERN CHECKBOX BADGES */
+    .doc-checkbox {
+      display: none;
+    }
 
-        /*=============================
-         DOKUMEN
-        ==============================*/
-        .section-title {
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-weight: 700;
-            color: #0b6b4b;
-            font-size: 0.95rem;
-        }
+    .doc-label {
+      cursor: pointer;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #64748b;
+      background-color: #f8fafc;
+      transition: all 0.2s ease;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        .doc-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+    .doc-label:hover {
+      background-color: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #334155;
+    }
 
-        .doc-item input {
-            display: none;
-        }
+    .doc-checkbox:checked + .doc-label {
+      background-color: #ccfbf1;
+      border-color: #0d9488;
+      color: #0f766e;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.15);
+    }
 
-        .doc-item span {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 9px 16px;
-            border-radius: 8px;
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-            user-select: none;
-            color: #475569;
-        }
+    /* SUBMIT BUTTON MODERN */
+    .btn-submit-modern {
+      background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      box-shadow: 0 10px 20px -5px rgba(13, 148, 136, 0.4);
+      transition: all 0.25s ease;
+    }
 
-        .doc-item span:hover {
-            background: #f1f5f9;
-            border-color: #94a3b8;
-        }
+    .btn-submit-modern:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -3px rgba(13, 148, 136, 0.5);
+      background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+    }
 
-        .doc-item input:checked + span {
-            background: linear-gradient(135deg, #00b894, #00cec9);
-            color: white;
-            border-color: #00b894;
-            box-shadow: 0 4px 12px rgba(0,184,148,.2);
-        }
-
-        #customNote {
-            margin-top: 8px;
-        }
-
-        /*=============================
-         STATUS
-        ==============================*/
-        #status {
-            margin-top: 15px;
-            font-weight: 600;
-            text-align: center;
-            font-size: 0.95rem;
-        }
-
-        /* Autocomplete dropdown styling */
-        #vendorList {
-            position: absolute;
-            border: 1px solid #cbd5e1;
-            border-top: none;
-            z-index: 99;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: #fff;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        #vendorList div {
-            padding: 10px 14px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        #vendorList div:hover {
-            background-color: #f1f5f9;
-        }
-    </style>
+    .btn-submit-modern:active {
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
 
-    <!-- SIDEBAR NAVIGASI -->
+  <!-- SIDEBAR NAVIGASI -->
     <div class="sidebar">
         <h4 class="text-center fw-bold mb-4 text-white">Ekspedisi<span class="text-primary">Pro</span></h4>
         <a href="index.html"><i class="fa-solid fa-chart-pie me-2"></i> <span class="menu-text">Beranda</span></a>
@@ -264,7 +186,7 @@
         <div class="collapse show" id="subTagihanMenu">
             <div class="ps-2 py-1 bg-dark bg-opacity-25">
                 <a href="tagihan-sl3.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Salatiga</a>
-                <a href="tagihan-pemalang.html" class="ps-4 py-2 d-block text-white small bg-primary bg-opacity-25 rounded"><i class="fa-solid fa-angle-right me-2"></i> Pemalang</a>
+                <a href="tagihan-pemalang.html" class="ps-4 py-2 d-block text-white small bg-primary bg-opacity-25 rounded"><i class="fa-solid fa-angle-right me-2"></i> Banyumas</a>
                 <a href="tagihan-sragen.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Sragen</a>
                 <a href="tagihan-banyumas.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Banyumas</a>
                 <a href="tagihan-kebumen.html" class="ps-4 py-2 d-block text-secondary small"><i class="fa-solid fa-angle-right me-2"></i> Kebumen</a>
@@ -278,246 +200,247 @@
         <a href="tanda-terima-tagihan.html"><i class="fa-solid fa-receipt me-2"></i> <span class="menu-text">Tanda Terima Tagihan</span></a>
     </div>
 
-    <!-- KONTEN UTAMA -->
-    <div class="main-content">
-        <div class="form-card">
-            <h3 class="form-title">EXPEDISI TAGIHAN CPI PEMALANG</h3>
 
+  <!-- MAIN CONTENT (DIUPDATE LEBIH MODERN) -->
+  <div class="main-content">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-10">
+        <div class="form-card-modern">
+          
+          <div class="form-header text-center">
+            <div class="d-inline-flex align-items-center justify-content-center bg-teal-subtle text-teal rounded-circle mb-2" style="width: 48px; height: 48px; background-color: #ccfbf1; color: #0d9488;">
+              <i class="fa-solid fa-file-invoice-dollar fs-4"></i>
+            </div>
+            <h4 class="mb-1">EXPEDISI TAGIHAN CPI PEMALANG</h4>
+            <p class="text-muted small mb-0">Kelola dan catat formulir penagihan ekpedisi secara presisi</p>
+          </div>
+          
+          <form id="formTagihan">
+            <!-- No PO -->
             <div class="mb-3">
-                <label>No PO</label>
-                <input type="text" id="po" placeholder="Masukkan nomor PO" required>
+              <label for="noPo" class="form-label text-dark small fw-bold mb-1">No PO</label>
+              <div class="input-group input-group-modern">
+                <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                <input type="text" class="form-control" id="noPo" placeholder="Masukkan nomor PO" required>
+              </div>
             </div>
 
+            <!-- Vendor / Expedisi -->
             <div class="mb-3">
-                <label>Vendor</label>
-                <div style="position: relative;">
-                    <input type="text" id="vendor" placeholder="Ketik nama vendor..." autocomplete="off">
-                    <div id="vendorList" style="display:none;"></div>
-                </div>
+              <label for="vendor" class="form-label text-dark small fw-bold mb-1">Vendor </label>
+              <div class="input-group input-group-modern">
+               <span class="input-group-text"><i class="fa-solid fa-building"></i></span>
+                <input type="text" class="form-control" id="vendor" list="vendorDatalist" placeholder="Pilih / ketik vendor..." autocomplete="off" required>
+              </div>
             </div>
 
+            <!-- Nominal -->
             <div class="mb-3">
-                <label>Nominal</label>
-                <input type="text" id="nominal" placeholder="Masukkan nominal" required oninput="formatNominal(this)">
+              <label for="nominal" class="form-label text-dark small fw-bold mb-1">Nominal</label>
+              <div class="input-group input-group-modern">
+                <span class="input-group-text"><i class="fa-solid fa-money-bill-wave"></i></span>
+                <input type="text" class="form-control" id="nominal" placeholder="Rp. 0" required>
+              </div>
             </div>
 
+            <!-- No Invoice -->
             <div class="mb-3">
-                <label>No Invoice</label>
-                <input type="text" id="invoice" placeholder="Masukkan nomor invoice">
+              <label for="noInvoice" class="form-label text-dark small fw-bold mb-1">No Invoice</label>
+              <div class="input-group input-group-modern">
+                <span class="input-group-text"><i class="fa-solid fa-receipt"></i></span>
+                <input type="text" class="form-control" id="noInvoice" placeholder="Masukkan nomor invoice">
+              </div>
             </div>
 
-            <div class="section-title">
-                📂 Dokumen yang disertakan
-            </div>
-
-            <div class="doc-group mb-3">
-                <label class="doc-item">
-                    <input type="checkbox" value="INV">
-                    <span>📄 INV</span>
-                </label>
-                <label class="doc-item">
-                    <input type="checkbox" value="SJ">
-                    <span>🚚 SJ</span>
-                </label>
-                <label class="doc-item">
-                    <input type="checkbox" value="COPY PO">
-                    <span>📑 COPY PO</span>
-                </label>
-                <label class="doc-item">
-                    <input type="checkbox" value="FKTR">
-                    <span>🧾 FKTR</span>
-                </label>
-            </div>
-
+            <!-- Dokumen yang disertakan -->
             <div class="mb-3">
-                <label>Dokumen lainnya</label>
-                <input type="text" id="customNote" placeholder="Contoh : KWITANSI, BAST, COA, dll">
+              <label class="form-label text-dark small fw-bold d-block mb-2"><i class="fa-regular fa-folder-open me-1 text-teal" style="color: #0d9488;"></i> Dokumen yang disertakan</label>
+              <div class="d-flex flex-wrap gap-2">
+                <input type="checkbox" class="doc-checkbox" id="docInv" value="INV">
+                <label class="doc-label" for="docInv"><i class="fa-solid fa-file-invoice"></i> INV</label>
+
+                <input type="checkbox" class="doc-checkbox" id="docSj" value="SJ">
+                <label class="doc-label" for="docSj"><i class="fa-solid fa-truck-ramp-box"></i> SJ</label>
+
+                <input type="checkbox" class="doc-checkbox" id="docPo" value="COPY PO">
+                <label class="doc-label" for="docPo"><i class="fa-solid fa-file-lines"></i> COPY PO</label>
+
+                <input type="checkbox" class="doc-checkbox" id="docFktr" value="FKTR">
+                <label class="doc-label" for="docFktr"><i class="fa-solid fa-receipt"></i> FKTR</label>
+              </div>
             </div>
 
-            <button id="btnSubmit" class="btn-submit-custom" onclick="submitData()">Simpan Data</button>
+            <!-- Dokumen lainnya -->
+            <div class="mb-4">
+              <label for="docLainnya" class="form-label text-dark small fw-bold mb-1">Dokumen lainnya</label>
+              <div class="input-group input-group-modern">
+                <span class="input-group-text"><i class="fa-solid fa-paperclip"></i></span>
+                <input type="text" class="form-control" id="docLainnya" placeholder="Contoh: KWITANSI, BAST, COA, dll">
+              </div>
+            </div>
 
-            <div id="status"></div>
+            <!-- Tombol Simpan -->
+            <button type="button" id="btnSimpan" class="btn btn-submit-modern w-100 text-white mt-2" onclick="simpanData()">
+              <i class="fa-solid fa-floppy-disk me-2"></i> Simpan Data Tagihan
+            </button>
+          </form>
+
         </div>
+      </div>
     </div>
+  </div>
 
-<script>
-// prefix untuk Pemalang
-const PREFIX_PO = "3237";
+  <!-- WADAH DATALIST AUTOCOMPLETE (TETAP) -->
+  <datalist id="vendorDatalist"></datalist>
 
-// Ganti URL di bawah ini dengan URL Web App Apps Script Anda yang berakhiran /exec
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzF_Ej51qZn6q2Q4pqdXobNLbKmh7_71PITKxuBzekGocbGEsGpw-xqy0l_m64CCNWT/exec";
+  <!-- BOOTSTRAP JS (TETAP) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-let vendors = [];
-let currentFocus = -1;
+  <!-- JAVASCRIPT LOGIC (TETAP) -->
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzF_Ej51qZn6q2Q4pqdXobNLbKmh7_71PITKxuBzekGocbGEsGpw-xqy0l_m64CCNWT/exec";
 
-// Ambil daftar vendor dari Web App Apps Script
-fetch(SCRIPT_URL, {
-  method: "POST",
-  body: JSON.stringify({ action: "getVendorList" })
-})
-.then(res => res.json())
-.then(result => {
-  if (result.status === "success") {
-    vendors = result.data;
+    document.addEventListener("DOMContentLoaded", function () {
+      loadVendorList();
+      setupEnterNavigation();
+      setupNominalFormat();
+    });
+
+    // 1. Memuat daftar vendor ke datalist
+    function loadVendorList() {
+      fetch(`${SCRIPT_URL}?action=getVendorList`)
+        .then(res => res.json())
+        .then(res => {
+          if (res.status === 'success' && Array.isArray(res.data)) {
+            const datalist = document.getElementById('vendorDatalist');
+            datalist.innerHTML = '';
+            res.data.forEach(v => {
+              const option = document.createElement('option');
+              option.value = v;
+              datalist.appendChild(option);
+            });
+          }
+        })
+        .catch(err => console.error("Gagal memuat vendor:", err));
+    }
+
+    // 2. NAVIGASI ENTER PINDAH KE INPUT BAWAHNYA
+    function setupEnterNavigation() {
+      const inputs = [
+        document.getElementById("noPo"),
+        document.getElementById("vendor"),
+        document.getElementById("nominal"),
+        document.getElementById("noInvoice"),
+        document.getElementById("docLainnya")
+      ];
+
+      inputs.forEach((input, index) => {
+        if (!input) return;
+
+        input.addEventListener("keydown", function (event) {
+          if (event.key === "Enter") {
+            event.preventDefault(); // Matikan submit default
+
+            // Pindah ke elemen berikutnya
+            const nextInput = inputs[index + 1];
+            if (nextInput) {
+              if (input.id === "vendor") {
+                input.blur(); // Tutup dropdown datalist vendor
+              }
+              setTimeout(() => {
+                nextInput.focus();
+                if (nextInput.select) nextInput.select();
+              }, 50);
+            } else {
+              // Jika sudah di input terakhir, jalankan simpan data
+              simpanData();
+            }
+          }
+        });
+
+        // Khusus Vendor: Pindah ke Nominal saat opsi datalist diklik
+        if (input.id === "vendor") {
+          input.addEventListener("change", function () {
+            if (this.value.trim() !== "") {
+              setTimeout(() => {
+                document.getElementById("nominal").focus();
+              }, 50);
+            }
+          });
+        }
+      });
+    }
+
+    // 3. Format Rupiah pada Input Nominal
+    function setupNominalFormat() {
+      const nominalInput = document.getElementById("nominal");
+      if (!nominalInput) return;
+
+      nominalInput.addEventListener("input", function () {
+        let value = this.value.replace(/[^,\d]/g, "");
+        if (value) {
+          let numberValue = parseInt(value, 10);
+          this.value = "Rp. " + numberValue.toLocaleString("id-ID");
+        } else {
+          this.value = "";
+        }
+      });
+    }
+
+    // 4. Simpan Data Tagihan
+    function simpanData() {
+  const noPo = document.getElementById("noPo").value.trim();
+  const vendor = document.getElementById("vendor").value.trim();
+  const nominal = document.getElementById("nominal").value.trim();
+  const noInvoice = document.getElementById("noInvoice").value.trim();
+  const docLainnya = document.getElementById("docLainnya").value.trim();
+
+  // Ambil semua dokumen yang dicentang
+  const docCheckboxes = document.querySelectorAll(".doc-checkbox:checked");
+  let docs = Array.from(docCheckboxes).map(cb => cb.value);
+  if (docLainnya) docs.push(docLainnya);
+
+  // Validasi Input Wajib
+  if (!noPo || !vendor || !nominal) {
+    Swal.fire('Peringatan', 'Harap isi No PO, Vendor, dan Nominal!', 'warning');
+    return;
   }
-})
-.catch(err => console.error("Gagal memuat vendor:", err));
 
-// Format rupiah (tetap sama)
-function formatNominal(el) {
-  const angka = el.value.replace(/\D/g, '');
-  if (!angka) { el.value = ''; return; }
-  el.value = 'Rp. ' + parseInt(angka).toLocaleString('id-ID');
-}
-
-// Submit data ke Web App Apps Script via Fetch
-function submitData() {
-  const po = document.getElementById('po').value.trim();
-  const vendor = document.getElementById('vendor').value.trim();
-  const nominalText = document.getElementById('nominal').value.trim();
-  const invoice = document.getElementById('invoice').value.trim();
-  const list=[];
-
-  document.querySelectorAll('.doc-item input:checked').forEach(c=>{
-    list.push(c.value);
+  Swal.fire({
+    title: 'Menyimpan...',
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
   });
 
-  const custom = document.getElementById("customNote").value.trim();
-  if(custom !== ""){
-    list.push(custom);
-  }
+  // Payload disesuaikan dengan fungsi addExpedisiPML di Code.gs
+  const payload = {
+    action: "addExpedisiPML",      // Action sesuai backend
+    po: noPo,                      // Menggunakan 'po'
+    vendor: vendor,                // Menggunakan 'vendor'
+    nominal: nominal,              // Menggunakan 'nominal'
+    invoice: noInvoice,            // Menggunakan 'invoice'
+    note: docs.join(", ")          // Menggunakan 'note' untuk daftar dokumen
+  };
 
-  const note = list.join(", ");
-  
-  if (!po || !vendor || !nominalText) {
-    document.getElementById('status').textContent = '⚠️ Semua field wajib diisi.';
-    document.getElementById('status').style.color = '#dc2626';
-    return;
-  }
-
-  if (!po.startsWith("3237")) {
-    document.getElementById('status').textContent = `⚠️ Nomor PO untuk PEMALANG harus diawali dengan 3237`;
-    document.getElementById('status').style.color = '#dc2626';
-    return;
-  }
-
-  const nominal = nominalText.replace(/[^\d]/g, '');
-  const btn = document.getElementById('btnSubmit');
-  btn.disabled = true;
-  document.getElementById('status').textContent = 'Menyimpan data...';
-  document.getElementById('status').style.color = '#0b6b4b';
-
-  // Kirim data menggunakan fetch ke Apps Script
   fetch(SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "addExpedisiPML",
-      po: po,
-      vendor: vendor,
-      nominal: nominal,
-      invoice: invoice,
-      note: note
-    })
+    method: 'POST',
+    body: JSON.stringify(payload)
   })
   .then(res => res.json())
-  .then(result => {
-    if (result.status === "success") {
-      document.getElementById("status").textContent = "✅ Data berhasil disimpan!";
-      document.getElementById("status").style.color = '#0b6b4b';
-
-      setTimeout(() => {
-          document.getElementById("status").textContent = "";
-          resetForm();
-      }, 1000);
+  .then(res => {
+    if (res.status === 'success') {
+      Swal.fire('Berhasil!', 'Data tagihan berhasil disimpan.', 'success');
+      document.getElementById("formTagihan").reset();
+      document.getElementById("noPo").focus();
     } else {
-      throw new Error(result.message || "Gagal menyimpan");
+      Swal.fire('Gagal', res.message || 'Gagal menyimpan data.', 'error');
     }
-    btn.disabled = false;
   })
   .catch(err => {
-    document.getElementById('status').textContent = '❌ Gagal: ' + err.message;
-    document.getElementById('status').style.color = '#dc2626';
-    btn.disabled = false;
+    console.error(err);
+    Swal.fire('Error', 'Terjadi kesalahan sistem saat menyimpan data.', 'error');
   });
 }
-
-/* === Autocomplete === */
-const vendorInput = document.getElementById("vendor");
-const vendorListDiv = document.getElementById("vendorList");
-
-vendorInput.addEventListener("input", function () {
-  const val = this.value.toLowerCase();
-  vendorListDiv.innerHTML = "";
-  currentFocus = -1;
-
-  if (!val) { vendorListDiv.style.display = "none"; return; }
-
-  let matches = vendors.filter(v => v.toLowerCase().includes(val));
-  if (matches.length === 0) { vendorListDiv.style.display = "none"; return; }
-
-  matches.forEach(match => {
-    let item = document.createElement("div");
-    item.textContent = match;
-    item.addEventListener("click", function () {
-      vendorInput.value = match;
-      vendorListDiv.style.display = "none";
-    });
-    vendorListDiv.appendChild(item);
-  });
-
-  vendorListDiv.style.display = "block";
-});
-
-vendorInput.addEventListener("keydown", function (e) {
-  let items = vendorListDiv.getElementsByTagName("div");
-  if (e.key === "ArrowDown") { currentFocus++; addActive(items); e.preventDefault(); }
-  else if (e.key === "ArrowUp") { currentFocus--; addActive(items); e.preventDefault(); }
-  else if (e.key === "Enter") {
-    e.preventDefault();
-    if (currentFocus > -1 && items[currentFocus]) { items[currentFocus].click(); }
-    else { vendorListDiv.style.display = "none"; }
-    document.getElementById("nominal").focus();
-  }
-});
-
-function addActive(items) {
-  if (!items) return;
-  removeActive(items);
-  if (currentFocus >= items.length) currentFocus = 0;
-  if (currentFocus < 0) currentFocus = items.length - 1;
-  items[currentFocus].style.backgroundColor = "#e2e8f0";
-  items[currentFocus].style.color = "#0f172a";
-}
-function removeActive(items) {
-  for (let i = 0; i < items.length; i++) {
-    items[i].style.backgroundColor = "";
-    items[i].style.color = "";
-  }
-}
-document.addEventListener("click", function (e) {
-  if (e.target !== vendorInput) { vendorListDiv.style.display = "none"; }
-});
-
-// enter untuk next field
-document.querySelectorAll('.form-card input').forEach((input, idx, inputs) => {
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && input.id !== 'vendor') {
-      e.preventDefault();
-      if (idx < inputs.length - 1) { inputs[idx + 1].focus(); }
-      else { submitData(); }
-    }
-  });
-});
-
-function resetForm() {
-    document.querySelectorAll('.form-card input[type="text"]').forEach(i => i.value = "");
-    document.querySelectorAll('.doc-item input[type="checkbox"]').forEach(c => c.checked = false);
-    document.getElementById("status").textContent = "";
-    document.getElementById("po").focus();
-}
-</script>
-
-<!-- Bootstrap Bundle JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </script>
 </body>
 </html>
