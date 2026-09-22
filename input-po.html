@@ -125,7 +125,9 @@
           <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
           <input type="text" id="searchPO" class="form-control border-start-0" placeholder="Cari No PO atau PIC..." onkeyup="filterPO()" oninput="filterPO()">
         </div>
-        <button class="btn btn-outline-secondary text-nowrap" onclick="loadData()"><i class="fa-solid fa-rotate me-1"></i> Refresh</button>
+        <button class="btn btn-outline-secondary text-nowrap" id="btnRefresh" onclick="loadData()">
+  <i class="fa-solid fa-rotate me-1"></i> Refresh
+</button>
       </div>
     </div>
 
@@ -233,10 +235,28 @@
         .catch(err => console.error("Gagal memuat vendor:", err));
     }
 
-    // 2. MEMUAT DAFTAR PO UNASSIGNED
+   // 2. MEMUAT DAFTAR PO UNASSIGNED
     function loadData() {
-      document.getElementById('tbodyKM8').innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4"><i class="fa-solid fa-spinner fa-spin me-2"></i>Memuat data KM8...</td></tr>`;
-      document.getElementById('tbodyKM9').innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4"><i class="fa-solid fa-spinner fa-spin me-2"></i>Memuat data KM9...</td></tr>`;
+      // 1. Ubah icon tombol refresh menjadi berputar dan disabled agar tidak diklik ganda
+      const btnRefresh = document.getElementById('btnRefresh');
+      if (btnRefresh) {
+        btnRefresh.disabled = true;
+        btnRefresh.innerHTML = `<i class="fa-solid fa-rotate fa-spin me-1"></i> Memuat...`;
+      }
+
+      // 2. Tampilkan animasi spinner di dalam kedua tabel
+      document.getElementById('tbodyKM8').innerHTML = `
+        <tr>
+          <td colspan="5" class="text-center text-muted py-4">
+            <i class="fa-solid fa-spinner fa-spin fa-lg me-2 text-primary"></i>Memuat data KM8...
+          </td>
+        </tr>`;
+      document.getElementById('tbodyKM9').innerHTML = `
+        <tr>
+          <td colspan="5" class="text-center text-muted py-4">
+            <i class="fa-solid fa-spinner fa-spin fa-lg me-2 text-danger"></i>Memuat data KM9...
+          </td>
+        </tr>`;
 
       fetch(`${SCRIPT_URL}?action=getUnassignedPOList`)
         .then(res => res.json())
@@ -245,6 +265,7 @@
             renderTables(res.data || []);
             document.getElementById('badgeCountKM8').innerText = `${res.totalKM8 || 0} PO Belum Naik`;
             document.getElementById('badgeCountKM9').innerText = `${res.totalKM9 || 0} PO Belum Naik`;
+            updateSelectedBadge(); // Reset badge pilihan ke 0 saat refresh selesai
           } else {
             Swal.fire('Error', res.message || 'Gagal memuat data PO', 'error');
           }
@@ -252,9 +273,15 @@
         .catch(err => {
           console.error(err);
           Swal.fire('Error', 'Gagal koneksi ke server', 'error');
+        })
+        .finally(() => {
+          // 3. Kembalikan tombol refresh ke kondisi normal setelah selesai memuat (baik berhasil maupun error)
+          if (btnRefresh) {
+            btnRefresh.disabled = false;
+            btnRefresh.innerHTML = `<i class="fa-solid fa-rotate me-1"></i> Refresh`;
+          }
         });
     }
-
     // 3. RENDER TABEL DENGAN ATRIBUT list="vendorDatalist"
     function renderTables(list) {
         const listKM8 = list.filter(item => item.feedmill === 'KM8');
