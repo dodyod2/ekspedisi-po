@@ -131,12 +131,15 @@
 
     <!-- TABLE AREA SIDE BY SIDE -->
     <div class="row g-3">
-      <!-- TABEL CPI KM8 -->
+     <!-- TABEL CPI KM8 -->
       <div class="col-lg-6">
         <div class="card card-custom p-3">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold text-primary mb-0"><i class="fa-solid fa-building me-2"></i>CPI KM8</h5>
-            <span class="badge bg-primary px-3 py-2 rounded-pill" id="badgeCountKM8">0 PO Belum Naik</span>
+            <div class="d-flex gap-2 align-items-center">
+              <span class="badge bg-primary px-3 py-2 rounded-pill" id="badgeCountKM8">0 PO Belum Naik</span>
+              <span class="badge bg-success px-3 py-2 rounded-pill" id="badgeSelectedKM8">0 Dipilih</span>
+            </div>
           </div>
 
           <div class="table-responsive">
@@ -163,7 +166,10 @@
         <div class="card card-custom p-3">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold text-danger mb-0"><i class="fa-solid fa-building me-2"></i>CPI KM9</h5>
-            <span class="badge bg-danger px-3 py-2 rounded-pill" id="badgeCountKM9">0 PO Belum Naik</span>
+            <div class="d-flex gap-2 align-items-center">
+              <span class="badge bg-danger px-3 py-2 rounded-pill" id="badgeCountKM9">0 PO Belum Naik</span>
+              <span class="badge bg-success px-3 py-2 rounded-pill" id="badgeSelectedKM9">0 Dipilih</span>
+            </div>
           </div>
 
           <div class="table-responsive">
@@ -184,7 +190,6 @@
           </div>
         </div>
       </div>
-    </div>
 
     <!-- TOMBOL SIMPAN DI BAGIAN BAWAH -->
     <div class="card card-custom p-3 mt-4 text-end">
@@ -438,6 +443,37 @@ document.addEventListener('keydown', function(e) {
         searchBox.focus();
     }
 });
+
+      // 1. Fungsi khusus menghitung baris yang tercentang di masing-masing tabel
+    function updateSelectedBadge() {
+      const countKM8 = document.querySelectorAll('#tbodyKM8 .check-po:checked').length;
+      const countKM9 = document.querySelectorAll('#tbodyKM9 .check-po:checked').length;
+
+      const badgeKM8 = document.getElementById('badgeSelectedKM8');
+      const badgeKM9 = document.getElementById('badgeSelectedKM9');
+
+      if (badgeKM8) badgeKM8.innerText = `${countKM8} Dipilih`;
+      if (badgeKM9) badgeKM9.innerText = `${countKM9} Dipilih`;
+    }
+
+    // 2. Perbarui toggleSelectAll agar langsung sinkron saat Select All diklik
+    function toggleSelectAll(feedmill, masterCheckbox) {
+      const tbodyId = feedmill === 'KM8' ? 'tbodyKM8' : 'tbodyKM9';
+      const checkboxes = document.querySelectorAll(`#${tbodyId} .check-po`);
+      checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+      updateSelectedBadge();
+    }
+
+    // 3. Event listener delegasi untuk klik checkbox satuan
+    document.addEventListener('change', function (e) {
+      if (e.target && e.target.classList.contains('check-po')) {
+        updateSelectedBadge();
+      }
+    });
+
+    // 4. Pastikan hitungan direset ke 0 saat selesai render/load data baru
+    // Letakkan pemanggilan ini di dalam blok `.then` fungsi loadData() setelah renderTables(...)
+    // updateSelectedBadge();
   </script>
 </body>
 </html>
