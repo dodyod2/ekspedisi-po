@@ -420,28 +420,29 @@ document.getElementById('searchPO').addEventListener('keydown', function(e) {
 
 // 2. Dari Input Vendor -> Enter -> Kosongkan Search, Reset Filter, Kembali ke Search
 document.addEventListener('keydown', function(e) {
-    // Pastikan yang ditekan adalah Enter dan elemen yang sedang aktif adalah input-vendor
-    if (e.target && e.target.classList.contains('input-vendor') && e.key === 'Enter') {
-        e.preventDefault();
+  // Pastikan yang ditekan adalah Enter dan elemen yang sedang aktif adalah input-vendor
+  if (e.target && e.target.classList.contains('input-vendor') && e.key === 'Enter') {
+    e.preventDefault();
 
-        // BONUS UX: Otomatis centang checkbox pada baris ini agar siap di-simpan
-        const poNumber = e.target.getAttribute('data-po');
-        const checkbox = document.querySelector(`.check-po[data-po="${poNumber}"]`);
-        if (checkbox) {
-            checkbox.checked = true;
-        }
-
-        const searchBox = document.getElementById('searchPO');
-        
-        // Kosongkan kotak pencarian
-        searchBox.value = '';
-        
-        // Jalankan ulang fungsi filter agar semua tabel kembali tampil (reset)
-        filterPO();
-        
-        // Kembalikan fokus ke kotak pencarian
-        searchBox.focus();
+    // BONUS UX: Otomatis centang checkbox pada baris ini agar siap di-simpan
+    const poNumber = e.target.getAttribute('data-po');
+    const checkbox = document.querySelector(`.check-po[data-po="${poNumber}"]`);
+    if (checkbox) {
+      checkbox.checked = true;
+      updateSelectedBadge(); // <-- TAMBAHKAN BARIS INI
     }
+
+    const searchBox = document.getElementById('searchPO');
+    
+    // Kosongkan kotak pencarian
+    searchBox.value = '';
+    
+    // Jalankan ulang fungsi filter agar semua tabel kembali tampil (reset)
+    filterPO();
+    
+    // Kembalikan fokus ke kotak pencarian
+    searchBox.focus();
+  }
 });
 
       // 1. Fungsi khusus menghitung baris yang tercentang di masing-masing tabel
